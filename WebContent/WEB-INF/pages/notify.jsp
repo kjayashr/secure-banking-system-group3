@@ -8,5 +8,9 @@
 </head>
 <body>
 	${notification}
+	
+	<div class="row">
+			<a href="${pageContext.request.contextPath}/welcome">Go Back To Home Page</a>
+		</div>
 </body>
 </html>

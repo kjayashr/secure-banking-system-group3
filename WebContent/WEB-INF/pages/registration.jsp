@@ -12,6 +12,7 @@
 
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
         <style type="text/css">
  
             body {font-family:Arial, Sans-Serif;}
@@ -30,12 +31,17 @@
             form .line.submit {text-align:right;}
  
         </style>
+        
+      
+        	
+        
+
     </head>
     <body>
         <div id="container" class="container">
-            <form action="${pageContext.request.contextPath}/register" method="post">
+            <form action="${pageContext.request.contextPath}/registration" method="post">
                 <h1>REGISTER</h1>
-                <div class="line"><label for="username">Username *: </label><input type="text" id="username" name="username" required /></div>
+                <div class="line"><label for="username">Username *: </label><input type="text" id="username"  name="username"  required /></div>
                 <div class="line"><label for="pwd">Password *: </label><input type="password" id="password" name="password" required/></div>
                 <!-- You may want to consider adding a "confirm" password box also -->
                 <div class="line"><label for="firstname">FirstName *: </label><input type="text" id="firstname" name="firstname" required /></div>
@@ -51,8 +57,11 @@
                 <div class="line"><label for="country">Country *: </label><input type="text" id="country" name="country" required /></div>
                 <div class="line"><label for="ptc">Post Code *: </label><input type="text" id="postcode" name="postcode" required /></div>
                 <div class="line submit"><input type="submit" value="Submit" class="btn btn-primary" /></div>
+                <span id="error" style="color: red"></span>
  
                 <p>Note: Please make sure your details are correct before submitting form and that all fields marked with * are completed!.</p>
+                <input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" />
             </form>
         </div>
     </body>

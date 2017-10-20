@@ -49,7 +49,7 @@
 		<c:if test="${not empty msg}">
 			<div class="msg">${msg}</div>
 		</c:if>
-
+	<div class="row">
 		<form name='loginForm' action="<c:url value='j_spring_security_check' />" method='POST'>
 
 		  <table>
@@ -66,7 +66,10 @@
 					value="submit" /></td>
 			</tr>
 		  </table>
-
+	</div>
+	<div class="row">
+		<a href="${pageContext.request.contextPath}/registration"> Sign Up </a>
+	</div>
 		  <input type="hidden" name="${_csrf.parameterName}"
 			value="${_csrf.token}" />
 

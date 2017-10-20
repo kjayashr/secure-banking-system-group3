@@ -31,7 +31,7 @@
 
   function validateTransfer(){
 	console.log("inside");
-	var type=document.getElementById('typeoftransfer');
+	var type=document.getElementById('typeoftransfer')
 	var typeVal=type.options[type.selectedIndex].value;
 	if(typeVal=="Internal"){
 		var fromSelect=document.getElementById('from');
@@ -71,8 +71,13 @@ $('.dropdown-menu li a').click(function(){
 				<a x href="javascript:formSubmit()"> Logout</a>
 			</h2>
 		</c:if>
-
-
+		<div class="row">
+			<a href="${pageContext.request.contextPath}/editprofile">Edit Profile</a>
+		</div>
+		
+		<div class="row">
+			<a href="${pageContext.request.contextPath}/viewtransaction">View Transactions</a>
+		</div>
 		<div class="container">
 			<h2>Welcome ${pageContext.request.userPrincipal.name}</h2>
 			<ul class="nav nav-tabs">
@@ -85,26 +90,23 @@ $('.dropdown-menu li a').click(function(){
 			<div class="tab-content">
 				<div id="account" class="tab-pane fade in active">
 					<div class="row" style="background-color: white;">
-						<div class="col-sm-6" >
-							Saving</div>
+						<div class="col-sm-6">Saving</div>
 						<div class="col-sm-6">
-							<c:out value="${accountData['Saving'].balance}"/> 
+							<c:out value="${accountData['Saving'].balance}" />
 						</div>
 					</div>
-					<hr/>
-					<div class="row"  style="background-color: white;">
-						<div class="col-sm-6" >
-							Checking Account:</div>
+					<hr />
+					<div class="row" style="background-color: white;">
+						<div class="col-sm-6">Checking Account:</div>
 						<div class="col-sm-6">
-							<c:out value="${accountData['Checking'].balance}"/> 
+							<c:out value="${accountData['Checking'].balance}" />
 						</div>
 					</div>
-					<hr/>
-					<div class="row"  style="background-color: white;">
-						<div class="col-sm-6" >
-							Credit Card:</div>
-						<div class="col-sm-6" >
-							<c:out value="${accountData['Credit'].balance}"/> 
+					<hr />
+					<div class="row" style="background-color: white;">
+						<div class="col-sm-6">Credit Card:</div>
+						<div class="col-sm-6">
+							<c:out value="${accountData['Credit'].balance}" />
 						</div>
 					</div>
 
@@ -113,7 +115,9 @@ $('.dropdown-menu li a').click(function(){
 				<div id="creditdebit" class="tab-pane fade">
 
 					<div class="container">
-						<form class="form-horizontal"  method="post" action="${pageContext.request.contextPath}/request" onsubmit="validateAmountCD()">
+						<form class="form-horizontal" method="post"
+							action="${pageContext.request.contextPath}/request"
+							onsubmit="validateAmountCD()">
 							<div class="form-group" style="padding-top: 40px">
 								<label class="control-label col-sm-2" for="amount">Amount($):</label>
 								<div class="col-sm-2">
@@ -126,7 +130,8 @@ $('.dropdown-menu li a').click(function(){
 									Type:</label>
 								<div class="col-sm-2 dropdown">
 
-									<select class="form-control" id="accountType" name="accountType">
+									<select class="form-control" id="accountType"
+										name="accountType">
 										<option>Saving</option>
 										<option>Checking</option>
 										<option>Credit Card</option>
@@ -135,10 +140,9 @@ $('.dropdown-menu li a').click(function(){
 
 								</div>
 							</div>
-							
+
 							<div class="form-group">
-								<label class="control-label col-sm-2" for="type">
-									Type:</label>
+								<label class="control-label col-sm-2" for="type"> Type:</label>
 								<div class="col-sm-2 dropdown">
 									<select class="form-control" id="type" name="type">
 										<option>Credit</option>
@@ -146,20 +150,23 @@ $('.dropdown-menu li a').click(function(){
 									</select>
 								</div>
 							</div>
-	
+
 							<div class="form-group">
 								<div class="col-sm-offset-2 col-sm-10">
 									<button type="submit" class="btn btn-default">Submit</button>
 								</div>
 							</div>
-							 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+							<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" />
 						</form>
 					</div>
 				</div>
 				<div id="transfer" class="tab-pane fade">
 					<h3>Tranfer Money</h3>
 					<div class="container">
-						<form class="form-horizontal"  method="post" action="${pageContext.request.contextPath}/transfer" onsubmit=" return validateTransfer()">
+						<form class="form-horizontal" method="post"
+							action="${pageContext.request.contextPath}/transfer"
+							onsubmit=" return validateTransfer()">
 							<div class="form-group" style="padding-top: 40px">
 								<label class="control-label col-sm-2" for="amount">Amount($):</label>
 								<div class="col-sm-2">
@@ -167,23 +174,23 @@ $('.dropdown-menu li a').click(function(){
 										placeholder="Enter amount" name="amount" min=1 required>
 								</div>
 							</div>
-							
+
 							<div class="form-group">
 								<label class="control-label col-sm-2" for="typeoftransfer">Type
 									:</label>
 								<div class="col-sm-2 dropdown">
 
-									<select class="form-control" id="typeoftransfer" name="typeoftransfer" onChange="changetextbox();">
+									<select class="form-control" id="typeoftransfer"
+										name="typeoftransfer" onChange="changetextbox();">
 										<option>Internal</option>
 										<option>External</option>
 									</select>
 
 								</div>
 							</div>
-							
+
 							<div class="form-group">
-								<label class="control-label col-sm-2" for="from">From
-									:</label>
+								<label class="control-label col-sm-2" for="from">From :</label>
 								<div class="col-sm-2 dropdown">
 
 									<select class="form-control" id="from" name="from">
@@ -195,10 +202,9 @@ $('.dropdown-menu li a').click(function(){
 
 								</div>
 							</div>
-							
+
 							<div class="form-group">
-								<label class="control-label col-sm-2" for="to">
-									To:</label>
+								<label class="control-label col-sm-2" for="to"> To:</label>
 								<div class="col-sm-2 dropdown">
 									<select class="form-control" id="to" name="to">
 										<option>Saving</option>
@@ -207,31 +213,34 @@ $('.dropdown-menu li a').click(function(){
 									</select>
 								</div>
 							</div>
-							
+
 							<div class="form-group">
 								<label class="control-label col-sm-2" for="recipient">
 									Recipient:</label>
 								<div class="col-sm-2 dropdown">
-									<input type="text" class="form-control" id="recipient"
-										placeholder="Enter email" name="recipient" required disabled>								</div>
+									<input type="email" class="form-control" id="recipient"
+										placeholder="Enter email" name="recipient" required disabled>
+								</div>
 							</div>
-							
-							<span id="error" style="color:red"></span>
-	
+
+							<span id="error" style="color: red"></span>
+
 							<div class="form-group">
 								<div class="col-sm-offset-2 col-sm-10">
 									<button type="submit" class="btn btn-default">Submit</button>
 								</div>
 							</div>
-							 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+							<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" />
 						</form>
 					</div>
 				</div>
-				
+
 				<div id="payment" class="tab-pane fade">
 					<h3>Make a Payment</h3>
 					<div class="container">
-						<form class="form-horizontal"  method="post" action="${pageContext.request.contextPath}/payment">
+						<form class="form-horizontal" method="post"
+							action="${pageContext.request.contextPath}/payment">
 							<div class="form-group" style="padding-top: 40px">
 								<label class="control-label col-sm-2" for="amount">Amount($):</label>
 								<div class="col-sm-2">
@@ -239,10 +248,9 @@ $('.dropdown-menu li a').click(function(){
 										placeholder="Enter amount" name="amount" min=1 required>
 								</div>
 							</div>
-							
+
 							<div class="form-group">
-								<label class="control-label col-sm-2" for="from">From:
-									:</label>
+								<label class="control-label col-sm-2" for="from">From: :</label>
 								<div class="col-sm-2 dropdown">
 
 									<select class="form-control" id="from" name="from">
@@ -254,10 +262,9 @@ $('.dropdown-menu li a').click(function(){
 
 								</div>
 							</div>
-							
+
 							<div class="form-group">
-								<label class="control-label col-sm-2" for="to">To
-									:</label>
+								<label class="control-label col-sm-2" for="to">To :</label>
 								<div class="col-sm-2 dropdown">
 
 									<input type="text" class="form-control" id="to"
@@ -265,7 +272,7 @@ $('.dropdown-menu li a').click(function(){
 
 								</div>
 							</div>
-							
+
 							<div class="form-group">
 								<label class="control-label col-sm-2" for="comments">
 									Comments:</label>
@@ -274,16 +281,17 @@ $('.dropdown-menu li a').click(function(){
 										placeholder="Enter comment" name="comment">
 								</div>
 							</div>
-	
+
 							<div class="form-group">
 								<div class="col-sm-offset-2 col-sm-10">
 									<button type="submit" class="btn btn-default">Submit</button>
 								</div>
 							</div>
-							 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+							<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" />
 						</form>
 					</div>
-					
+
 				</div>
 			</div>
 		</div>

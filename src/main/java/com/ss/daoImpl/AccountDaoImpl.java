@@ -2,6 +2,7 @@ package com.ss.daoImpl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,9 +23,9 @@ public class AccountDaoImpl implements AccountDao {
 	JdbcTemplate jdbcTemplate;
 
 	@Override
-	public HashMap<String, Account> getAccountInfo(int userid) {
-		String sql="select accountType,SUM(balance) as balance from account where userid= ? group by accountType";
-		List<Account> data =jdbcTemplate.query(sql, new Object[]{userid}, new accountinfoMapper()) ;
+	public HashMap<String, Account> getAccountInfo(String username) {
+		String sql="select accountType,SUM(balance) as balance from account where username= ? group by accountType";
+		List<Account> data =jdbcTemplate.query(sql, new Object[]{username}, new accountinfoMapper()) ;
 		HashMap<String,Account> retMap=new HashMap<String,Account>();
 		for(Account a:data){
 			if(a.getAccountType().equalsIgnoreCase("Saving")){
@@ -75,11 +76,21 @@ public void doPayment(String accountTypeFrom, double amount) {
 		jdbcTemplate.execute(sql1);
 }
 
-public boolean checkAmount(String accountType,double amount, int userid){
-	String sql="Select balance from account where accountType='"+ accountType+"' AND userid=1;";
+public boolean checkAmount(String accountType,double amount, String username){
+	String sql="Select balance from account where accountType='"+ accountType+"' AND username='"+ username+"';";
 	Integer ret= jdbcTemplate.queryForObject(sql, Integer.class);
 	System.out.println(ret);
 	return ret - amount > 0;
+}
+
+public void addToTransaction(double amount, String detail, String status, String username, Date date, String object) {
+	// TODO Auto-generated method stub
+	object="fuy";
+	String sql="Insert into transaction(amount,detail,status,transacterusername,transactiondate, transferto) values "
+			+ "(" +amount+",'"+detail+"','"+status+"','"+username+"','"+date+"','"+object+"');";
+	
+	jdbcTemplate.execute(sql);
+	
 }
 
 }

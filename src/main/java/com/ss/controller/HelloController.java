@@ -32,9 +32,7 @@ public class HelloController {
 	public ModelAndView welcomePage() {
 
 		ModelAndView model = new ModelAndView();
-		HashMap<String,Account> accountinfo=accountDoaImpl.getAccountInfo(1);
-
-		
+		HashMap<String,Account> accountinfo=accountDoaImpl.getAccountInfo("alex");		
 		model.addObject("savings", "Spring Security Hello World");
 		model.addObject("message", "This is welcome page!");
 		model.addObject("accountData", accountinfo);

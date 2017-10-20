@@ -20,6 +20,7 @@
 	</bean>
 
 	<bean id="accountDoaImpl" class="com.ss.daoImpl.AccountDaoImpl" />
+	<bean id="registrationImpl" class="com.ss.daoImpl.RegistrationDaoImpl" />
 	
 
 

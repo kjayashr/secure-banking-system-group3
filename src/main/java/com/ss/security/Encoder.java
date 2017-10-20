@@ -3,6 +3,7 @@ package com.ss.security;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class Encoder {
+	
 	BCryptPasswordEncoder encoder=new BCryptPasswordEncoder();
 
 	public String encode(String str){

@@ -1,11 +1,14 @@
 package com.ss.controller;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,7 +31,8 @@ public class RequestController {
 	AccountDaoImpl accountDaoImpl;
 	
 	@RequestMapping(value="/request", method=RequestMethod.POST)
-	public ModelAndView creditDebitRequest(HttpServletRequest req){
+	public ModelAndView creditDebitRequest(HttpServletRequest req,Authentication auth){
+		String username=auth.getName();
 		ModelAndView notifyPage=new ModelAndView("notify");
 		String accountType=req.getParameter("accountType");
 		String type=req.getParameter("type");
@@ -36,7 +40,12 @@ public class RequestController {
 		System.out.println(accountType + " " + type + " " +amount);
 		// add validation over credit and debit
 		if(type.equalsIgnoreCase("Debit")){
-			if(accountDaoImpl.checkAmount(accountType, amount, 1)){		
+			if(accountDaoImpl.checkAmount(accountType, amount,username)){
+				String detail="Debit to "+accountType;
+				String status="pending";
+				DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+				Date date = new Date();
+				accountDaoImpl.addToTransaction(amount, detail, status, username, date, null);
 				accountDaoImpl.doCreditDebit(accountType, amount, type);
 				notifyPage.addObject("notification","Payment Processed sucessfully");
 			}else{
@@ -50,17 +59,31 @@ public class RequestController {
 	}
 	
 	@RequestMapping(value="/transfer", method=RequestMethod.POST)
-	public ModelAndView transferRequest(HttpServletRequest req){
+	public ModelAndView transferRequest(HttpServletRequest req,Authentication auth){
+		String username=auth.getName();
 		ModelAndView notifyPage=new ModelAndView("notify");
 		String accountTypeFrom=req.getParameter("from");
 		String accountTypeTo=req.getParameter("to");
+		String typeOfTransfer=req.getParameter("typeoftransfer");
+		String recipient=req.getParameter("recipient");
 		double amount=Double.parseDouble(req.getParameter("amount"));
 		System.out.println(accountTypeFrom + " " + accountTypeTo + " " +amount);
 		
-		// add validation over cedit and debit
-		// check if both to and from are same
-		boolean check=accountDaoImpl.checkAmount(accountTypeFrom, amount, 1);
+		// add validation over credit and debit
+		boolean check=accountDaoImpl.checkAmount(accountTypeFrom, amount,username);
 		if(check){
+			String detail="";
+			if(typeOfTransfer.equalsIgnoreCase("internal")){
+				 detail="Transfer to "+ accountTypeTo + " from "+ accountTypeFrom;
+			}
+			else{
+				 detail="Transfer to "+ recipient + " from "+ accountTypeFrom;
+			}
+			
+			String status="pending";
+			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			Date date = new Date();
+			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null); 
 			accountDaoImpl.doTransfer(accountTypeFrom,accountTypeTo,amount);
 			notifyPage.addObject("notification","Payment Processed sucessfully");
 		}else{
@@ -70,7 +93,8 @@ public class RequestController {
 	}
 	
 	@RequestMapping(value="/payment", method=RequestMethod.POST)
-	public ModelAndView paymentRequest(HttpServletRequest req){
+	public ModelAndView paymentRequest(HttpServletRequest req,Authentication auth){
+		String username=auth.getName();
 		ModelAndView notifyPage=new ModelAndView("notify");
 		String accountTypeFrom=req.getParameter("from");
 		String accountTypeTo=req.getParameter("to");
@@ -79,8 +103,14 @@ public class RequestController {
 		
 		// add validation over cedit and debit
 		// check if both to and from are same
-		boolean check=accountDaoImpl.checkAmount(accountTypeFrom, amount, 1);
+		boolean check=accountDaoImpl.checkAmount(accountTypeFrom, amount, username);
 		if(check){
+			//ADDING TO TRANSACTION TABLE
+			String detail="Paid to "+ accountTypeTo;
+			String status="pending";
+			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			Date date = new Date();
+			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null); 
 			accountDaoImpl.doPayment(accountTypeFrom,amount);
 			notifyPage.addObject("notification","Payment Processed sucessfully");
 		}else{
