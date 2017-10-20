@@ -32,6 +32,7 @@ public class Tier1Controller {
 		ModelAndView model = new ModelAndView();
 		model.addObject("savings", "Spring Security Hello World");
 		model.addObject("message", "This is welcome page!");
+		//System.out
 		model.setViewName("hellotier1");
 		return model;
      
