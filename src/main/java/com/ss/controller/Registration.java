@@ -19,8 +19,8 @@ public class Registration {
 	@Autowired
 	RegistrationDaoImpl registrationImpl;
 	
-	@Autowired
-	Encoder encoder;
+//	@Autowired
+//	Encoder encoder;
 
 	@RequestMapping(value="/registration",method=RequestMethod.GET)
 	public String getRegistration(){
@@ -44,7 +44,7 @@ public class Registration {
 		String country=req.getParameter("country");
 		int postcode=Integer.parseInt(req.getParameter("postcode"));
 
-		password=encoder.encode(password);
+//		password=encoder.encode(password);
 	
 		// validation left
 		int i=registrationImpl.addNewUser(username,password,firstname,lastname, dateofbirth, email, address,
