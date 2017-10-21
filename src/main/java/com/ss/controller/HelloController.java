@@ -1,10 +1,13 @@
 package com.ss.controller;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -28,11 +31,24 @@ public class HelloController {
 	@Autowired
 	AccountDaoImpl accountDoaImpl;
 	
-	@RequestMapping(value = { "/", "/welcome**" }, method = RequestMethod.GET)
-	public ModelAndView welcomePage() {
+	@RequestMapping(value = "/welcome**" , method = RequestMethod.GET)
+	public ModelAndView welcomePage(HttpServletRequest req, HttpServletResponse resp) {
 
 		ModelAndView model = new ModelAndView();
-		HashMap<String,Account> accountinfo=accountDoaImpl.getAccountInfo("alex");		
+		if(req.getUserPrincipal() == null) {
+			try {
+				req.getRequestDispatcher("/login?expired").forward(req, resp);
+				model.setViewName("hello");
+				return model;
+			} catch (ServletException|IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				model.setViewName("login");
+				return model;
+			}
+		}
+		String name = req.getUserPrincipal().getName();
+		HashMap<String,Account> accountinfo=accountDoaImpl.getAccountInfo(name);
 		model.addObject("savings", "Spring Security Hello World");
 		model.addObject("message", "This is welcome page!");
 		model.addObject("accountData", accountinfo);
@@ -55,10 +71,11 @@ public class HelloController {
 	}
 	
 	//Spring Security see this :
-		@RequestMapping(value = "/login", method = RequestMethod.GET)
+		@RequestMapping(value = { "/", "/login" }, method = RequestMethod.GET)
 		public ModelAndView login(
 			@RequestParam(value = "error", required = false) String error,
-			@RequestParam(value = "logout", required = false) String logout
+			@RequestParam(value = "logout", required = false) String logout,
+			@RequestParam(value = "expired", required = false) String expired
 				) {
 
 			ModelAndView model = new ModelAndView();
@@ -68,6 +85,9 @@ public class HelloController {
 
 			if (logout != null) {
 				model.addObject("msg", "You've been logged out successfully.");
+			}
+			if (expired != null) {
+				model.addObject("expired", "Your session has expired.");
 			}
 			model.setViewName("login"); 
 
