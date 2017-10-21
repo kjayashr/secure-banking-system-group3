@@ -22,6 +22,8 @@
 	<bean id="accountDoaImpl" class="com.ss.daoImpl.AccountDaoImpl" />
 	<bean id="registrationImpl" class="com.ss.daoImpl.RegistrationDaoImpl" />
 	<bean id="transactionDaoImpl" class="com.ss.daoImpl.TransactionDaoImpl" />
+	<bean id="encoder" class="com.ss.security.Encoder" />
+
 	
 
 

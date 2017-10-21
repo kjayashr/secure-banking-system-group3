@@ -11,7 +11,7 @@ public class Encoder {
 		//BCryptPasswordEncoder encoder=new BCryptPasswordEncoder();
 		return encoder.encode(str);
 	}
-	
+		
 	public boolean matches(String raw, String encodedString){
 		return encoder.matches(raw, encodedString);
 	}
