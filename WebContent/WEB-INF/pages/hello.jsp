@@ -78,6 +78,11 @@ $('.dropdown-menu li a').click(function(){
 		<div class="row">
 			<a href="${pageContext.request.contextPath}/viewtransaction">View Transactions</a>
 		</div>
+		
+		<div class="row">
+			<a href="${pageContext.request.contextPath}/userapprovals">Approvals Needed</a>
+		</div>
+		
 		<div class="container">
 			<h2>Welcome ${pageContext.request.userPrincipal.name}</h2>
 			<ul class="nav nav-tabs">
