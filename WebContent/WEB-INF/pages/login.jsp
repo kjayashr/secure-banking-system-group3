@@ -37,8 +37,6 @@
 </head>
 <body onload='document.loginForm.username.focus();'>
 
-	
-
 	<div id="login-box">
 
 		<h2>Login</h2>
@@ -49,9 +47,9 @@
 		<c:if test="${not empty msg}">
 			<div class="msg">${msg}</div>
 		</c:if>
+	
+		<form role="form" name='loginForm' action="<c:url value='j_spring_security_check' />" method='POST'>
 	<div class="row">
-		<form name='loginForm' action="<c:url value='j_spring_security_check' />" method='POST'>
-
 		  <table>
 			<tr>
 				<td>User:</td>
