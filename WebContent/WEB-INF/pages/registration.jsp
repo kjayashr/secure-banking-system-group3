@@ -136,7 +136,7 @@
                 <!-- Valid input types: http://www.w3schools.com/html5/html5_form_input_types.asp -->
                 <div class="line"><label for="add">Address *: </label><input type="text" id="address" name="address" required /></div>
                 <div class="line"><label for="contactno">contactno*</label><input type="number" id="contactno" name="contactno" required onblur="checkNumber()" /></div>
-        			<div><span id="invalidPhone" name="invalidPhone" style="color:red"></span></div>
+        		<div><span id="invalidPhone" name="invalidPhone" style="color:red"></span></div>
                 <div class="line"><label for="ssn">ssn *: </label><input type="number" id="ssn" name="ssn"  required min=1 onblur="checkSSN()"/></div>
                 <div><span id="invalidSSN" name="invalidSSN" style="color:red"></span></div>
                 <div class="line"><label for="city">city *: </label><input type="text" id="city" name="city" required /></div>
