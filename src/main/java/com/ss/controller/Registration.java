@@ -10,17 +10,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ss.daoImpl.RegistrationDaoImpl;
-import com.ss.security.Encoder;
+import com.ss.dao.RegistrationDao;
+
 
 @Controller
 public class Registration {
 	
 	@Autowired
-	RegistrationDaoImpl registrationImpl;
-	
-//	@Autowired
-//	Encoder encoder;
+	RegistrationDao registrationImpl;
+
 
 	@RequestMapping(value="/registration",method=RequestMethod.GET)
 	public String getRegistration(){
@@ -43,8 +41,6 @@ public class Registration {
 		String state=req.getParameter("state");
 		String country=req.getParameter("country");
 		int postcode=Integer.parseInt(req.getParameter("postcode"));
-
-//		password=encoder.encode(password);
 	
 		// validation left
 		int i=registrationImpl.addNewUser(username,password,firstname,lastname, dateofbirth, email, address,

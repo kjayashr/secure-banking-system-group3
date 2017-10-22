@@ -98,7 +98,7 @@
    	 
    	function checkSSN(){
   		 var ssn=$("#ssn").val();
-  		 if(ssn.length < 9){
+  		 if(ssn.length != 9){
   			$("#invalidSSN").html("Enter 9-digit SSN");
   		 }else{
   			$("#invalidSSN").html("");
