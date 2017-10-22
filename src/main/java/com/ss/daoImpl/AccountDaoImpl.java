@@ -83,11 +83,19 @@ public boolean checkAmount(String accountType,double amount, String username){
 	return ret - amount > 0;
 }
 
-public void addToTransaction(double amount, String detail, String status, String username, Date date, String object) {
+public String getusername(String email){
+	
+	String sql1="select username from users where email='"+email+"';";
+	String ret= jdbcTemplate.queryForObject(sql1,String.class);
+	
+	return ret;
+}
+
+public void addToTransaction(double amount, String detail, String status, String username, Date date, String to, boolean critical) {
 	// TODO Auto-generated method stub
-	object="fuy";
-	String sql="Insert into transaction(amount,detail,status,transacterusername,transactiondate, transferto) values "
-			+ "(" +amount+",'"+detail+"','"+status+"','"+username+"','"+date+"','"+object+"');";
+	
+	String sql="Insert into transaction(amount,detail,status,transacterusername,transactiondate, transferto,critical) values "
+			+ "(" +amount+",'"+detail+"','"+status+"','"+username+"','"+date+"','"+to+"',"+critical+");";
 	
 	jdbcTemplate.execute(sql);
 	
