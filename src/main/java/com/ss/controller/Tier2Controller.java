@@ -53,7 +53,7 @@ public class Tier2Controller {
 	@RequestMapping(value = "/tier2/transactions", method = RequestMethod.GET)
 	public ModelAndView viewTransactions() {
 		System.out.println("In view Transactions method");
-		List<TransactionDO> transactions = transactionBO.getUnapprovedTransactionInfo(USER_ROLE_TIER2);
+		List<TransactionDO> transactions = transactionBO.getUnapprovedCriticalTransactions(USER_ROLE_TIER2);
 
 		ModelAndView model = new ModelAndView();
 		model.addObject("transactions", transactions);
@@ -65,14 +65,42 @@ public class Tier2Controller {
 	@RequestMapping(value= "/tier2/transaction/approve", method = RequestMethod.POST)
 	public @ResponseBody String approveTransaction(@RequestParam("transactionId") int transactionId) {
 		System.out.println("In approve transactions method");
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String userInSession = "someUser";
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+		    UserDetails userDetail = (UserDetails) auth.getPrincipal();
+		    userInSession = userDetail.getUsername();
+		}
 		boolean transactionSuccess = transactionBO
-				.approveTransaction(transactionId, "someUser", USER_ROLE_TIER2);
+				.approveTransaction(transactionId, userInSession);
 		String transactionMessage = "";
 		if (transactionSuccess) {
 			transactionMessage = "Transaction approval processed successfully!";
 		} else {
 			transactionMessage = "Transaction approval failed!";
 		}
+		System.out.println(transactionMessage);
+		return transactionMessage;
+	}
+
+	@RequestMapping(value= "/tier2/transaction/decline", method = RequestMethod.POST)
+	public @ResponseBody String declineTransaction(@RequestParam("transactionId") int transactionId) {
+		System.out.println("In approve transactions method");
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String userInSession = "someUser";
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+		    UserDetails userDetail = (UserDetails) auth.getPrincipal();
+		    userInSession = userDetail.getUsername();
+		}
+		boolean transactionSuccess = transactionBO
+				.declineTransaction(transactionId, userInSession);
+		String transactionMessage = "";
+		if (transactionSuccess) {
+			transactionMessage = "Transaction decline processed successfully!";
+		} else {
+			transactionMessage = "Transaction decline failed!";
+		}
+		System.out.println(transactionMessage);
 		return transactionMessage;
 	}
 
