@@ -1,5 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@page session="true"%>
+
+
 <html>
 <head>
 <title>Login Page</title>
@@ -23,6 +25,15 @@
 	background-color: #d9edf7;
 	border-color: #bce8f1;
 }
+.expired {
+	padding: 15px;
+	margin-bottom: 20px;
+	border: 1px solid transparent;
+	border-radius: 4px;
+	color: #31708f;
+	background-color: #d9edf7;
+	border-color: #bce8f1;
+}
 
 #login-box {
 	width: 300px;
@@ -37,18 +48,22 @@
 </head>
 <body onload='document.loginForm.username.focus();'>
 
+
 	<div id="login-box">
-
 		<h2>Login</h2>
-
-		<c:if test="${not empty error}">
+		<c:choose>
+		<c:when test="${not empty error}">
 			<div class="error">${error}</div>
-		</c:if>
-		<c:if test="${not empty msg}">
+		</c:when>
+		<c:when test="${not empty msg}">
 			<div class="msg">${msg}</div>
-		</c:if>
+		</c:when>
+		<c:when test="${not empty expired}">
+			<div class="msg">${expired}</div>
+		</c:when>
+		</c:choose>
 	
-		<form role="form" name='loginForm' action="<c:url value='j_spring_security_check' />" method='POST'>
+	<form role="form" name='loginForm' action="<c:url value='j_spring_security_check' />" method='POST'>
 	<div class="row">
 		  <table>
 			<tr>

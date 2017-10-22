@@ -20,8 +20,29 @@
 					 />
 		<logout logout-success-url="/login?logout" logout-url="/j_spring_security_logout"/>
 		
+
+		<!-- access denied page -->
+		<access-denied-handler error-page="/403" />
+
+
+		<form-login login-page="/login" 
+					default-target-url="/welcome" 
+					login-processing-url="/j_spring_security_check" 
+					authentication-failure-url="/login?error" 
+					username-parameter="username" 
+					password-parameter="password" />
+		
+		<logout logout-success-url="/login?logout" 
+				logout-url="/j_spring_security_logout" 
+				invalidate-session="false"/>
+
 		<!-- enable csrf protection -->
-		<csrf/>
+		<csrf />
+
+
+		<session-management>
+			<concurrency-control max-sessions="1" expired-url="/login?expired" />
+		</session-management>
 	</http>
 	
 
@@ -33,8 +54,5 @@
 		  authorities-by-username-query="select username, role from user_roles where username =?" />
 	  </authentication-provider>
 	</authentication-manager>
-	
-	
-		
 	
 </beans:beans>

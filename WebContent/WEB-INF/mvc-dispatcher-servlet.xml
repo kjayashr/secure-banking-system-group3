@@ -27,8 +27,8 @@
 	<bean id="registrationImpl" class="com.ss.daoImpl.RegistrationDaoImpl" />
 	<bean id="transactionDaoImpl" class="com.ss.daoImpl.TransactionDaoImpl" />
 	
-
-
+	<bean id="transactionBO" class="com.ss.daoImpl.TransactionBOImpl" />
+	
 
 
 </beans>
