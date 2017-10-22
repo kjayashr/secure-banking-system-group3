@@ -13,7 +13,11 @@
 </head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
+ <meta name="_csrf" content="${_csrf.token}"/>
+	<!-- default header name is X-CSRF-TOKEN -->
+<meta name="_csrf_header" content="${_csrf.headerName}"/>
 <body>
+
 
 
 	<sec:authorize access="hasRole('ROLE_USER')">
@@ -57,6 +61,26 @@
 			})
 	  }
    	 
+   	function decline(x) {
+		 	console.log("In changeStatus");
+   		var token = $("meta[name='_csrf']").attr("content");
+			var header = $("meta[name='_csrf_header']").attr("content");
+			var transactionId=x;
+		$.ajax({
+			type:"POST",
+			url:"${pageContext.request.contextPath}/tier1/transaction/decline",
+			data:{transactionId:transactionId},
+		    success:function(response){
+		    		console.log(response);
+		    },
+		    error:function(error){
+		    		console.log("Error "+error);
+		    },
+			beforeSend: function(xhr) {
+	       	 xhr.setRequestHeader(header, token);
+	    		}
+		})
+  }
  </script>
 
 		<div class="container">
@@ -83,13 +107,10 @@
 				                         <td>${transaction.targetUserName}</td>
 				                         <td>${transaction.amount}</td>
 				                         <td>
-					                          <button id="accepted" onclick="changeStatus(${transaction.transactionId})">Approve</button>
+					                          <button id="approved" onclick="changeStatus(${transaction.transactionId})">Approve</button>
 				                         </td>
 				                         <td>
-				                             <FORM NAME="form1" METHOD="POST">
-				                                 <INPUT TYPE="HIDDEN" NAME="buttonName">
-                                                 <INPUT TYPE="BUTTON" VALUE="decline">
-				                             </FORM>
+                                              <button id="declined" onclick="decline(${transaction.transactionId})">Decline</button>
 				                         </td>
 				                     </tr>
 				                 </c:forEach>

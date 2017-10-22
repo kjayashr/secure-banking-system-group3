@@ -56,7 +56,26 @@
 		    		}
 			})
 	  }
-   	 
+    	function decline(x) {
+		 	console.log("In changeStatus");
+   		var token = $("meta[name='_csrf']").attr("content");
+			var header = $("meta[name='_csrf_header']").attr("content");
+			var transactionId=x;
+		$.ajax({
+			type:"POST",
+			url:"${pageContext.request.contextPath}/tier2/transaction/decline",
+			data:{transactionId:transactionId},
+		    success:function(response){
+		    		console.log(response);
+		    },
+		    error:function(error){
+		    		console.log("Error "+error);
+		    },
+			beforeSend: function(xhr) {
+	       	 xhr.setRequestHeader(header, token);
+	    		}
+		})
+  }
  </script>
 
 		<div class="container">
@@ -84,6 +103,9 @@
 				                         <td>${transaction.amount}</td>
 				                         <td>
 					                          <button id="accepted" onclick="changeStatus(${transaction.transactionId})">Approve</button>
+				                         </td>
+				                         <td>
+                                              <button id="declined" onclick="decline(${transaction.transactionId})">Decline</button>
 				                         </td>
 				                         <td>
 				                             <FORM NAME="form1" METHOD="POST">

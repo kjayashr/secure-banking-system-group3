@@ -44,7 +44,6 @@ public class Tier1Controller {
 		ModelAndView model = new ModelAndView();
 		model.addObject("savings", "Spring Security Hello World");
 		model.addObject("message", "This is welcome page!");
-		//System.out
 		model.setViewName("hellotier1");
 		return model;
      
@@ -53,7 +52,7 @@ public class Tier1Controller {
 	@RequestMapping(value = "/tier1/transactions", method = RequestMethod.GET)
 	public ModelAndView viewTransactions() {
 		System.out.println("In view Transactions method");
-		List<TransactionDO> transactions = transactionBO.getUnapprovedTransactionInfo(USER_ROLE_TIER1);
+		List<TransactionDO> transactions = transactionBO.getUnapprovedNonCriticalTransactions(USER_ROLE_TIER1);
 
 		ModelAndView model = new ModelAndView();
 		model.addObject("transactions", transactions);
@@ -65,15 +64,42 @@ public class Tier1Controller {
 	@RequestMapping(value= "/tier1/transaction/approve", method = RequestMethod.POST)
 	public @ResponseBody String approveTransaction(@RequestParam("transactionId") int transactionId) {
 		System.out.println("In approve transactions method");
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String userInSession = "someUser";
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+		    UserDetails userDetail = (UserDetails) auth.getPrincipal();
+		    userInSession = userDetail.getUsername();
+		}
 		boolean transactionSuccess = transactionBO
-				.approveTransaction(transactionId, "someUser", USER_ROLE_TIER1);
+				.approveTransaction(transactionId, userInSession);
 		String transactionMessage = "";
 		if (transactionSuccess) {
 			transactionMessage = "Transaction approval processed successfully!";
 		} else {
 			transactionMessage = "Transaction approval failed!";
 		}
+		System.out.println(transactionMessage);
 		return transactionMessage;
 	}
 
+	@RequestMapping(value= "/tier1/transaction/decline", method = RequestMethod.POST)
+	public @ResponseBody String declineTransaction(@RequestParam("transactionId") int transactionId) {
+		System.out.println("In approve transactions method");
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String userInSession = "someUser";
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+		    UserDetails userDetail = (UserDetails) auth.getPrincipal();
+		    userInSession = userDetail.getUsername();
+		}
+		boolean transactionSuccess = transactionBO
+				.declineTransaction(transactionId, userInSession);
+		String transactionMessage = "";
+		if (transactionSuccess) {
+			transactionMessage = "Transaction decline processed successfully!";
+		} else {
+			transactionMessage = "Transaction decline failed!";
+		}
+		System.out.println(transactionMessage);
+		return transactionMessage;
+	}
 }
