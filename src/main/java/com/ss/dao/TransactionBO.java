@@ -9,6 +9,7 @@ public interface TransactionBO {
 	boolean approveTransaction(int transactionId, String approverUserId, String userLevel);
 	void declineTransaction(int transactionId);
     List<TransactionDO> getUnapprovedNonCriticalTransactions(String userRole);
+    List<TransactionDO> getUnapprovedCriticalTransactions(String userRole);
 	boolean approveTransaction(int transactionId, String approverUserId);
 	boolean declineTransaction(int transactionId, String approverUserId);
 	    

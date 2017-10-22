@@ -14,14 +14,14 @@ import com.ss.model.TransactionDO;
 
 public class TransactionBOImpl implements TransactionBO {
 private static final String USER_ROLE_TIER1 = "TIER1";
-
+private static final String USER_ROLE_TIER2 = "TIER2";
     @Autowired
     JdbcTemplate jdbcTemplate;
 	
     @Override
     public List<TransactionDO> getUnapprovedTransactionInfo(String userRole) {
     	String sql = "";
-    	if (USER_ROLE_TIER1.equals(userRole)) {
+    	if (USER_ROLE_TIER1.equals(userRole) || USER_ROLE_TIER2.equals(userRole)) {
     	    sql="select * from transaction where approverUserName is null";
     	}
 		List<TransactionDO> transactions =jdbcTemplate.query(sql, new TransactionInfoMapper()) ;
@@ -50,6 +50,12 @@ private static final String USER_ROLE_TIER1 = "TIER1";
     public List<TransactionDO> getUnapprovedNonCriticalTransactions(String userRole) {
     	String sql = "";
     	sql="select * from transaction where ((approverUserName is null or approverUserName='') and critical=false and transacterusername is not null) and ((status ='accepted' and transferto is not null) or (status='pending' and transferto='') or (status='pending and transferto is null'))";
+    	List<TransactionDO> transactions =jdbcTemplate.query(sql, new TransactionInfoMapper()) ;
+		return transactions;	
+    }
+    public List<TransactionDO> getUnapprovedCriticalTransactions(String userRole) {
+    	String sql = "";
+    	sql="select * from transaction where ((approverUserName is null or approverUserName='') and critical=true and transacterusername is not null) and ((status ='accepted' and transferto is not null) or (status='pending' and transferto='') or (status='pending and transferto is null'))";
     	List<TransactionDO> transactions =jdbcTemplate.query(sql, new TransactionInfoMapper()) ;
 		return transactions;	
     }
