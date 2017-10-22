@@ -5,8 +5,8 @@ import java.util.List;
 
 public interface TransactionBO {
 	
-    public List<TransactionDO> getUnapprovedTransactionInfo(String userRole);
-	public boolean approveTransaction(int transactionId, String approverUserId, String userLevel);
-	public void declineTransaction(int transactionId);
+    public List<TransactionDO> getUnapprovedNonCriticalTransactions(String userRole);
+	public boolean approveTransaction(int transactionId, String approverUserId);
+	public boolean declineTransaction(int transactionId, String approverUserId);
 	    
 }

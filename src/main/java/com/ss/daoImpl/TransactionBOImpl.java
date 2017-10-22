@@ -19,10 +19,10 @@ private static final String USER_ROLE_TIER1 = "TIER1";
 	JdbcTemplate jdbcTemplate;
 	
     @Override
-    public List<TransactionDO> getUnapprovedTransactionInfo(String userRole) {
+    public List<TransactionDO> getUnapprovedNonCriticalTransactions(String userRole) {
     	String sql = "";
     	if (USER_ROLE_TIER1.equals(userRole)) {
-    	    sql="select * from transaction where approverUserName is null";
+    	    sql="select * from transaction where (approverUserName is null and critical=false and transacterusername is not null) and ((status ='accepted' and transferto is not null) or (status='pending' and transferto='') or (status='pending and transferto is null'))";
     	}
 		List<TransactionDO> transactions =jdbcTemplate.query(sql, new TransactionInfoMapper()) ;
 		return transactions;	
@@ -42,21 +42,31 @@ private static final String USER_ROLE_TIER1 = "TIER1";
   }
     
     @Override
-    public boolean approveTransaction(int transactionId, String approverUserId, String userLevel) {
-    	String sql = "update transaction set approverUserName=? where id=?";
+    public boolean approveTransaction(int transactionId, String approverUserName) {
+    	String sql = "update transaction set approverUserName=?, status='approved' where id=?";
     	boolean success = false;
     	try {
-    		jdbcTemplate.update(sql, new Object[] {approverUserId, transactionId});
+    		jdbcTemplate.update(sql, new Object[] {approverUserName, transactionId});
+    		success = true;
     	} catch (DataAccessException e) {
-    		
+    		System.out.println("encountered Data Access Exception");
+    		throw e;
     	}
-		success = true;
     	return success;
     }
     
     @Override
-    public void declineTransaction(int transactionId) {
-    	
+    public boolean declineTransaction(int transactionId, String rejecterUserName) {
+    	String sql = "update transaction set approverUserName=?, status='rejected' where id=?";
+    	boolean success = false;
+    	try {
+    		jdbcTemplate.update(sql, new Object[] {rejecterUserName, transactionId});
+        	success = true;
+    	} catch(DataAccessException e) {
+    		System.out.println("encountered Data Access Exception");
+    		throw e;
+    	}
+    	return success;
     }
     
 }
