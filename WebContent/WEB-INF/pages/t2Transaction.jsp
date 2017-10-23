@@ -14,26 +14,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
 <body>
-
-
-	<sec:authorize access="hasRole('ROLE_USER')">
-		<!-- For login user -->
-		<c:url value="/j_spring_security_logout" var="logoutUrl" />
-		<form action="${logoutUrl}" method="post" id="logoutForm">
-			<input type="hidden" name="${_csrf.parameterName}"
-				value="${_csrf.token}" />
-		</form>
-		<script>
-			function formSubmit() {
-				document.getElementById("logoutForm").submit();
-			}
-		</script>
-
-		<c:if test="${pageContext.request.userPrincipal.name != null}">
-			<h2>
-				<a x href="javascript:formSubmit()"> Logout</a>
-			</h2>
-		</c:if>
+<jsp:include page="header.jsp"></jsp:include>
 
 <script>
    	 function changeStatus(x) {
@@ -124,6 +105,5 @@
 			<a href="${pageContext.request.contextPath}/tier2">Go Back To Home Page</a>
 		</div>
 
-	</sec:authorize>
 </body>
 </html>

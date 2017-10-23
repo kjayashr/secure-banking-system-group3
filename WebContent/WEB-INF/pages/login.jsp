@@ -74,20 +74,25 @@
 				<td>Password:</td>
 				<td><input type='password' name='password' /></td>
 			</tr>
-			<tr>
-				<td colspan='2'><input name="submit" type="submit"
-					value="submit" /></td>
-			</tr>
 		  </table>
 	</div>
 	<div class="row">
-		<a href="${pageContext.request.contextPath}/registration"> Sign Up </a>
+	<table>
+		<tr>
+			<td>
+				<input name="submit" type="submit" class="btn btn-primary" value="Submit" />
+			</td>
+			<td></td>
+			<td>
+				<a href="${pageContext.request.contextPath}/registration"> Sign Up </a>
+			</td>
+	</table>
 	</div>
 		  <input type="hidden" name="${_csrf.parameterName}"
 			value="${_csrf.token}" />
 
-		</form>
-	</div>
+	</form>
+  </div>
 
 </body>
 </html>

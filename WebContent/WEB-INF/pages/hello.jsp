@@ -1,6 +1,7 @@
 <%@taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <html>
 <head>
 <link rel="stylesheet"
@@ -104,13 +105,12 @@ $('.dropdown-menu li a').click(function(){
 									Type:</label>
 								<div class="col-sm-2 dropdown">
 
-									<select class="form-control" id="accountType"
-										name="accountType">
+									<select class="form-control" id="accountType" name="accountType">
 										<option>Saving</option>
 										<option>Checking</option>
 										<option>Credit Card</option>
 									</select>
-
+	
 
 								</div>
 							</div>

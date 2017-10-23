@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ss.dao.AccountDao;
 import com.ss.dao.RegistrationDao;
 
 
@@ -19,6 +20,8 @@ public class Registration {
 	@Autowired
 	RegistrationDao registrationImpl;
 
+	@Autowired
+	AccountDao accountDao;
 
 	@RequestMapping(value="/registration",method=RequestMethod.GET)
 	public String getRegistration(){
@@ -41,11 +44,13 @@ public class Registration {
 		String state=req.getParameter("state");
 		String country=req.getParameter("country");
 		int postcode=Integer.parseInt(req.getParameter("postcode"));
-	
+		String type=req.getParameter("accountType");
+		int balance=Integer.parseInt(req.getParameter("balance"));
+		int interest=Integer.parseInt(req.getParameter("balance"));
 		// validation left
 		int i=registrationImpl.addNewUser(username,password,firstname,lastname, dateofbirth, email, address,
 				contactno, ssn, city, state, country, postcode);
-		
+		int accountCrRet=accountDao.createAccount(balance,username,type,interest);
 		return "login";
 	}
 	
