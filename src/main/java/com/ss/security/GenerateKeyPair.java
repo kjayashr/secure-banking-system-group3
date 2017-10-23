@@ -15,19 +15,17 @@ public class GenerateKeyPair {
 	private KeyPair pair;
 	private PrivateKey kPrivate;
 	private PublicKey kPublic;
-
-	public GenerateKeyPair(int keyLength) throws NoSuchAlgorithmException, NoSuchProviderException {
-
-        this.KPGen = KeyPairGenerator.getInstance("RSA");
-        this.KPGen.initialize(keyLength, new SecureRandom());;
-    }
-
-	public void createKeys() {
-		this.pair = this.KPGen.generateKeyPair();
+	private String algorithm = "RSA";
+	private int keyLength = 1024;
+	
+	public GenerateKeyPair() throws NoSuchAlgorithmException, NoSuchProviderException {
+        this.KPGen = KeyPairGenerator.getInstance(algorithm);
+        this.KPGen.initialize(keyLength, new SecureRandom());
+        
+        this.pair = this.KPGen.generateKeyPair();
 		this.kPrivate = pair.getPrivate();
 		this.kPublic = pair.getPublic();
-
-	}
+    }
 
 	public String getPrivateKey() {
 		return Base64.encodeBase64String(this.kPrivate.getEncoded());
