@@ -16,14 +16,14 @@ public class PKICertificate {
 	private static String algorithm = "RSA";
 	private static String charset = "UTF-8";
 	
-	public static PrivateKey getPrivateKey(String keyString) throws Exception {
+	private static PrivateKey getPrivateKey(String keyString) throws Exception {
 		byte[] keyBytes = Base64.decodeBase64(keyString);
 	    PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
 	    KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
 	    return keyFactory.generatePrivate(keySpec);
 	}
 	
-	public static PublicKey getPublicKey(String keyString) throws Exception {
+	private static PublicKey getPublicKey(String keyString) throws Exception {
 		byte[] keyBytes = Base64.decodeBase64(keyString);
 		X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
 		KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
