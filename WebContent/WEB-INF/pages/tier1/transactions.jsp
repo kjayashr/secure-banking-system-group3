@@ -18,7 +18,7 @@
 <meta name="_csrf_header" content="${_csrf.headerName}"/>
 <body>
 
-<jsp:include page="header.jsp"/>
+<jsp:include page="../header.jsp"/>
 <script>
    	 function changeStatus(x) {
    		 	console.log("In changeStatus");
