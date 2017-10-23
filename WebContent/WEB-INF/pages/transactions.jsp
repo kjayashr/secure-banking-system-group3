@@ -18,27 +18,7 @@
 <meta name="_csrf_header" content="${_csrf.headerName}"/>
 <body>
 
-
-
-	<sec:authorize access="hasRole('ROLE_USER')">
-		<!-- For login user -->
-		<c:url value="/j_spring_security_logout" var="logoutUrl" />
-		<form action="${logoutUrl}" method="post" id="logoutForm">
-			<input type="hidden" name="${_csrf.parameterName}"
-				value="${_csrf.token}" />
-		</form>
-		<script>
-			function formSubmit() {
-				document.getElementById("logoutForm").submit();
-			}
-		</script>
-
-		<c:if test="${pageContext.request.userPrincipal.name != null}">
-			<h2>
-				<a x href="javascript:formSubmit()"> Logout</a>
-			</h2>
-		</c:if>
-
+<jsp:include page="header.jsp"/>
 <script>
    	 function changeStatus(x) {
    		 	console.log("In changeStatus");
@@ -124,7 +104,5 @@
 			
 			
 		</div>
-
-	</sec:authorize>
 </body>
 </html>

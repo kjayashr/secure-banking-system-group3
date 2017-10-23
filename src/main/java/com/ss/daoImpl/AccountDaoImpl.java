@@ -93,7 +93,6 @@ public String getusername(String email){
 
 public void addToTransaction(double amount, String detail, String status, String username, Date date, String to, boolean critical) {
 	// TODO Auto-generated method stub
-	
 	String sql="Insert into transaction(amount,detail,status,transacterusername,transactiondate, transferto,critical) values "
 			+ "(" +amount+",'"+detail+"','"+status+"','"+username+"','"+date+"','"+to+"',"+critical+");";
 	

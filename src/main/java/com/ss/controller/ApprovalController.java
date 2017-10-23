@@ -25,6 +25,9 @@ public class ApprovalController {
 	public String getListOfApprovals(Authentication auth,ModelMap model){
 		String username=auth.getName();
 		List<ApprovalList> data=transactionDaoImpl.getApprovalList(username);
+		if(data==null||data.isEmpty()) {
+			model.addAttribute("emptyMsg","Nothing to Approve");
+		}
 		model.addAttribute("list",data);
 		model.addAttribute("column1", "Date");
 		model.addAttribute("column2", "Sender");

@@ -53,6 +53,7 @@ form .line.submit {
 </style>
 </head>
 <body>
+	<jsp:include page="header.jsp"/>
 	<div id="container" class="container">
 		<form action="${pageContext.request.contextPath}/editprofile"
 			method="post">

@@ -7,8 +7,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 </head>
 <body>
-
+<jsp:include page="header.jsp"/>
 	<div align="center" id="log">
+	 <c:choose>
+	  <c:when test="${empty emptyMsg}">
 		<table border="1" cellpadding="5">
 			<caption>
 				<h2 id="title">${title}</h2>
@@ -20,35 +22,27 @@
 
 
 			</tr>
-
-			<c:forEach var="log" items="${list}">
-				<tr>
-					<td>${log.transactiondate}</td>
-
-					<td>${log.detail}</td>
-
-					<td>${log.amount}</td>
-
-				</tr>
-			</c:forEach>
-
-
-		</table>
-	</div>
-
-	<div class="row" align="center">
-		<a href="${pageContext.request.contextPath}/welcome">Go Back To
-			Home Page</a>
-
-	</div>
+				<c:forEach var="log" items="${list}">
+					<tr>
+						<td>${log.transactiondate}</td>	
 	
-	<div class="row" align="center">
-		<a href="${pageContext.request.contextPath}/downloadPDF">PDF
-			Home Page</a>
-
-	</div>
-
+						<td>${log.detail}</td>
 	
+						<td>${log.amount}</td>
 
+					</tr>
+				<div class="row" align="center">
+					<a href="${pageContext.request.contextPath}/downloadPDF">Get PDF</a>
+				</div>
+				</c:forEach>
+			</table>
+		</c:when>
+  		<c:otherwise>
+				<table>
+					<th>"No transactions to display"</th>
+				</table>
+		</c:otherwise>
+	  </c:choose>
+ 	</div>
 </body>
 </html>

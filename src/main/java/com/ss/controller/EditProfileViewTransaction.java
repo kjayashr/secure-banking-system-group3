@@ -49,6 +49,9 @@ public class EditProfileViewTransaction {
 	public ModelAndView getviewtransaction(Authentication auth,ModelMap model){
 		String username=auth.getName();
 		List<TransactionList> data=transactionDaoImpl.viewTransaction(username);
+		if(data==null||data.isEmpty()) {
+			model.addAttribute("emptyMsg","No Transaction available to view");
+		}
 		model.addAttribute("list",data);
 		model.addAttribute("column1", "Date");
 		model.addAttribute("column2", "Details");
@@ -56,7 +59,6 @@ public class EditProfileViewTransaction {
 		model.addAttribute("title", "Transaction List");
 		//return "transactionpage";
 		return new ModelAndView("transactionpage","list",data);
-
 	}
 	
 	@RequestMapping(value="/downloadPDF")
@@ -64,6 +66,9 @@ public class EditProfileViewTransaction {
 		System.out.println("dshdsldsld");
 		String username=auth.getName();
 		List<TransactionList> data=transactionDaoImpl.viewTransaction(username);
+		if(data==null) {
+			return;
+		}
 		final ServletContext servletContext = request.getSession().getServletContext();
 	    final File tempDirectory = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
 	    final String temperotyFilePath = tempDirectory.getAbsolutePath();

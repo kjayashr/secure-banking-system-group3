@@ -10,7 +10,8 @@
 <title>Welcome Tier1 User</title>
 </head>
 <body>
-<h2>Welcome ${pageContext.request.userPrincipal.name}</h2>
+<jsp:include page="header.jsp"/>
+
     <sec:authorize access="hasRole('ROLE_USER')">
 		<!-- For login user -->
 		<c:url value="/j_spring_security_logout" var="logoutUrl" />

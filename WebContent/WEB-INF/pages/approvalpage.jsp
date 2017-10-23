@@ -12,7 +12,7 @@
 <meta name="_csrf_header" content="${_csrf.headerName}"/>
 </head>
 <body>
-
+<jsp:include page="header.jsp"/>
 <script>
    	 function changeStatus(x,y) {
    		 	console.log("dsa");
@@ -43,6 +43,8 @@
  </script>
 
 <div align="center" id="log">
+	<c:choose>
+	<c:when test="${empty emptyMsg}">
 		<table border="1" cellpadding="5">
 			<caption>
 				<h2 id="title">${title}</h2>
@@ -68,14 +70,15 @@
 					
 				</tr>
 			</c:forEach>
-
-
-		</table>
+			</table>
+	  </c:when>
+	  <c:otherwise>
+	  			<table>
+					<th>"No approvals needed at the moment"</th>
+				</table>
+	  </c:otherwise>
+	  </c:choose>
 	</div>
-	
-	<div class="row" align="center">
-			<a href="${pageContext.request.contextPath}/welcome">Go Back To Home Page</a>
-		</div>
 
 </body>
 </html>

@@ -7,6 +7,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -23,12 +24,15 @@ public class TransactionDaoImpl implements TransactionDao{
 	JdbcTemplate jdbcTemplate;
 
 	public List<ApprovalList> getApprovalList(String username) {
+		try {
 		String sql="select id, transactiondate, transacterusername, amount from transaction where status='pending' and"
 				+ " transferto=?";
 		List<ApprovalList> data =jdbcTemplate.query(sql, new Object[]{username}, new approvalListMapper()) ;
 		System.out.println(data.size());
-
-		return data.size()>0? data:null;
+		return data.size()!=0?data:null;
+		}catch(EmptyResultDataAccessException erda) {
+			return null;
+		}
 	}
 
 	public int changestatus(String transactionId, String status) {
@@ -38,11 +42,13 @@ public class TransactionDaoImpl implements TransactionDao{
 	}
 
 	public List<TransactionList> viewTransaction(String username) {
-		String sql="Select transactiondate, amount, detail from transaction where (transferto='"+username+"' or transacterusername='"+username+"') and (status='approve');";
-		List<TransactionList> data =jdbcTemplate.query(sql,new viewTransactionMapper());
-		System.out.println(data.size());
-		return data.size()>0? data:null;
-
+		try {
+			String sql="Select transactiondate, amount, detail from transaction where (transferto='"+username+"' or transacterusername='"+username+"') and (status='approve');";
+			List<TransactionList> data =jdbcTemplate.query(sql,new viewTransactionMapper());
+			return data.size()!=0?data:null;
+		}catch(EmptyResultDataAccessException erda) {
+			return null;
+		}
 
 	}
 
