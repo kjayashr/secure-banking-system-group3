@@ -73,7 +73,7 @@ public class EditProfileViewTransaction {
 	    final File tempDirectory = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
 	    final String temperotyFilePath = tempDirectory.getAbsolutePath();
  
-	    String fileName = "BankStatement.pdf";
+	    String fileName = "BankStatement_"+username+".pdf";
 	    response.setContentType("application/pdf");
 	    response.setHeader("Content-disposition", "attachment; filename="+ fileName);
  
