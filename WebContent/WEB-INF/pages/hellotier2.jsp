@@ -31,7 +31,7 @@
 		</c:if>
     </sec:authorize>
 <div class="row" align="center">
-	<a href="${pageContext.request.contextPath}/tier2">View External User Account</a>
+	<a href="${pageContext.request.contextPath}/tier2/t1users">Authorize tier 1 employees</a>
 </div>
 <div class="row" align="center">
 			<a href="${pageContext.request.contextPath}/tier2">Modify Personal Account</a>

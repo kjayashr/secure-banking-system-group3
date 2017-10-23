@@ -26,5 +26,7 @@
 	<bean id="registrationImpl" class="com.ss.daoImpl.RegistrationDaoImpl" />
 	<bean id="transactionDaoImpl" class="com.ss.daoImpl.TransactionDaoImpl" />
 	<bean id="transactionBO" class="com.ss.daoImpl.TransactionBOImpl" />
+	<bean id="t1userBO" class="com.ss.daoImpl.T1userBOImpl" />
+
 
 </beans>

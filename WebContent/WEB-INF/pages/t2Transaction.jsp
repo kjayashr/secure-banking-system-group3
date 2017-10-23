@@ -60,7 +60,8 @@
  </script>
 
 		<div class="container">
-				<div id="transactions" class="container">
+				
+				  <div id="transactions" class="container">
 				     <h3>Approve transactions</h3>
 				     <div class="container">
     				     <c:if test="${transactions.size()>0}">
@@ -99,10 +100,12 @@
 				             </table>
 				         </c:if>
 				     </div>
+				
 				</div>
-			</div>
-        <div class="row" align="center">
-			<a href="${pageContext.request.contextPath}/tier2">Go Back To Home Page</a>
+				
+        		<div class="row" align="center">
+					<a href="${pageContext.request.contextPath}/tier2">Go Back To Home Page</a>
+				</div>
 		</div>
 
 </body>
