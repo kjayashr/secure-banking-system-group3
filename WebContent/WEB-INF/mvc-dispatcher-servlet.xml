@@ -24,9 +24,9 @@
 
 	<bean id="accountDoaImpl" class="com.ss.daoImpl.AccountDaoImpl" />
 	<bean id="registrationImpl" class="com.ss.daoImpl.RegistrationDaoImpl" />
+	<bean id ="adminDaoImpl" class="com.ss.daoImpl.AdminDaoImpl" />
 	<bean id="transactionDaoImpl" class="com.ss.daoImpl.TransactionDaoImpl" />
 	<bean id="transactionBO" class="com.ss.daoImpl.TransactionBOImpl" />
 	<bean id="t1userBO" class="com.ss.daoImpl.T1userBOImpl" />
-
 
 </beans>

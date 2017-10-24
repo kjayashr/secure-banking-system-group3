@@ -1,5 +1,6 @@
 package com.ss.controller;
 
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,7 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.ss.daoImpl.AccountDaoImpl;
 import com.ss.model.Account;
-
+import org.apache.log4j.Logger;
 
 @Controller
 public class HelloController {
@@ -33,7 +33,7 @@ public class HelloController {
 	
 	@RequestMapping(value = "/welcome**" , method = RequestMethod.GET)
 	public ModelAndView welcomePage(HttpServletRequest req, HttpServletResponse resp) {
-
+    
 		ModelAndView model = new ModelAndView();
 		if(req.getUserPrincipal() == null) {
 			try {
@@ -54,7 +54,7 @@ public class HelloController {
 		model.addObject("accountData", accountinfo);
 		model.setViewName("hello");
 		return model;
-
+		
 	}
 
 

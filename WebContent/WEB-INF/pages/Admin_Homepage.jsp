@@ -51,7 +51,7 @@
 	<br></br>
 	<div align="center" class="row"><a href="${pageContext.request.contextPath}/tier3">Decline Internal Users Request</a> </div>
 	<br></br>	
-	<div align="center" class="row"><a href="${pageContext.request.contextPath}/tier3">Access Log File</a> </div>
+	<div align="center" class="row"><a href="${pageContext.request.contextPath}/tier3/viewlogs">Access Log File</a> </div>
 	<br></br>	
 	<div align="center" class="row"><a href="${pageContext.request.contextPath}/tier3">Access PII</a> </div>
 	<br></br>	

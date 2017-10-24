@@ -1,0 +1,42 @@
+package com.ss.daoImpl;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.ss.dao.AdminDao;
+
+public class AdminDaoImpl implements AdminDao {
+
+	@Override
+	public List<String> getExistingLogFilesPaths() {
+		
+		String catalingpath = System.getProperty("catalina.base");
+		System.out.println(catalingpath);
+		
+//		List<String> list = new ArrayList<String>();
+		List<String> listOfFiles = new ArrayList<String>();
+		String path=catalingpath+"\\logs";
+
+		File dir = new File(path);
+        
+		File[] files = dir.listFiles();
+		
+        for (File file : files) {
+            System.out.println(file.getAbsolutePath());
+            
+            Pattern p = Pattern.compile("(my-application).+([0-9]{4}[-][0-9]{2}[-][0-9]{2}[-][0-9]{2}[-][0-9]{2})"); 
+            System.out.print(file.getName());  
+
+            Matcher m = p.matcher(file.getName()); 
+            if (m.matches()) {   
+              System.out.print("\n\n");  
+              listOfFiles.add(m.group(2));
+            }
+         }
+        return listOfFiles;
+	}
+	
+}
