@@ -1,5 +1,6 @@
 package com.ss.controller;
 
+import java.io.File;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,11 @@ public class HelloController {
 	AccountDaoImpl accountDoaImpl;
 
 	private static Logger logger = Logger.getLogger(HelloController.class);
-	
-	
+		
 	@RequestMapping(value = { "/", "/welcome**" }, method = RequestMethod.GET)
 	public ModelAndView welcomePage() {
-	
 		logger.info("Welcome page loaded");
+
 		ModelAndView model = new ModelAndView();
 		HashMap<String,Account> accountinfo=accountDoaImpl.getAccountInfo("alex");		
 		model.addObject("savings", "Spring Security Hello World");
