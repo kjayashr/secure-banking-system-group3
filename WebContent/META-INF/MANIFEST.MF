@@ -1,3 +1,5 @@
 Manifest-Version: 1.0
-Class-Path: 
+Built-By: thara
+Build-Jdk: 1.8.0_144
+Created-By: Maven Integration for Eclipse
 

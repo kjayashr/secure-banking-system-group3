@@ -8,28 +8,49 @@
 
 	<http auto-config="true" use-expressions="true">
 		<intercept-url pattern="/admin**" access="hasRole('ROLE_ADMIN')" />
-		
 		<!-- access denied page -->
 		<access-denied-handler error-page="/403" />
-		
-		
 		<form-login
 		    login-page="/login"
 		    default-target-url="/welcome"
 		    login-processing-url="/j_spring_security_check"
 			authentication-failure-url="/login?error"
-			username-parameter="username"
-			password-parameter="password" />
+			username-parameter="username" 
+			password-parameter="password"
+					 />
 		<logout logout-success-url="/login?logout" logout-url="/j_spring_security_logout"/>
 		
+
+		<!-- access denied page -->
+		<access-denied-handler error-page="/403" />
+
+
+		<form-login login-page="/login" 
+					default-target-url="/welcome" 
+					login-processing-url="/j_spring_security_check" 
+					authentication-failure-url="/login?error" 
+					username-parameter="username" 
+					password-parameter="password" />
+		
+		<logout logout-success-url="/login?logout" 
+				logout-url="/j_spring_security_logout" 
+				invalidate-session="false"/>
+
 		<!-- enable csrf protection -->
-		<csrf/>
+		<csrf />
+
+
+		<session-management>
+			<concurrency-control max-sessions="1" expired-url="/login?expired" />
+		</session-management>
 	</http>
+	
 
 	<authentication-manager>
-	  <authentication-provider>
+	  <authentication-provider> 
+	 	<password-encoder hash="bcrypt"></password-encoder>
 	    <jdbc-user-service data-source-ref="dataSource"
-		  users-by-username-query="select username,passwords,enabled from users where username=?"
+		  users-by-username-query="select username,password,enabled from users where username=?"
 		  authorities-by-username-query="select username, role from user_roles where username =?" />
 	  </authentication-provider>
 	</authentication-manager>

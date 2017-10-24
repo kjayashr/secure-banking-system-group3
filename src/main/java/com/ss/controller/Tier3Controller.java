@@ -1,5 +1,6 @@
 package com.ss.controller;
 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -29,6 +30,10 @@ import org.springframework.web.servlet.ModelAndView;
 import com.ss.dao.AdminDao;
 import com.ss.daoImpl.AccountDaoImpl;
 import com.ss.model.Account;
+import com.ss.dao.TransactionBO;
+import com.ss.daoImpl.AccountDaoImpl;
+import com.ss.model.Account;
+import com.ss.model.TransactionDO;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,9 +44,11 @@ public class Tier3Controller {
 	@Autowired
 	AccountDaoImpl accountDaoImpl;
 
-	@Autowired
+  @Autowired
 	AdminDao adminDaoImpl;
 	
+	@Autowired
+	TransactionBO transactionBO;
 	
     @RequestMapping(value="/tier3", method=RequestMethod.GET)
 	public ModelAndView hellotier3Page() {
@@ -92,8 +99,6 @@ public class Tier3Controller {
     public void download(@PathVariable("filename")String filename, HttpServletResponse response) throws IOException {
  //Check the user is admin before downloading
     	
-    	System.out.println(filename);
-
     	File file = new File(System.getProperty("catalina.base") + "\\logs\\" + "my-application.log." + filename );
         InputStream is = new FileInputStream(file);
  
@@ -113,7 +118,5 @@ public class Tier3Controller {
         os.close();
         is.close();
     }    
-    
-
     
 }

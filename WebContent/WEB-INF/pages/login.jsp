@@ -1,5 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@page session="true"%>
+
+
 <html>
 <head>
 <title>Login Page</title>
@@ -23,6 +25,15 @@
 	background-color: #d9edf7;
 	border-color: #bce8f1;
 }
+.expired {
+	padding: 15px;
+	margin-bottom: 20px;
+	border: 1px solid transparent;
+	border-radius: 4px;
+	color: #31708f;
+	background-color: #d9edf7;
+	border-color: #bce8f1;
+}
 
 #login-box {
 	width: 300px;
@@ -37,21 +48,23 @@
 </head>
 <body onload='document.loginForm.username.focus();'>
 
-	
 
 	<div id="login-box">
-
 		<h2>Login</h2>
-
-		<c:if test="${not empty error}">
+		<c:choose>
+		<c:when test="${not empty error}">
 			<div class="error">${error}</div>
-		</c:if>
-		<c:if test="${not empty msg}">
+		</c:when>
+		<c:when test="${not empty msg}">
 			<div class="msg">${msg}</div>
-		</c:if>
+		</c:when>
+		<c:when test="${not empty expired}">
+			<div class="msg">${expired}</div>
+		</c:when>
+		</c:choose>
+	
+	<form role="form" name='loginForm' action="<c:url value='j_spring_security_check' />" method='POST'>
 	<div class="row">
-		<form name='loginForm' action="<c:url value='j_spring_security_check' />" method='POST'>
-
 		  <table>
 			<tr>
 				<td>User:</td>
@@ -61,20 +74,25 @@
 				<td>Password:</td>
 				<td><input type='password' name='password' /></td>
 			</tr>
-			<tr>
-				<td colspan='2'><input name="submit" type="submit"
-					value="submit" /></td>
-			</tr>
 		  </table>
 	</div>
 	<div class="row">
-		<a href="${pageContext.request.contextPath}/registration"> Sign Up </a>
+	<table>
+		<tr>
+			<td>
+				<input name="submit" type="submit" class="btn btn-primary" value="Submit" />
+			</td>
+			<td></td>
+			<td>
+				<a href="${pageContext.request.contextPath}/registration"> Sign Up </a>
+			</td>
+	</table>
 	</div>
 		  <input type="hidden" name="${_csrf.parameterName}"
 			value="${_csrf.token}" />
 
-		</form>
-	</div>
+	</form>
+  </div>
 
 </body>
 </html>

@@ -23,6 +23,13 @@ public class AccountDaoImpl implements AccountDao {
 	JdbcTemplate jdbcTemplate;
 
 	@Override
+	public int createAccount(int balance,String username, String type,int interest) {
+		String sql="Insert into account values("+balance+",'"+type+"','"+username+"',"+interest+");";
+		int ret=jdbcTemplate.update(sql);
+		return ret;
+	}
+	
+	@Override
 	public HashMap<String, Account> getAccountInfo(String username) {
 		String sql="select accountType,SUM(balance) as balance from account where username= ? group by accountType";
 		List<Account> data =jdbcTemplate.query(sql, new Object[]{username}, new accountinfoMapper()) ;
@@ -83,16 +90,42 @@ public boolean checkAmount(String accountType,double amount, String username){
 	return ret - amount > 0;
 }
 
-public void addToTransaction(double amount, String detail, String status, String username, Date date, String object) {
+public String getusername(String email){
+	
+	String sql1="select username from users where email='"+email+"';";
+	String ret= jdbcTemplate.queryForObject(sql1,String.class);
+	
+	return ret;
+}
+
+public void addToTransaction(double amount, String detail, String status, String username, Date date, String to, boolean critical) {
 	// TODO Auto-generated method stub
-	object="fuy";
-	String sql="Insert into transaction(amount,detail,status,transacterusername,transactiondate, transferto) values "
-			+ "(" +amount+",'"+detail+"','"+status+"','"+username+"','"+date+"','"+object+"');";
+	String sql="Insert into transaction(amount,detail,status,transacterusername,transactiondate, transferto,critical) values "
+			+ "(" +amount+",'"+detail+"','"+status+"','"+username+"','"+date+"','"+to+"',"+critical+");";
 	
 	jdbcTemplate.execute(sql);
 	
 }
 
+@Override
+public List<Account> getValidAccounts(String name) {
+	String sql="select distinct accountType from account where username= ?";
+	List<Account> data =jdbcTemplate.query(sql, new Object[] {name}, new accountMapper()) ;
+	return data;
+}
+
+
+}
+
+
+
+
+class accountMapper implements RowMapper<Account> {
+	public Account mapRow(ResultSet rs,int arg1) throws SQLException {
+		Account accountdata = new Account();
+	    accountdata.setAccountType(rs.getString("accountType"));
+	    return accountdata;
+	}
 }
 
 class accountinfoMapper implements RowMapper<Account> {

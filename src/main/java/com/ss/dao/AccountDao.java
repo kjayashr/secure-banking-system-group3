@@ -16,6 +16,9 @@ public interface AccountDao {
 	
 	 HashMap<String, Account> getAccountInfo(String username);
 	 void doCreditDebit(String accountType, double amount, String type);
-	 void addToTransaction(double amount, String detail, String status, String username, Date date, String object);
+	 void addToTransaction(double amount, String detail, String status, String username, Date date, String object, boolean critical);
+	int createAccount(int balance,String username, String type,int interest);
+	List<Account> getValidAccounts(String name);
+	
 	
 }

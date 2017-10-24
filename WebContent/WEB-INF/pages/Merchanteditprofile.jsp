@@ -53,11 +53,10 @@ form .line.submit {
 </style>
 </head>
 <body>
-	<jsp:include page="header.jsp"/>
 	<div id="container" class="container">
-		<form action="${pageContext.request.contextPath}/editprofile"
+		<form action="${pageContext.request.contextPath}/Merchanthello/Merchanteditprofile"
 			method="post">
-			<h1>Edit Profile</h1>
+			<h1>Merchant Edit Profile</h1>
 			<div class="line">
 				<label for="email">Email *: </label><input type="email" id="email"
 					name="email" required />
@@ -91,7 +90,7 @@ form .line.submit {
 				submitting form and that all fields marked with * are completed!.</p>
 				
 			<div class="row">
-			<a href="${pageContext.request.contextPath}/welcome"> Go back to home page</a>
+			<a href="${pageContext.request.contextPath}/Merchanthello"> Go back to home page</a>
 		</div>
 		</form>
 	</div>

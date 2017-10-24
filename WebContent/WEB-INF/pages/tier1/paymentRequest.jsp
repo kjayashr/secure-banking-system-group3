@@ -1,7 +1,6 @@
 <%@taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <html>
 <head>
 <link rel="stylesheet"
@@ -12,7 +11,7 @@
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
-<jsp:include page="header.jsp"/>
+
 	<script>
 	
   function changetextbox()
@@ -52,42 +51,37 @@ $('.dropdown-menu li a').click(function(){
 	$(".btn:first-child").text($(this).text());
     $(".btn:first-child").val($(this).text());
   });
-</script>		
+</script>
+
+	<sec:authorize access="hasRole('ROLE_USER')">
+		<!-- For login user -->
+		<c:url value="/j_spring_security_logout" var="logoutUrl" />
+		<form action="${logoutUrl}" method="post" id="logoutForm">
+			<input type="hidden" name="${_csrf.parameterName}"
+				value="${_csrf.token}" />
+		</form>
+		<script>
+			function formSubmit() {
+				document.getElementById("logoutForm").submit();
+			}
+		</script>
+
+		<c:if test="${pageContext.request.userPrincipal.name != null}">
+			<h2>
+				<a x href="javascript:formSubmit()"> Logout</a>
+			</h2>
+		</c:if>
+		
 		<div class="container">
-			<h2>${pageContext.request.userPrincipal.name}'s Accounts</h2>
+			<h2>Payment on behalf of ${customerUser}</h2>
 			<ul class="nav nav-tabs">
-				<li class="active"><a data-toggle="tab" href="#account">Accounts</a></li>
-				<li><a data-toggle="tab" href="#creditdebit">Credit/Debit</a></li>
+				<li class="active"><a data-toggle="tab" href="#creditdebit">Credit/Debit</a></li>
 				<li><a data-toggle="tab" href="#transfer">Transfer</a></li>
 				<li><a data-toggle="tab" href="#payment">Payment</a></li>
 			</ul>
 
 			<div class="tab-content">
-				<div id="account" class="tab-pane fade in active">
-					<div class="row" style="background-color: white;">
-						<div class="col-sm-6">Saving</div>
-						<div class="col-sm-6">
-							<c:out value="${accountData['Saving'].balance}" />
-						</div>
-					</div>
-					<hr />
-					<div class="row" style="background-color: white;">
-						<div class="col-sm-6">Checking Account:</div>
-						<div class="col-sm-6">
-							<c:out value="${accountData['Checking'].balance}" />
-						</div>
-					</div>
-					<hr />
-					<div class="row" style="background-color: white;">
-						<div class="col-sm-6">Credit Card:</div>
-						<div class="col-sm-6">
-							<c:out value="${accountData['Credit'].balance}" />
-						</div>
-					</div>
-
-
-				</div>
-				<div id="creditdebit" class="tab-pane fade">
+				<div id="creditdebit" class="tab-pane fade in active">
 
 					<div class="container">
 						<form class="form-horizontal" method="post"
@@ -105,12 +99,13 @@ $('.dropdown-menu li a').click(function(){
 									Type:</label>
 								<div class="col-sm-2 dropdown">
 
-									<select class="form-control" id="accountType" name="accountType">
+									<select class="form-control" id="accountType"
+										name="accountType">
 										<option>Saving</option>
 										<option>Checking</option>
 										<option>Credit Card</option>
 									</select>
-	
+
 
 								</div>
 							</div>
@@ -269,5 +264,11 @@ $('.dropdown-menu li a').click(function(){
 				</div>
 			</div>
 		</div>
+
+
+        <div class="row" align="center">
+			<a href="${pageContext.request.contextPath}/tier1">Go Back To Home Page</a>
+		</div>
+	</sec:authorize>
 </body>
 </html>

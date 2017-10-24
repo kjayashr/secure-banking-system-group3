@@ -29,10 +29,13 @@ public class RequestController {
 
 	@Autowired
 	AccountDaoImpl accountDaoImpl;
+	int threshold=1000;
+	
 	
 	@RequestMapping(value="/request", method=RequestMethod.POST)
 	public ModelAndView creditDebitRequest(HttpServletRequest req,Authentication auth){
 		String username=auth.getName();
+		boolean critical=false;
 		ModelAndView notifyPage=new ModelAndView("notify");
 		String accountType=req.getParameter("accountType");
 		String type=req.getParameter("type");
@@ -45,7 +48,9 @@ public class RequestController {
 				String status="pending";
 				DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 				Date date = new Date();
-				accountDaoImpl.addToTransaction(amount, detail, status, username, date, null);
+				if(amount>=threshold)
+					critical=true;
+				accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical);
 				accountDaoImpl.doCreditDebit(accountType, amount, type);
 				notifyPage.addObject("notification","Payment Processed sucessfully");
 			}else{
@@ -68,23 +73,29 @@ public class RequestController {
 		String recipient=req.getParameter("recipient");
 		double amount=Double.parseDouble(req.getParameter("amount"));
 		System.out.println(accountTypeFrom + " " + accountTypeTo + " " +amount);
+		boolean critical=false;
 		
 		// add validation over credit and debit
 		boolean check=accountDaoImpl.checkAmount(accountTypeFrom, amount,username);
 		if(check){
-			String detail="";
-			if(typeOfTransfer.equalsIgnoreCase("internal")){
-				 detail="Transfer to "+ accountTypeTo + " from "+ accountTypeFrom;
-			}
-			else{
-				 detail="Transfer to "+ recipient + " from "+ accountTypeFrom;
-			}
-			
+			String tousername="";
 			String status="pending";
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			Date date = new Date();
-			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null); 
-			accountDaoImpl.doTransfer(accountTypeFrom,accountTypeTo,amount);
+			if(amount>=threshold) critical=true;
+			String detail="";
+			if(typeOfTransfer.equalsIgnoreCase("internal")){
+				 detail="Transfer to "+ accountTypeTo + " from "+ accountTypeFrom;
+				 tousername=accountTypeFrom;
+			}
+			else{
+				  String to=accountDaoImpl.getusername(recipient);
+				  tousername=to;
+				 detail="Transfer to "+ recipient + " from "+ accountTypeFrom;
+			}
+			
+			accountDaoImpl.addToTransaction(amount, detail, status, username, date, tousername, critical); 
+			accountDaoImpl.doTransfer(accountTypeFrom,tousername,amount);
 			notifyPage.addObject("notification","Payment Processed sucessfully");
 		}else{
 			notifyPage.addObject("notification","Insufficient Funds");
@@ -95,6 +106,7 @@ public class RequestController {
 	@RequestMapping(value="/payment", method=RequestMethod.POST)
 	public ModelAndView paymentRequest(HttpServletRequest req,Authentication auth){
 		String username=auth.getName();
+		boolean critical=false;
 		ModelAndView notifyPage=new ModelAndView("notify");
 		String accountTypeFrom=req.getParameter("from");
 		String accountTypeTo=req.getParameter("to");
@@ -110,7 +122,8 @@ public class RequestController {
 			String status="pending";
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			Date date = new Date();
-			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null); 
+			if(amount>threshold) critical=true;
+			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical); 
 			accountDaoImpl.doPayment(accountTypeFrom,amount);
 			notifyPage.addObject("notification","Payment Processed sucessfully");
 		}else{

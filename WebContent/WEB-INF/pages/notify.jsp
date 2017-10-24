@@ -7,10 +7,10 @@
 
 </head>
 <body>
-	${notification}
-	
+	<jsp:include page="header.jsp"/>
 	<div class="row">
-			<a href="${pageContext.request.contextPath}/welcome">Go Back To Home Page</a>
-		</div>
+		<h4 align="center">${notification}</h4>
+	</div>
+
 </body>
 </html>
