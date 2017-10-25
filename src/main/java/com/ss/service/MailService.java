@@ -73,9 +73,10 @@ public class MailService {
 	
 	public static void sendKey(String toMail, String toName, String key) {
 		String body = "Your Key for future use is generated."+
-						"\n\nYour Key is \n		" + key + 
+						"\n\nYour Key is :\n\n" + key + 
 						"\n\nPlease mark this mail as important. and DON'T delete this. " +
-						"This key is needed to complete some Banking activities";
+						"This key is needed to complete some Banking activities. " +
+						"For safety, you can keep this key stored in some secure place.";
 		
 		sendMail(toMail, toName, "Bank Key [IMPORTANT]", body, null, null);
 	}
