@@ -40,10 +40,10 @@
 			<a href="${pageContext.request.contextPath}/tier2/transactions">View Critical Transactions</a>
 </div>
 <div class="row" align="center">
-			<a href="${pageContext.request.contextPath}/tier2">Create Transaction</a>
+			<a href="${pageContext.request.contextPath}/tier2/tier2TransactionUser">Create Transaction</a>
 </div>
 <div class="row" align="center">
-			<a href="${pageContext.request.contextPath}/tier2">Create External User Account</a>
+			<a href="${pageContext.request.contextPath}/tier2/createExternalUser">Create External User Account</a>
 </div>
 <div class="row" align="center">
 			<a href="${pageContext.request.contextPath}/tier2">View User Account Requests</a>
