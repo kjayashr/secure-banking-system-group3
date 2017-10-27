@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.codec.binary.Base64;
+//import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import com.ss.dao.RegistrationDao;
 import com.ss.security.GenerateKeyPair;
-import com.ss.security.PKICertificate;
+import com.ss.service.EncryptDecryptUtil;
 import com.ss.service.MailService;
 
 @Repository
@@ -34,13 +34,13 @@ public class RegistrationDaoImpl implements RegistrationDao {
 			kp = new GenerateKeyPair();
 			
 			// Encoding the private key before storing in DB 
-			privateKey = Base64.encodeBase64String(kp.getPrivateKey().getBytes());
+			privateKey = EncryptDecryptUtil.singleEncryption(kp.getPrivateKey());
 			publicKey = kp.getPublicKey();
-			MailService.sendKey(email, firstname+" "+lastname, publicKey);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 			errors.add("There is some issue with your key generation.");
+			errors.add("Your account could not be generated due to key generation issue.");
 		}
 		
 		if(errors.size()>0) {
@@ -62,44 +62,10 @@ public class RegistrationDaoImpl implements RegistrationDao {
 					+ "('" +username+"','"+role+"');";
 		
 		int roleQ=jdbcTemplate.update(sql2);
+
+		MailService.sendKey(email, firstname+" "+lastname, publicKey);
 		
-		// TODO Remove afterward
-		/**
-		 * 	TEST CODE 
-		 *  DON'T REMOVE NOW. We can use this to implement the PKI
-		 *  in functionality like Transaction 
-		 */
-		
-		String testData = "Hello Testing Line";
-		try {
-			testData = PKICertificate.lock(testData, publicKey);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			errors.add("Your key is not valid.");
-		}
-		
-		String pk = "";
-		String sqlTest = "Select key_private from users where username = '"+username+"';";
-		try {
-			pk = jdbcTemplate.queryForObject(sqlTest, String.class);
-			pk = new String(Base64.decodeBase64(pk));
-		}catch(EmptyResultDataAccessException e) {
-			return 0;
-		}
-		
-		try {
-			testData = PKICertificate.unlock(testData, pk);
-		} catch (Exception e) {
-			errors.add("Your Prkey is not valid.");
-		}
-		
-		System.out.println(testData);
-		if(errors.size()>0) {
-			MailService.sendErrorMail(email, firstname+" "+lastname, errors);
-			return 0;
-		}
-		
-		/*****************/
+
 		
 		return roleQ;	
 
