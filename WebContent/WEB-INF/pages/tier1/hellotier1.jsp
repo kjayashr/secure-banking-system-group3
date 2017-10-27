@@ -10,7 +10,7 @@
 <title>Welcome Tier1 User</title>
 </head>
 <body>
-<jsp:include page="header.jsp"/>
+<jsp:include page="../header.jsp"/>
 
     <sec:authorize access="hasRole('ROLE_USER')">
 		<!-- For login user -->
@@ -41,13 +41,17 @@
 			<a href="${pageContext.request.contextPath}/tier1/transactions">View Non Critical Transactions</a>
 </div>
 <div class="row" align="center">
-			<a href="${pageContext.request.contextPath}/tier1">Create Transaction</a>
+			<a href="${pageContext.request.contextPath}/tier1/tier1TransactionUser">Create Transaction</a>
 </div>
 <div class="row" align="center">
 			<a href="${pageContext.request.contextPath}/tier1">Create External User Account</a>
 </div>
 <div class="row" align="center">
 			<a href="${pageContext.request.contextPath}/tier1">View User Account Requests</a>
+			
+        <div class="row" align="center">
+			<a href="${pageContext.request.contextPath}/tier1">Go Back To Home Page</a>
+		</div>
 </div>
 </body>
 

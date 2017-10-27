@@ -44,7 +44,7 @@ public class Tier1Controller {
 		ModelAndView model = new ModelAndView();
 		model.addObject("savings", "Spring Security Hello World");
 		model.addObject("message", "This is welcome page!");
-		model.setViewName("hellotier1");
+		model.setViewName("tier1/hellotier1");
 		return model;
      
 	}
@@ -56,7 +56,7 @@ public class Tier1Controller {
 
 		ModelAndView model = new ModelAndView();
 		model.addObject("transactions", transactions);
-		model.setViewName("transactions");
+		model.setViewName("tier1/transactions");
 		return model;
 
 	}    
@@ -101,5 +101,21 @@ public class Tier1Controller {
 		}
 		System.out.println(transactionMessage);
 		return transactionMessage;
+	}
+	
+	@RequestMapping(value= "/tier1/tier1TransactionUser", method = RequestMethod.GET)
+    public ModelAndView viewTransactionUser() {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("tier1/tier1TransactionUser");
+		return mav;
+	}
+	
+	@RequestMapping(value= "/tier1/fillTransactionRequest", method = RequestMethod.POST)
+    public ModelAndView fillTransactionRequest(HttpServletRequest req) {
+		String fromUserName=req.getParameter("fromUser");
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("customerUser", fromUserName);
+		mav.setViewName("tier1/paymentRequest");
+		return mav;
 	}
 }

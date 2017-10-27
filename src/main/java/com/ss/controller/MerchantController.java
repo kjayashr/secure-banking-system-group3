@@ -1,6 +1,5 @@
 package com.ss.controller;
 
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,26 +23,27 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.ss.daoImpl.AccountDaoImpl;
 import com.ss.model.Account;
-import org.apache.log4j.Logger;
+
 
 @Controller
-public class HelloController {
+public class MerchantController {
 	
 	@Autowired
 	AccountDaoImpl accountDoaImpl;
 	
-	@RequestMapping(value = "/welcome**" , method = RequestMethod.GET)
-	public ModelAndView welcomePage(HttpServletRequest req, HttpServletResponse resp,HttpSession se) {
+	@RequestMapping(value = "Merchanthello" , method = RequestMethod.GET)
+	public ModelAndView welcomePage(HttpServletRequest req, HttpServletResponse resp) {
+
 		ModelAndView model = new ModelAndView();
 		if(req.getUserPrincipal() == null) {
 			try {
 				req.getRequestDispatcher("/login?expired").forward(req, resp);
-				model.setViewName("hello");
+				model.setViewName("Merchanthello");
 				return model;
 			} catch (ServletException|IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				model.setViewName("login");
+				model.setViewName("Merchantlogin");
 				return model;
 			}
 		}
@@ -51,28 +52,16 @@ public class HelloController {
 		model.addObject("savings", "Spring Security Hello World");
 		model.addObject("message", "This is welcome page!");
 		model.addObject("accountData", accountinfo);
-		List<String> validAccounts = accountDoaImpl.getValidAccounts(name);
-		se.setAttribute("validAccounts",validAccounts);
-		model.setViewName("hello");
-		return model;
-		
-	}
-
-
-	@RequestMapping(value = "/admin**", method = RequestMethod.GET)
-	public ModelAndView adminPage() {
-
-		ModelAndView model = new ModelAndView();
-		model.addObject("title", "Spring Security Hello World");
-		model.addObject("message", "This is protected page!");
-		model.setViewName("admin");
-
+		model.setViewName("Merchanthello");
 		return model;
 
 	}
+
+
+	
 	
 	//Spring Security see this :
-		@RequestMapping(value = { "/", "/login" }, method = RequestMethod.GET)
+		@RequestMapping(value = { "/Merchantlogin" }, method = RequestMethod.GET)
 		public ModelAndView login(
 			@RequestParam(value = "error", required = false) String error,
 			@RequestParam(value = "logout", required = false) String logout,
@@ -90,29 +79,13 @@ public class HelloController {
 			if (expired != null) {
 				model.addObject("expired", "Your session has expired.");
 			}
-			model.setViewName("login"); 
+			model.setViewName("Merchantlogin"); 
 
 			return model;
 
 		}
 		
-		//for 403 access denied page
-		@RequestMapping(value = "/403", method = RequestMethod.GET)
-		public ModelAndView accesssDenied() {
-
-		  ModelAndView model = new ModelAndView();
-
-		  //check if user is login
-		  Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		  if (!(auth instanceof AnonymousAuthenticationToken)) {
-			UserDetails userDetail = (UserDetails) auth.getPrincipal();
-			model.addObject("username", userDetail.getUsername());
-		  }
-
-		  model.setViewName("403");
-		  return model;
-
-		}
+		
 
 	
 
