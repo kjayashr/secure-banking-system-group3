@@ -52,6 +52,9 @@
 	<div id="login-box">
 		<h2>Login</h2>
 		<c:choose>
+		<c:when test="${not empty SPRING_SECURITY_LAST_EXCEPTION}">
+      		<div class="error">${SPRING_SECURITY_LAST_EXCEPTION.message}</div	>	
+    		 </c:when>
 		<c:when test="${not empty error}">
 			<div class="error">${error}</div>
 		</c:when>

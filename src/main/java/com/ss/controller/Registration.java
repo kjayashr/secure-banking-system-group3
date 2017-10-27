@@ -1,9 +1,12 @@
 package com.ss.controller;
 
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ss.dao.AccountDao;
 import com.ss.dao.RegistrationDao;
+import com.ss.dao.UserAttemptDao;
 
 
 @Controller
@@ -22,6 +26,9 @@ public class Registration {
 
 	@Autowired
 	AccountDao accountDao;
+	
+	@Autowired
+	UserAttemptDao userAttemptDao;
 
 	@RequestMapping(value="/registration",method=RequestMethod.GET)
 	public String getRegistration(){
@@ -33,6 +40,8 @@ public class Registration {
 		
 		String username=req.getParameter("username");
 		String password=req.getParameter("password");
+		BCryptPasswordEncoder encoder=new BCryptPasswordEncoder();
+		password=encoder.encode(password);
 		String firstname=req.getParameter("firstname");
 		String lastname=req.getParameter("lastname");
 		String dateofbirth=req.getParameter("dateofbirth");
@@ -51,6 +60,8 @@ public class Registration {
 		int i=registrationImpl.addNewUser(username,password,firstname,lastname, dateofbirth, email, address,
 				contactno, ssn, city, state, country, postcode);
 		int accountCrRet=accountDao.createAccount(balance,username,type,interest);
+		int numOfAttempt=0;
+		int userAttempt=userAttemptDao.insertUser(username,password,1,numOfAttempt,new Date(),true,true,true);
 		return "login";
 	}
 	

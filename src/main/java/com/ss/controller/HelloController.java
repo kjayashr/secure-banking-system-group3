@@ -32,7 +32,7 @@ public class HelloController {
 	AccountDaoImpl accountDoaImpl;
 	
 	@RequestMapping(value = "/welcome**" , method = RequestMethod.GET)
-	public ModelAndView welcomePage(HttpServletRequest req, HttpServletResponse resp) {
+	public ModelAndView welcomePage(HttpServletRequest req, HttpServletResponse resp,HttpSession se) {
 
 		ModelAndView model = new ModelAndView();
 		if(req.getUserPrincipal() == null) {
@@ -52,6 +52,8 @@ public class HelloController {
 		model.addObject("savings", "Spring Security Hello World");
 		model.addObject("message", "This is welcome page!");
 		model.addObject("accountData", accountinfo);
+		List<String> validAccounts = accountDoaImpl.getValidAccounts(name);
+		se.setAttribute("validAccounts",validAccounts);
 		model.setViewName("hello");
 		return model;
 

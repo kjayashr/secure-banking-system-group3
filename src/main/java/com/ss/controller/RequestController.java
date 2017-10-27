@@ -86,7 +86,7 @@ public class RequestController {
 			String detail="";
 			if(typeOfTransfer.equalsIgnoreCase("internal")){
 				 detail="Transfer to "+ accountTypeTo + " from "+ accountTypeFrom;
-				 tousername=accountTypeFrom;
+				 tousername=accountTypeTo;
 			}
 			else{
 				  String to=accountDaoImpl.getusername(recipient);

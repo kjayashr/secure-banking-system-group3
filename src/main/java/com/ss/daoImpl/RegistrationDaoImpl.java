@@ -22,8 +22,7 @@ public class RegistrationDaoImpl implements RegistrationDao {
 	public int addNewUser(String username, String password, String firstname,String lastname,
 			String dateofbirth, String email, String address, Long contactno, Long ssn, String city, String state, String country, int postcode) {
 
-		BCryptPasswordEncoder encoder=new BCryptPasswordEncoder();
-		password=encoder.encode(password);
+		
 		String sql="Insert into users(username,password,firstname,lastname,dob, address,"
 				+ "email, contactno, ssn, city, state,country,postcode) values "
 				+ "('" +username+"','"+password+"','"+firstname+"','"+lastname+"','"+dateofbirth+"','"+address+"','"+email+"',"+contactno+","+ssn+",'"+city+"','"+state+"','"+country+"',"+postcode+");";

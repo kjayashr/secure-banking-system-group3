@@ -90,7 +90,7 @@ $('.dropdown-menu li a').click(function(){
 				<div id="creditdebit" class="tab-pane fade">
 
 					<div class="container">
-						<form class="form-horizontal" method="post"
+						<form:form class="form-horizontal" method="post" 
 							action="${pageContext.request.contextPath}/request"
 							onsubmit="validateAmountCD()">
 							<div class="form-group" style="padding-top: 40px">
@@ -105,13 +105,13 @@ $('.dropdown-menu li a').click(function(){
 									Type:</label>
 								<div class="col-sm-2 dropdown">
 
-									<select class="form-control" id="accountType" name="accountType">
-										<option>Saving</option>
-										<option>Checking</option>
-										<option>Credit Card</option>
-									</select>
-	
-
+								<select class="form-control" id="accountType" name="accountType">
+									<c:forEach items="${validAccounts}" var="account">
+										<option value="${account}">${account}</option>
+									</c:forEach>
+								</select>
+									
+									
 								</div>
 							</div>
 
@@ -132,7 +132,7 @@ $('.dropdown-menu li a').click(function(){
 							</div>
 							<input type="hidden" name="${_csrf.parameterName}"
 								value="${_csrf.token}" />
-						</form>
+						</form:form>
 					</div>
 				</div>
 				<div id="transfer" class="tab-pane fade">
@@ -168,10 +168,10 @@ $('.dropdown-menu li a').click(function(){
 								<div class="col-sm-2 dropdown">
 
 									<select class="form-control" id="from" name="from">
-										<option>Saving</option>
-										<option>Checking</option>
-										<option>Credit Card</option>
-									</select>
+									<c:forEach items="${validAccounts}" var="account">
+										<option value="${account}">${account}</option>
+									</c:forEach>
+								</select>
 
 
 								</div>
@@ -181,10 +181,10 @@ $('.dropdown-menu li a').click(function(){
 								<label class="control-label col-sm-2" for="to"> To:</label>
 								<div class="col-sm-2 dropdown">
 									<select class="form-control" id="to" name="to">
-										<option>Saving</option>
-										<option>Checking</option>
-										<option>Credit Card</option>
-									</select>
+									<c:forEach items="${validAccounts}" var="account">
+										<option value="${account}">${account}</option>
+									</c:forEach>
+								</select>
 								</div>
 							</div>
 
@@ -228,10 +228,10 @@ $('.dropdown-menu li a').click(function(){
 								<div class="col-sm-2 dropdown">
 
 									<select class="form-control" id="from" name="from">
-										<option>Saving</option>
-										<option>Checking</option>
-										<option>Credit Card</option>
-									</select>
+									<c:forEach items="${validAccounts}" var="account">
+										<option value="${account}">${account}</option>
+									</c:forEach>
+								</select>
 
 
 								</div>

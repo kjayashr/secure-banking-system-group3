@@ -14,28 +14,12 @@
 		    login-page="/login"
 		    default-target-url="/welcome"
 		    login-processing-url="/j_spring_security_check"
-			authentication-failure-url="/login?error"
+			authentication-failure-url="/login?error="
 			username-parameter="username" 
-			password-parameter="password"
-					 />
+			password-parameter="password"/>
 		<logout logout-success-url="/login?logout" logout-url="/j_spring_security_logout"/>
 		
-
-		<!-- access denied page -->
-		<access-denied-handler error-page="/403" />
-
-
-		<form-login login-page="/login" 
-					default-target-url="/welcome" 
-					login-processing-url="/j_spring_security_check" 
-					authentication-failure-url="/login?error" 
-					username-parameter="username" 
-					password-parameter="password" />
 		
-		<logout logout-success-url="/login?logout" 
-				logout-url="/j_spring_security_logout" 
-				invalidate-session="false"/>
-
 		<!-- enable csrf protection -->
 		<csrf />
 
@@ -45,14 +29,30 @@
 		</session-management>
 	</http>
 	
+	
+	<beans:bean id="customUserDetailsService" class="com.ss.service.UserDetailsService">
+		<beans:property name="usersByUsernameQuery" value="select * from attempts where username = ?"/>
+		<beans:property name="authoritiesByUsernameQuery" value="select username, role from user_roles where username =?" />
+		<beans:property name="dataSource" ref="dataSource" />
+	</beans:bean>
+	
+	<beans:bean id="userDetailsDao" class="com.ss.daoImpl.UserDetailsDaoImpl" >
+		<beans:property name="dataSource" ref="dataSource" />
+	</beans:bean>
+	
+	<beans:bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
+		<beans:constructor-arg name="strength" value="10" />
+	</beans:bean>
+	
+	<beans:bean id="authenticaionProvider" class="com.ss.controller.LimitNoLoginAuthProvider">
+		<beans:property name="userDetailsService" ref="customUserDetailsService" />
+		<beans:property name="userDetailsDao" ref="userDetailsDao" />
+		<beans:property name="passwordEncoder" ref="encoder"/>
+	</beans:bean>
 
 	<authentication-manager>
-	  <authentication-provider> 
-	 	<password-encoder hash="bcrypt"></password-encoder>
-	    <jdbc-user-service data-source-ref="dataSource"
-		  users-by-username-query="select username,password,enabled from users where username=?"
-		  authorities-by-username-query="select username, role from user_roles where username =?" />
+	  <authentication-provider ref="authenticaionProvider">
 	  </authentication-provider>
 	</authentication-manager>
 	
-</beans:beans>
+	</beans:beans>

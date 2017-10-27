@@ -2,6 +2,7 @@ package com.ss.daoImpl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -108,10 +109,14 @@ public void addToTransaction(double amount, String detail, String status, String
 }
 
 @Override
-public List<Account> getValidAccounts(String name) {
+public List<String> getValidAccounts(String name) {
 	String sql="select distinct accountType from account where username= ?";
 	List<Account> data =jdbcTemplate.query(sql, new Object[] {name}, new accountMapper()) ;
-	return data;
+	List<String> ret=new ArrayList<String>();
+	for(Account a:data) {
+		ret.add(a.getAccountType());
+	}
+	return ret;
 }
 
 
