@@ -86,6 +86,7 @@ public void doPayment(String accountTypeFrom, double amount) {
 
 public boolean checkAmount(String accountType,double amount, String username){
 	String sql="Select balance from account where accountType='"+ accountType+"' AND username='"+ username+"';";
+	System.out.println(sql);
 	Integer ret= jdbcTemplate.queryForObject(sql, Integer.class);
 	System.out.println(ret);
 	return ret - amount > 0;

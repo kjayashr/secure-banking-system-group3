@@ -6,6 +6,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import com.ss.dao.TransactionBO;
+
+import java.util.Date;
 import java.util.List;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,6 +45,16 @@ private static final String USER_ROLE_TIER2 = "TIER2";
     
     @Override
     public void declineTransaction(int transactionId) {
+    	
+    }
+    
+    @Override
+    public void insertTransaction(double amount, String detail, String status, String username, Date date, String to, boolean critical, String fromAccountType, String toAccountType) {
+    	// TODO Auto-generated method stub
+    	String sql="Insert into transaction(amount,detail,status,transacterusername,transactiondate, transferto,critical, fromAccountType, toAccountType) values "
+    			+ "(" +amount+",'"+detail+"','"+status+"','"+username+"','"+date+"','"+to+"',"+critical +","+"'"+ fromAccountType + "','" + toAccountType+"'" +");";
+    	
+    	jdbcTemplate.execute(sql);
     	
     }
     
