@@ -21,7 +21,7 @@ public class MerchantApprovalController {
 	@Autowired
 	TransactionDaoImpl transactionDaoImpl;
 	
-	@RequestMapping(value="/Merchanthello/Merchantuserapprovals",method=RequestMethod.GET)
+	@RequestMapping(value="Merchantuserapprovals",method=RequestMethod.GET)
 	public String getListOfApprovals(Authentication auth,ModelMap model){
 		String username=auth.getName();
 		List<ApprovalList> data=transactionDaoImpl.getApprovalList(username);

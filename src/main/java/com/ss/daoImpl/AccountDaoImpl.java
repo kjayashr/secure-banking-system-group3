@@ -84,12 +84,42 @@ public void doPayment(String accountTypeFrom, double amount) {
 		jdbcTemplate.execute(sql1);
 }
 
+
+public void MPayment(String cardno,int cvv,double amount) {
+	
+	String sqlmc="Update creditcard set current_balance = current_balance - "+amount+"where cardnumber='"+cardno+"'AND cvv='"+cvv+"';";
+	jdbcTemplate.execute(sqlmc);
+	
+}
+
 public boolean checkAmount(String accountType,double amount, String username){
 	String sql="Select balance from account where accountType='"+ accountType+"' AND username='"+ username+"';";
 	Integer ret= jdbcTemplate.queryForObject(sql, Integer.class);
 	System.out.println(ret);
 	return ret - amount > 0;
 }
+
+
+public boolean checkCAmount(String accountFrom,String cardno,double amount){
+	String sql="Select current_balance from creditcard where name='"+ accountFrom+"' AND cardnumber='"+ cardno+"';";
+	Integer ret= jdbcTemplate.queryForObject(sql, Integer.class);
+	System.out.println(ret);
+	return ret - amount > 0;
+}
+
+public boolean checkDet(String accountFrom,String cardno) {
+	String a="Select count(*) from creditcard where name='"+accountFrom+"' AND cardnumber='" + cardno +"';";
+	Integer count=jdbcTemplate.queryForObject(a, Integer.class);
+	if(count > 0)
+		return true;
+	else
+		return false;
+}
+	
+	
+	
+	
+
 
 public String getusername(String email){
 	

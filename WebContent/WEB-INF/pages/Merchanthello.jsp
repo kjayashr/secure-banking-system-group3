@@ -358,13 +358,21 @@ $('.dropdown-menu li a').click(function(){
 								<label class="control-label col-sm-2" for="fromCard">CustomerCardNumber:</label>
 								<div class="col-sm-2 dropdown">
 
-									<input type="text" class="form-control" id="fromCard"
-										placeholder="Enter 16digit card number" name="fromCard" required>
+									<input type="text" maxlength="16" class="form-control" id="fromCard"
+										placeholder="Enter 16 digit card number" name="fromCard" required>
 
 								</div>
 							</div>
 							
+							<div class="form-group">
+								<label class="control-label col-sm-2" for="fromCVV">CustomerCVVNumber:</label>
+								<div class="col-sm-2 dropdown">
 
+									<input type="number" maxlength="3" class="form-control" id="fromCVV"
+										placeholder="Enter 3 digit CVV number" name="fromCVV" required>
+
+								</div>
+							</div>
 							
 
 							<div class="form-group">

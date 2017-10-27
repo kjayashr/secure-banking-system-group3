@@ -133,6 +133,54 @@ public class RequestController {
 	}
 	
 	
+	
+	
+	
+	
+	
+	@RequestMapping(value="/GetCustomerPayment", method=RequestMethod.POST)
+	public ModelAndView CustomerpaymentRequest(HttpServletRequest req,Authentication auth){
+		String username=auth.getName();
+		boolean critical=false;
+		ModelAndView notifyPageM=new ModelAndView("notifyMer");
+		String accountFrom=req.getParameter("fromName");
+		System.out.println(accountFrom);
+		String accountTypeTo=req.getParameter("to");
+		int cvv=Integer.parseInt(req.getParameter("fromCVV"));
+		String cardno=req.getParameter("fromCard");
+		double amount=Double.parseDouble(req.getParameter("amount"));
+		//System.out.println(accountTypeFrom + " " + accountTypeTo + " " +amount);
+		
+		// add validation over credit and debit
+		// check if both to and from are same
+		boolean checkCustomerAmount=accountDaoImpl.checkCAmount(accountFrom,cardno,amount);
+		boolean verify=accountDaoImpl.checkDet(accountFrom,cardno);
+		System.out.println("one" + checkCustomerAmount);
+		System.out.println("second" + verify);
+		if(verify&&checkCustomerAmount){
+			//ADDING TO TRANSACTION TABLE
+			String detail="Paid to "+ accountTypeTo;
+			String status="pending";
+			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			Date date = new Date();
+			if(amount>threshold) critical=true;
+			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical); 
+			accountDaoImpl.MPayment(cardno,cvv,amount);
+			accountDaoImpl.doPayment(accountTypeTo,-amount);
+			notifyPageM.addObject("notification","Payment Processed sucessfully");
+		}else{
+			notifyPageM.addObject("notification","Insufficient Funds");
+		}
+		return notifyPageM;
+	}
+	
+	@RequestMapping(value="/notifyMer", method=RequestMethod.GET)
+	public String Merrequest(HttpServletRequest req){
+		return "notifyMer";
+	}
+	
+	
+	
 	@RequestMapping(value="/notify", method=RequestMethod.GET)
 	public String request(HttpServletRequest req){
 		return "notify";

@@ -18,12 +18,12 @@ public class MerchantEditProfileViewTransaction {
 	@Autowired
 	TransactionDaoImpl transactionDaoImpl;
 
-	@RequestMapping(value="Merchanthello/Merchanteditprofile",method=RequestMethod.GET)
+	@RequestMapping(value="Merchanteditprofile",method=RequestMethod.GET)
 	public String getEditProfile(){
 		return "Merchanteditprofile";
 	}
 
-	@RequestMapping(value="Merchanthello/Merchanttransactionpage",method=RequestMethod.GET)
+	@RequestMapping(value="Merchantviewtransaction",method=RequestMethod.GET)
 	public String getviewtransaction(Authentication auth,ModelMap model){
 		String username=auth.getName();
 		List<TransactionList> data=transactionDaoImpl.viewTransaction(username);
