@@ -65,7 +65,7 @@ public class MailService {
 				message.setContent(multipart);
 			}
 			Transport.send(message);
-			System.out.println("DONE");
+			System.out.println("[ DONE ]\n");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -79,6 +79,19 @@ public class MailService {
 						"For safety, you can keep this key stored in some secure place.";
 		
 		sendMail(toMail, toName, "Bank Key [IMPORTANT]", body, null, null);
+	}
+	
+	public static void sendOTPMail(String toMail, String toName, int otp, boolean isResend) {
+		String body = "Your OTP is ";
+		if (isResend) {
+			body = body + "Regenerated. ";
+		} else {
+			body = body + "Generated. ";
+		}
+		body = body + "The OTP is : [ " + otp + 
+				" ]\n\nPlease use this OTP to validate.";
+		
+		sendMail(toMail, toName, "OTP [IMPORTANT]", body, null, null);
 	}
 	
 	public static void sendStatement(String toMail, String toName, String absoluteFileName) {

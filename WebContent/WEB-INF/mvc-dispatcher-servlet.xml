@@ -28,5 +28,8 @@
 	<bean id="transactionDaoImpl" class="com.ss.daoImpl.TransactionDaoImpl" />
 	<bean id="transactionBO" class="com.ss.daoImpl.TransactionBOImpl" />
 	<bean id="t1userBO" class="com.ss.daoImpl.T1userBOImpl" />
+	<bean id="otpDao" class="com.ss.daoImpl.OTPDaoImpl" />
+	<bean id="userDao" class="com.ss.daoImpl.UserDaoImpl" />
+	<bean id="otpUtil" class="com.ss.security.OTPUtil" />
 
 </beans>
