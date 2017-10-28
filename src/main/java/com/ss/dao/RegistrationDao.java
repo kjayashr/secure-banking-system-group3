@@ -8,4 +8,6 @@ public interface RegistrationDao {
 	String check(String username);
 	String checkEmail(String email);
 
+	void rollback(String username);
+
 }
