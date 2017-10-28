@@ -57,11 +57,16 @@ public class Registration {
 		int balance=Integer.parseInt(req.getParameter("balance"));
 		int interest=Integer.parseInt(req.getParameter("balance"));
 		// validation left
-		int i=registrationImpl.addNewUser(username,password,firstname,lastname, dateofbirth, email, address,
+		try {
+			int i=registrationImpl.addNewUser(username,password,firstname,lastname, dateofbirth, email, address,
 				contactno, ssn, city, state, country, postcode);
-		int accountCrRet=accountDao.createAccount(balance,username,type,interest);
-		int numOfAttempt=0;
-		int userAttempt=userAttemptDao.insertUser(username,password,1,numOfAttempt,new Date(),true,true,true);
+			int accountCrRet=accountDao.createAccount(balance,username,type,interest);
+			int numOfAttempt=0;
+			int userAttempt=userAttemptDao.insertUser(username,password,1,numOfAttempt,new Date(),true,true,true);
+		}catch(Exception e) {
+			registrationImpl.rollback(username);
+			System.out.println(e.getMessage());
+		}
 		return "login";
 	}
 	

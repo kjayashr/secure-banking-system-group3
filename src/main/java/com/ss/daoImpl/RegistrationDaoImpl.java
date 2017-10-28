@@ -92,4 +92,17 @@ public class RegistrationDaoImpl implements RegistrationDao {
 		}
 	}
 
+	@Override
+	public void rollback(String username) {
+		String delete_user="DELETE FROM users where username = '"+username+"'";
+		jdbcTemplate.update(delete_user);
+		String delete_user_role="DELETE FROM user_roles where username = '"+username+"'";
+		jdbcTemplate.update(delete_user_role);
+		String delete_accounts="DELETE FROM account where username = '"+username+"'";
+		jdbcTemplate.update(delete_accounts);
+		String delete_attempts="DELETE FROM attempts where username = '"+username+"'";
+		jdbcTemplate.update(delete_attempts);
+		
+	}
+
 }
