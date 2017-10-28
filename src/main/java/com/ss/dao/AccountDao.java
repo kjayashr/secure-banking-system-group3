@@ -18,6 +18,7 @@ public interface AccountDao {
 	 void doCreditDebit(String accountType, double amount, String type, String username);
 	 void addToTransaction(double amount, String detail, String status, String username, Date date, String object, boolean critical);
 	int createAccount(int balance,String username, String type,int interest);
+	
 	List<String> getValidAccounts(String name);
 	
 	

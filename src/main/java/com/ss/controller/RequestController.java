@@ -146,27 +146,34 @@ public class RequestController {
 		String accountFrom=req.getParameter("fromName");
 		System.out.println(accountFrom);
 		String accountTypeTo=req.getParameter("to");
-		int cvv=Integer.parseInt(req.getParameter("fromCVV"));
+		String cvv=req.getParameter("fromCVV");
 		String cardno=req.getParameter("fromCard");
 		double amount=Double.parseDouble(req.getParameter("amount"));
 		//System.out.println(accountTypeFrom + " " + accountTypeTo + " " +amount);
 		
 		// add validation over credit and debit
 		// check if both to and from are same
-		boolean checkCustomerAmount=accountDaoImpl.checkCAmount(accountFrom,cardno,amount);
 		boolean verify=accountDaoImpl.checkDet(accountFrom,cardno);
+		boolean checkCustomerAmount=false;
+		String usernameofuser="";
+		if(verify) {
+			 checkCustomerAmount=accountDaoImpl.checkCAmount(cardno,cvv,amount);
+			 usernameofuser=accountDaoImpl.getusernameMerchant(cardno);
+
+		}
+		
 		System.out.println("one" + checkCustomerAmount);
 		System.out.println("second" + verify);
 		if(verify&&checkCustomerAmount){
 			//ADDING TO TRANSACTION TABLE
-			String detail="Paid to "+ accountTypeTo;
+			String detail="From user"+ accountFrom;
 			String status="pending";
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			Date date = new Date();
 			if(amount>threshold) critical=true;
 			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical); 
-			accountDaoImpl.MPayment(cardno,cvv,amount);
-			accountDaoImpl.doPayment(accountTypeTo,-amount);
+			accountDaoImpl.MPayment(cardno,cvv,amount,usernameofuser,username,accountTypeTo);
+			//accountDaoImpl.doPayment(accountTypeTo,-amount);
 			notifyPageM.addObject("notification","Payment Processed sucessfully");
 		}else{
 			notifyPageM.addObject("notification","Insufficient Funds");
