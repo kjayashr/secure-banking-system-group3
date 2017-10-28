@@ -48,7 +48,7 @@ public class AccountDaoImpl implements AccountDao {
 
 	}
 
-	public void doCreditDebit(String accountType, double amount, String type) {
+	public void doCreditDebit(String accountType, double amount, String type, String username) {
 		
 		// check for threshold and user
 		

@@ -18,9 +18,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 			throws IOException, ServletException {
 		// TODO Auto-generated method stub
 		String userTargetURL="/SS/welcome";
-		String adminTargetURl="";
-		String tier1TargetURL="";
-		String tier2TargetURL="";
+		String adminTargetURl="/SS/admin/Welcome";
+		String tier1TargetURL="/SS/tier1";
+		String tier2TargetURL="/SS/tier1";
+		String merchantTargetURL="/SS/Merchanthello";
 		Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
 		if(roles.contains("ROLE_ADMIN")){
 			response.sendRedirect(adminTargetURl);
@@ -31,7 +32,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 			response.sendRedirect(tier1TargetURL);
 
 	      }
-		else{
+		else if(roles.contains("ROLE_MERCHANT")){
+			response.sendRedirect(merchantTargetURL);
+
+	      }
+		else if {
 			response.sendRedirect(tier2TargetURL);
 
 		}

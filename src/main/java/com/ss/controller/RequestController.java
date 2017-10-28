@@ -51,13 +51,13 @@ public class RequestController {
 				if(amount>=threshold)
 					critical=true;
 				accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical);
-				accountDaoImpl.doCreditDebit(accountType, amount, type);
+				accountDaoImpl.doCreditDebit(accountType, amount, type, username);
 				notifyPage.addObject("notification","Payment Processed sucessfully");
 			}else{
 				notifyPage.addObject("notification","Insufficient Funds");
 			}	
 		}else{
-			accountDaoImpl.doCreditDebit(accountType, amount, type);
+			accountDaoImpl.doCreditDebit(accountType, amount, type, username);
 			notifyPage.addObject("notification","Payment Processed sucessfully");
 		}
 		return notifyPage;
