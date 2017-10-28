@@ -16,5 +16,5 @@ public interface TransactionBO {
 	boolean declineTransaction(int transactionId, String approverUserId);
 	void insertTransaction(double amount, String detail, String status, String username, Date date, String to,
 			boolean critical, String fromAccountType, String toAccountType);
-	    
+	TransactionDO getTransactionFromId(int transactionId);
 }

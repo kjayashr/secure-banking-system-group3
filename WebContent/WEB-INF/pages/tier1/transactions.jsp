@@ -75,6 +75,7 @@
     				         <col width = "80"/>
 	    			         <table class="table">	
 	    			             <tr>
+	    			                 <th>Transaction id</th>
 	    			                 <th>FromUser</th>
 	    			                 <th>ToUser</th>
 	    			                 <th>Amount</th>
@@ -83,6 +84,7 @@
 	    			             </tr>	             
 				                 <c:forEach items="${transactions}" var="transaction">
 				                     <tr>
+				                         <td>${transaction.transactionId}</td>
 				                         <td>${transaction.transactorUserName}</td>
 				                         <td>${transaction.targetUserName}</td>
 				                         <td>${transaction.amount}</td>

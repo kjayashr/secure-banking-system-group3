@@ -76,7 +76,12 @@ public void doTransfer(String from, String to, double amount) {
 	
 		
 	}
-
+    public void doTransfer(String fromUserName, String fromAccountType, String toUserName, String toAccountType, double amount) {
+    	String sql = "update account set balance = balance - " + amount + " where username='" + fromUserName + "' and accountType ='"+fromAccountType+"';";
+    	jdbcTemplate.execute(sql);
+    	String sql1 = "update account set balance = balance + " + amount + " where username='" + toUserName + "' and accountType ='"+toAccountType+"';";
+    	jdbcTemplate.execute(sql1);
+    }
 public void doPayment(String accountTypeFrom, double amount) {
 	// TODO Auto-generated method stub
 	

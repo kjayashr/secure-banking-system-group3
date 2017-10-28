@@ -61,7 +61,7 @@ private static final String USER_ROLE_TIER2 = "TIER2";
     @Override
     public List<TransactionDO> getUnapprovedNonCriticalTransactions(String userRole) {
     	String sql = "";
-    	sql="select * from transaction where ((approverUserName is null or approverUserName='') and critical=false and transacterusername is not null) and ((status ='accepted' and transferto is not null) or (status='pending' and transferto='') or (status='pending and transferto is null'))";
+    	sql="select * from transaction where ((approverUserName is null or approverUserName='') and critical=false and transacterusername is not null) and (status ='pending')";
     	List<TransactionDO> transactions =jdbcTemplate.query(sql, new TransactionInfoMapper()) ;
 		return transactions;	
     }
@@ -72,6 +72,18 @@ private static final String USER_ROLE_TIER2 = "TIER2";
 		return transactions;	
     }
     
+    @Override
+    public TransactionDO getTransactionFromId(int transactionId) {
+    	String sql = "";
+    	sql="select * from transaction where id=?";
+    	List<TransactionDO> transactions = jdbcTemplate.query(sql, new Object[] {transactionId}, new TransactionInfoMapper());
+    	if (transactions.size()>0) {
+    		return transactions.get(0);
+    	} else {
+    		return null;
+    	}
+    }
+    
     class TransactionInfoMapper implements RowMapper<TransactionDO> {
   	  public TransactionDO mapRow(ResultSet rs, int arg1) throws SQLException {
   		TransactionDO transactionData = new TransactionDO();
@@ -79,6 +91,8 @@ private static final String USER_ROLE_TIER2 = "TIER2";
   	    transactionData.setTransactorUserName(rs.getString("transacterusername"));
   	    transactionData.setTargetUserName(rs.getString("transferto"));
   	    transactionData.setTransactionId(Integer.parseInt(rs.getString("id")));
+  	    transactionData.setFromAccountType(rs.getString("fromAccountType"));
+  	    transactionData.setToAccountType(rs.getString("toAccountType"));
   	    return transactionData;
   	  }
   	  

@@ -70,10 +70,24 @@ public class Tier1Controller {
 		    UserDetails userDetail = (UserDetails) auth.getPrincipal();
 		    userInSession = userDetail.getUsername();
 		}
-		boolean transactionSuccess = transactionBO
-				.approveTransaction(transactionId, userInSession);
+		
+		TransactionDO transaction = transactionBO.getTransactionFromId(transactionId);
+		
+		boolean amountCheck = accountDaoImpl.checkAmount(transaction.getFromAccountType(), transaction.getAmount(), transaction.getTransactorUserName());
+		boolean transactionSuccess = false; 
 		String transactionMessage = "";
+		
+		//Checking if balance is available
+		if (amountCheck) {
+		    transactionSuccess = transactionBO
+				.approveTransaction(transactionId, userInSession);
+		} else {
+			transactionMessage = "Not enough balance in transfer initiator";
+		}
+		
+		//setting message depending on transaction.
 		if (transactionSuccess) {
+			accountDaoImpl.doTransfer(transaction.getTransactorUserName(), transaction.getFromAccountType(), transaction.getTargetUserName(), transaction.getToAccountType(), transaction.getAmount());
 			transactionMessage = "Transaction approval processed successfully!";
 		} else {
 			transactionMessage = "Transaction approval failed!";
