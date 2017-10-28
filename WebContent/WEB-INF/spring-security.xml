@@ -11,8 +11,8 @@
 		<!-- access denied page -->
 		<access-denied-handler error-page="/403" />
 		<form-login
+			authentication-success-handler-ref="authenticationSuccessRedirecthandler"
 		    login-page="/login"
-		    default-target-url="/welcome"
 		    login-processing-url="/j_spring_security_check"
 			authentication-failure-url="/login?error="
 			username-parameter="username" 
@@ -43,6 +43,11 @@
 	<beans:bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
 		<beans:constructor-arg name="strength" value="10" />
 	</beans:bean>
+	
+	<beans:bean id="authenticationSuccessRedirecthandler" class="com.ss.security.CustomAuthenticationSuccessHandler" >
+	</beans:bean>
+	
+	
 	
 	<beans:bean id="authenticaionProvider" class="com.ss.controller.LimitNoLoginAuthProvider">
 		<beans:property name="userDetailsService" ref="customUserDetailsService" />

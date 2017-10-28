@@ -29,6 +29,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.ss.dao.AdminDao;
 import com.ss.daoImpl.AccountDaoImpl;
+import com.ss.daoImpl.AdminDaoImpl;
 import com.ss.model.Account;
 import com.ss.dao.TransactionBO;
 import com.ss.daoImpl.AccountDaoImpl;
@@ -45,7 +46,7 @@ public class Tier3Controller {
 	AccountDaoImpl accountDaoImpl;
 
   @Autowired
-	AdminDao adminDaoImpl;
+	AdminDaoImpl adminDaoImpl;
 	
 	@Autowired
 	TransactionBO transactionBO;
