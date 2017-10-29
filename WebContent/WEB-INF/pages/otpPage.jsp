@@ -127,7 +127,7 @@ div {
 				</div>
 				<input type="hidden" name="otp_attempts" value="${otp_attempts}"/>
 
-				<div class="789">
+				<div id="numRow1">
 					<button id="number" class="num" type="button"
 						onclick="numberPressed(9);">9</button>
 					<button id="number" class="num" type="button"
@@ -135,7 +135,7 @@ div {
 					<button id="number" class="num" type="button"
 						onclick="numberPressed(7);">7</button>
 				</div>
-				<div class="456">
+				<div id="numRow1">
 					<button id="number" class="num" type="button"
 						onclick="numberPressed(6);">6</button>
 					<button id="number" class="num" type="button"
@@ -143,7 +143,7 @@ div {
 					<button id="number" class="num" type="button"
 						onclick="numberPressed(4);">4</button>
 				</div>
-				<div class="123">
+				<div id="numRow1">
 					<button id="number" class="num" type="button"
 						onclick="numberPressed(3);">3</button>
 					<button id="number" class="num" type="button"
@@ -151,7 +151,7 @@ div {
 					<button id="number" class="num" type="button"
 						onclick="numberPressed(1);">1</button>
 				</div>
-				<div class="0Bck">
+				<div id="numRow1">
 					<button id="number" class="num" type="button"
 						onclick="numberPressed(0);">0</button>
 					<button id="bckspc" class="backspace" type="button"

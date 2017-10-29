@@ -4,10 +4,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 
-//import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -24,36 +25,18 @@ public class UserDaoImpl implements UserDao {
 	JdbcTemplate jdbcTemplate;
 
 	private List<User> getUserbyString(String sql, Object param) {
-
-		List<User> user = (List<User>) jdbcTemplate.query(sql, new Object[] { param }, new RowMapper<User>() {
-
-			@Override
-			public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-				System.out.println("User found : " + param);
-				User rsUser = new User();
-				rsUser.setUsername(rs.getString(1));
-				rsUser.setFirstname(rs.getString(2));
-				rsUser.setLastname(rs.getString(3));
-				rsUser.setDateofbirth(rs.getString(4));
-				rsUser.setAddress(rs.getString(5));
-				rsUser.setEmail(rs.getString(6));
-				rsUser.setContactno(rs.getLong(7));
-				rsUser.setSsn(rs.getLong(8));
-				rsUser.setCity(rs.getString(9));
-				rsUser.setState(rs.getString(10));
-				rsUser.setCountry(rs.getString(11));
-				rsUser.setPostcode(rs.getInt(12));
-				return rsUser;
-			}
-		});
-
-		return user;
+		try {
+			return (List<User>) jdbcTemplate.query(sql, new Object[] { param }, new userinfoMapper());
+		} catch (DataAccessException e) {
+			// TODO Log message
+			return null;
+		}
 	}
 
 	@Override
 	public User getUserbyUsername(String username) {
-		String sql = "select username,firstname,lastname,dob, " + "address, email, contactno, ssn, city, state, "
-				+ "country,postcode from users where username = ?";
+		String sql = "select username,firstname,lastname,dob, address, email, contactno, "
+				+ "ssn, city, state, country, postcode from users where username = ?";
 
 		List<User> user = getUserbyString(sql, username);
 
@@ -67,33 +50,108 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public User getUserbyEmail(String email) {
-		String sql = "select username,firstname,lastname,dob, " + "address, email, contactno, ssn, city, state, "
-				+ "country,postcode from users where email= ?";
-		
+		String sql = "select username, firstname, lastname, dob, address, email, contactno, "
+				+ "ssn, city, state, country, postcode from users where email= ?";
+
 		List<User> user = getUserbyString(sql, email);
-		
-		if(user.size() != 0) {
+
+		if (user.size() != 0) {
 			return user.get(0);
 		} else {
 			return null;
 		}
 	}
-	
+
 	@Override
 	public User getUserbyPhone(Long phone) {
-		String sql = "select username,firstname,lastname,dob, " + "address, email, contactno, ssn, city, state, "
-				+ "country,postcode from users where contactno= ?";
-		
+		String sql = "select username, firstname, lastname, dob, address, email, contactno, "
+				+ "ssn, city, state, country, postcode from users where contactno= ?";
+
 		List<User> user = getUserbyString(sql, phone);
-		
-		if(user.size() != 0) {
+
+		if (user.size() != 0) {
 			return user.get(0);
 		} else {
 			return null;
 		}
-		
 	}
-	
-	
+
+	@Override
+	public List<User> getUserInfo() {
+		String sql = "select username, firstname, lastname, dob, address, email, contactno, "
+				+ "ssn, city, state, country, postcode from users";
+		try {
+			return jdbcTemplate.query(sql, new userinfoMapper());
+		} catch (DataAccessException e) {
+			// TODO Log message
+			return null;
+		}
+	}
+
+	@Override
+	public List<User> getInternalUserInfo(String username) {
+		String sql = "select users.username as username, firstname, lastname, dob, address, email, contactno, "
+				+ "ssn, city, state, country, postcode from users inner join user_roles on users.username = user_roles.username where "
+				+ "users.username=? and user_roles.role like 'ROLE_TIER%'";
+		try {
+			return jdbcTemplate.query(sql, new Object[] { username }, new userinfoMapper());
+		} catch (DataAccessException e) {
+			// TODO Log message
+			return null;
+		}
+
+	}
+
+	@Override
+	public int ProcessInternalUserProfileUpdate(HttpServletRequest req, String username) {
+		String sql = "update users set firstname = ?, lastname = ?, dob = ?, ssn = ?, city = ?, state = ?, "
+				+ "country = ?, postcode = ?, contactno = ? where username = ?";
+
+		try {
+			return jdbcTemplate.update(sql, new Object[] { req.getParameter("firstname"), req.getParameter("lastname"),
+					req.getParameter("dob"), Long.parseLong(req.getParameter("ssn")), req.getParameter("city"),
+					req.getParameter("state"), req.getParameter("country"),
+					Integer.parseInt(req.getParameter("postcode")), Long.parseLong(req.getParameter("contactno")) });
+		} catch (DataAccessException e) {
+			// TODO Log message
+			return 0;
+		}
+	}
+
+	@Override
+	public int ProcessInternalUserProfileDelete(String username) {
+		String user_sql = "delete from users where username = ?";
+		String user_role_sql = "delete from user_roles where username = ?";
+
+		try {
+			int user_profile_delete = jdbcTemplate.update(user_sql, new Object[] { username });
+			int user_role_delete = jdbcTemplate.update(user_role_sql, new Object[] { username });
+			if (user_profile_delete != 0 && user_role_delete != 0) {
+				return 1;
+			}
+		} catch (DataAccessException e) {
+			// TODO Log message
+		}
+		return 0;
+	}
+
+	class userinfoMapper implements RowMapper<User> {
+		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+			User userdata = new User();
+			userdata.setUsername(rs.getString("username"));
+			userdata.setFirstname(rs.getString("firstname"));
+			userdata.setLastname(rs.getString("lastname"));
+			userdata.setDateofbirth(rs.getString("dob"));
+			userdata.setSsn(rs.getLong("ssn"));
+			userdata.setAddress(rs.getString("address"));
+			userdata.setCity(rs.getString("city"));
+			userdata.setState(rs.getString("state"));
+			userdata.setCountry(rs.getString("country"));
+			userdata.setContactno(rs.getLong("contactno"));
+			userdata.setEmail(rs.getString("email"));
+			userdata.setPostcode(rs.getInt("postcode"));
+			return userdata;
+		}
+	}
 
 }
