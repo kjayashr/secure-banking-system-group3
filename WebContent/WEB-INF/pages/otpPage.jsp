@@ -8,9 +8,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
 <style type="text/css">
-body {
-	font-family: Arial, Sans-Serif;
-}
 
 #container {
 	width: 300px;
@@ -59,10 +56,10 @@ div {
 
 <meta name="_csrf" content="${_csrf.token}" />
 <!-- default header name is X-CSRF-TOKEN -->
-<meta name="_csrf_header" content="${_csrf.headerName}" />
+<!-- <meta name="_csrf_header" content="${_csrf.headerName}" /> -->
 </head>
 <body onload="checkOTP()">
-	<jsp:include page="header.jsp" />
+<jsp:include page="header.jsp" />
 	<script>
 		function validate() {
 			checkFinalOTP();
@@ -115,7 +112,7 @@ div {
 			checkOTP();
 		}
 	</script>
-	<form action="${pageContext.request.contextPath}/OTP" method="post"
+	<form action="${pageContext.request.contextPath}/${page}" method="post"
 		onsubmit="return validate()">
 		<div id="container" class="container">
 			<div class="row">
@@ -128,7 +125,7 @@ div {
 				<div>
 					<span id="invalidOTP" style="color: red"></span>
 				</div>
-				<input type="hidden" name="otp_attempts" value="${otp_attempts}" }/>
+				<input type="hidden" name="otp_attempts" value="${otp_attempts}"/>
 
 				<div class="789">
 					<button id="number" class="num" type="button"

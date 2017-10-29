@@ -65,7 +65,6 @@ public class MailService {
 				message.setContent(multipart);
 			}
 			Transport.send(message);
-			System.out.println("[ DONE ]\n");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
