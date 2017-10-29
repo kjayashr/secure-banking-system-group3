@@ -20,15 +20,15 @@ public class OTPUtil {
 	private UserDaoImpl userDao;
 
 	private int OTP = 0;
-	
+
 	private User user = null;
-	
-	private void generateOTP(String username, boolean isResend) {
-		
-		if(user == null) {
+
+	private void createOTP(String username, boolean isResend) {
+
+		if (user == null) {
 			user = userDao.getUserbyUsername(username);
 		}
-		
+
 		String encryptedOTP = "";
 
 		if (!isResend) {
@@ -40,44 +40,45 @@ public class OTPUtil {
 		int otpCheck = getOTP(username);
 		if (otpCheck == -1) {
 			if (otpDao.create(username, encryptedOTP)) {
-				MailService.sendOTPMail(user.getEmail(), user.getFirstname()+" "+user.getLastname(), OTP, isResend);
+				MailService.sendOTPMail(user.getEmail(), user.getFirstname() + " " + user.getLastname(), OTP, isResend);
 			} else {
 				ArrayList<String> error = new ArrayList<String>();
 				error.add("OTP is not generated due to issue");
-				MailService.sendErrorMail(user.getEmail(), user.getFirstname()+" "+user.getLastname(), error);
+				MailService.sendErrorMail(user.getEmail(), user.getFirstname() + " " + user.getLastname(), error);
 			}
 		} else {
 			encryptedOTP = EncryptDecryptUtil.doubleEncryption(Integer.toString(OTP));
 			if (otpDao.update(username, encryptedOTP)) {
-				MailService.sendOTPMail(user.getEmail(), user.getFirstname()+" "+user.getLastname(), OTP, isResend);
+				MailService.sendOTPMail(user.getEmail(), user.getFirstname() + " " + user.getLastname(), OTP, isResend);
 			} else {
 				ArrayList<String> error = new ArrayList<String>();
 				error.add("OTP is not generated due to issue");
-				MailService.sendErrorMail(user.getEmail(), user.getFirstname()+" "+user.getLastname(), error);
+				MailService.sendErrorMail(user.getEmail(), user.getFirstname() + " " + user.getLastname(), error);
 			}
 		}
 
 	}
 
-	public void createOTP(String username) {
-		generateOTP(username, false);
+	public void generateOTP(String username) {
+		createOTP(username, false);
 	}
 
 	public void resendOTP(String username) {
-		generateOTP(username, true);
+		createOTP(username, true);
 	}
 
-	public boolean validateOTP(String username, int userOTP) {
+	public boolean validateOTP(String username, int userOTP, int tryLeft) {
 
 		int curOTP = getOTP(username);
 
 		if (userOTP == curOTP) {
-			for (int i = 1; i <= 3; i++) {
-				if (otpDao.delete(username))
-					break;
-			}
+			otpDao.delete(username);
 			return true;
 		} else {
+			// in last try, if validation fails, remove the OTP
+			if (tryLeft == 1) {
+				otpDao.delete(username);
+			}
 			return false;
 		}
 	}

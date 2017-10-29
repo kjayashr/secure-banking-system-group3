@@ -1,32 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <html>
 <head>
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-	crossorigin="anonymous">
-
-<!-- Optional theme -->
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
-	integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
-	crossorigin="anonymous">
-
-<!-- Latest compiled and minified JavaScript -->
-<script
-	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-	integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-	crossorigin="anonymous"></script>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
 <style type="text/css">
-body {
-	font-family: Arial, Sans-Serif;
-}
 
 #container {
 	width: 300px;
@@ -66,20 +47,24 @@ div {
 	width: 65px;
 	height: 30px;
 }
+
+.submit {
+	width: 47px;
+	height: 40px;
+}
 </style>
 
 <meta name="_csrf" content="${_csrf.token}" />
 <!-- default header name is X-CSRF-TOKEN -->
-<meta name="_csrf_header" content="${_csrf.headerName}" />
+<!-- <meta name="_csrf_header" content="${_csrf.headerName}" /> -->
 </head>
-<body>
-
+<body onload="checkOTP()">
+<jsp:include page="header.jsp" />
 	<script>
 		function validate() {
 			checkFinalOTP();
 			var otpError = $("#invalidOTP").html();
 			if (otpError == "") {
-				$("#error").html("");
 				return true;
 			} else {
 				$("#error").html("Please correct the OTP");
@@ -120,24 +105,29 @@ div {
 			otpBox.value = val;
 			checkOTP();
 		}
+		
+		function clearPressed() {
+			var otpBox = document.getElementById('userOTP');
+			otpBox.value = "";
+			checkOTP();
+		}
 	</script>
-	<form action="${pageContext.request.contextPath}/OTP" method="post"
-		onsubmit="checkOTP()" onsubmit="return validate()">
-		<h2 align="center">OTP</h2>
+	<form action="${pageContext.request.contextPath}/${page}" method="post"
+		onsubmit="return validate()">
 		<div id="container" class="container">
 			<div class="row">
 
 				<div class="line">
-					<label for="userOTP">OTP : </</label>
-					<br> 
-					<input type="text" id="userOTP" style="width:100px;"
-						name="userOTP" onblur="checkOTP()" />
+					<label for="userOTP">OTP : ${otp_attempts}</</label> <input
+						type="text" id="userOTP" style="width: 100px;" name="userOTP"
+						onblur="checkOTP()" />
 				</div>
 				<div>
-					<span id="invalidOTP" name="invalidOTP" style="color: red"></span>
+					<span id="invalidOTP" style="color: red"></span>
 				</div>
+				<input type="hidden" name="otp_attempts" value="${otp_attempts}"/>
 
-				<div class="789">
+				<div id="numRow1">
 					<button id="number" class="num" type="button"
 						onclick="numberPressed(9);">9</button>
 					<button id="number" class="num" type="button"
@@ -145,7 +135,7 @@ div {
 					<button id="number" class="num" type="button"
 						onclick="numberPressed(7);">7</button>
 				</div>
-				<div class="456">
+				<div id="numRow1">
 					<button id="number" class="num" type="button"
 						onclick="numberPressed(6);">6</button>
 					<button id="number" class="num" type="button"
@@ -153,7 +143,7 @@ div {
 					<button id="number" class="num" type="button"
 						onclick="numberPressed(4);">4</button>
 				</div>
-				<div class="123">
+				<div id="numRow1">
 					<button id="number" class="num" type="button"
 						onclick="numberPressed(3);">3</button>
 					<button id="number" class="num" type="button"
@@ -161,17 +151,21 @@ div {
 					<button id="number" class="num" type="button"
 						onclick="numberPressed(1);">1</button>
 				</div>
-				<div class="0Bck">
+				<div id="numRow1">
 					<button id="number" class="num" type="button"
 						onclick="numberPressed(0);">0</button>
 					<button id="bckspc" class="backspace" type="button"
 						onclick="bckspPressed();">Back</button>
 				</div>
 				<br />
-				<div class="line submit">
-					<input type="submit" value="OK" class="btn btn-primary" />
+				<div class="line">
+					<button id="clear" class="submit" type="button"
+						onclick="clearPressed();">Clear</button>
+					<input type="submit" value="OK" class="submit" />
 				</div>
-				<span id="error" style="color: red"></span>
+				<input type="hidden" name="${_csrf.parameterName}"
+					value="${_csrf.token}" />
+
 			</div>
 		</div>
 	</form>
