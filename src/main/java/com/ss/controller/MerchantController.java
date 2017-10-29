@@ -54,7 +54,7 @@ public class MerchantController {
 		model.addObject("savings", "Spring Security Hello World");
 		model.addObject("message", "This is welcome page!");
 		model.addObject("accountData", accountinfo);
-		model.setViewName("403");
+		model.setViewName("Merchanthello");
 		return model;
 
 	}
@@ -63,7 +63,7 @@ public class MerchantController {
 	
 	
 	//Spring Security see this :
-		@RequestMapping(value = { "/Merchantlogin" }, method = RequestMethod.GET)
+		@RequestMapping(value = {"/Merchantlogin" }, method = RequestMethod.GET)
 		public ModelAndView login(
 			@RequestParam(value = "error", required = false) String error,
 			@RequestParam(value = "logout", required = false) String logout,

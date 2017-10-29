@@ -20,8 +20,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 		String userTargetURL="/SS/welcome";
 		String adminTargetURl="/SS/admin/Welcome";
 		String tier1TargetURL="/SS/tier1";
-		String tier2TargetURL="/SS/tier1";
-		String merchantTargetURL="/SS/Merchanthello";
+		String tier2TargetURL="/SS/tier2";
+		String merchantTargetURL="/SS/Merchant/Welcome";
 		Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
 		if(roles.contains("ROLE_ADMIN")){
 			response.sendRedirect(adminTargetURl);
@@ -35,10 +35,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 				response.sendRedirect(merchantTargetURL);
 
 	      }
-		else if(roles.contains("ROLE_MERCHANT")){
-			response.sendRedirect(merchantTargetURL);
+		
 
-	      }
+	      
 		else {
 			response.sendRedirect(tier2TargetURL);
 
