@@ -52,7 +52,6 @@ public class Tier1Controller {
 	@RequestMapping(value = "/tier1/transactions", method = RequestMethod.GET)
 	public ModelAndView viewTransactions() {
 		System.out.println("In view Transactions method");
-        System.out.println(java.util.TimeZone.getDefault().toString());
 		List<TransactionDO> transactions = transactionBO.getUnapprovedNonCriticalTransactions(USER_ROLE_TIER1);
 
 		ModelAndView model = new ModelAndView();
@@ -61,6 +60,14 @@ public class Tier1Controller {
 		return model;
 
 	}    
+	
+	@RequestMapping(value = "/tier1/createExternalUser", method = RequestMethod.GET)
+	public ModelAndView createExternalUser() {
+		ModelAndView model = new ModelAndView();
+		model.setViewName("registration");
+		return model;
+	}  
+	
     
 	@RequestMapping(value= "/tier1/transaction/approve", method = RequestMethod.POST)
 	public @ResponseBody String approveTransaction(@RequestParam("transactionId") int transactionId) {

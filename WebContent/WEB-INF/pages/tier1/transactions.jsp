@@ -19,6 +19,7 @@
 <body>
 
 <jsp:include page="../header.jsp"/>
+<sec:authorize access="hasRole('ROLE_TIER1_APPROVED')">
 <script>
    	 function changeStatus(x) {
    		 	console.log("In changeStatus");
@@ -106,5 +107,6 @@
 			
 			
 		</div>
+		</sec:authorize>
 </body>
 </html>
