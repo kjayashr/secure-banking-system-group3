@@ -38,7 +38,7 @@
 	<meta name="_csrf_header" content="${_csrf.headerName}"/>
     </head>
     <body>
-    
+    <jsp:include page="header.jsp"></jsp:include>
     <script>
    	 function checkAvailabilityUsername() {
 	   		var token = $("meta[name='_csrf']").attr("content");

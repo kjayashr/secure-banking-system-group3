@@ -24,7 +24,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.ss.daoImpl.AccountDaoImpl;
 import com.ss.model.Account;
 import org.apache.log4j.Logger;
-
 @Controller
 public class HelloController {
 	
@@ -33,7 +32,6 @@ public class HelloController {
 	
 	@RequestMapping(value = "/welcome**" , method = RequestMethod.GET)
 	public ModelAndView welcomePage(HttpServletRequest req, HttpServletResponse resp,HttpSession se) {
-		System.out.println("Came to welcome here");
 		ModelAndView model = new ModelAndView();
 		if(req.getUserPrincipal() == null) {
 			try {
@@ -58,8 +56,7 @@ public class HelloController {
 		return model;
 		
 	}
-
-
+	
 	@RequestMapping(value = "/admin**", method = RequestMethod.GET)
 	public ModelAndView adminPage() {
 

@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class Tier2Controller {
-	private static final String USER_ROLE_TIER2 = "TIER2";
+	private static final String USER_ROLE_TIER2 = "ROLE_TIER2";
 	@Autowired
 	RegistrationDao registrationImpl;
 	
@@ -64,6 +64,39 @@ public class Tier2Controller {
 		return model;
      
 	}
+    @RequestMapping(value="/tier2/changedDetails", method=RequestMethod.POST)
+    public ModelAndView changedDetails(HttpServletRequest req,Authentication auth) {
+    	ModelAndView model = new ModelAndView();
+		String uName = "";
+		String role = "";
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+			UserDetails userDetail = (UserDetails) auth.getPrincipal();
+			model.addObject("username", userDetail.getUsername());
+			uName = userDetail.getUsername();
+			}
+		
+		model.addObject("savings", "Spring Security Hello World");
+		model.addObject("message", "This is welcome page!");
+		String firstname=req.getParameter("firstname");
+		String lastname=req.getParameter("lastname");
+		String contactno=req.getParameter("contactno");
+		String address=req.getParameter("address");
+		String city=req.getParameter("city");
+		String state=req.getParameter("state");
+		String country=req.getParameter("country");
+		String postcode=req.getParameter("postcode");
+		// validation left
+		registrationImpl.myNewMethod(uName,firstname,lastname,address,
+			 city, state, country, postcode,contactno);
+		if(role.equals("ROLE_TIER2"))
+			model.setViewName("hellotier2");
+		else if(role.equals("ROLE_TIER1"))
+			model.setViewName("hellotier1");
+		else if(role.equals("ROLE_TIER3"))
+			model.setViewName("Admin_Homepage");
+		return model;
+	}
+    
     
     @RequestMapping(value="/tier2/createExternalUser", method=RequestMethod.GET)
     public ModelAndView createuser() {
@@ -93,9 +126,18 @@ public class Tier2Controller {
 		return model;
 	}
     
+	@RequestMapping(value="/tier2/modifyPersonalAccount", method = RequestMethod.GET)
+	public ModelAndView modifyPersonalAccount() {
+		ModelAndView model = new ModelAndView();
+		model.addObject("message","hello");
+		model.setViewName("t2modifyPersonalAccount");
+		return model;
+	
+	}
+	
+	
 	@RequestMapping(value="/tier2/t1user/grantApproval", method=RequestMethod.POST)
 	public @ResponseBody String grantApproval(@RequestParam("userName") String userName) {
-		System.out.print("hit ");
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String userInSession = "someUser";
 		if(!(auth instanceof AnonymousAuthenticationToken)){

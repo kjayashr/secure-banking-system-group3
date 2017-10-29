@@ -15,8 +15,8 @@ import java.sql.SQLException;
 import com.ss.model.TransactionDO;
 
 public class TransactionBOImpl implements TransactionBO {
-private static final String USER_ROLE_TIER1 = "TIER1";
-private static final String USER_ROLE_TIER2 = "TIER2";
+private static final String USER_ROLE_TIER1 = "ROLE_TIER1";
+private static final String USER_ROLE_TIER2 = "ROLE_TIER2";
     @Autowired
     JdbcTemplate jdbcTemplate;
 	
