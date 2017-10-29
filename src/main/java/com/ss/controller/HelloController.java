@@ -33,6 +33,7 @@ public class HelloController {
 	
 	@RequestMapping(value = "/welcome**" , method = RequestMethod.GET)
 	public ModelAndView welcomePage(HttpServletRequest req, HttpServletResponse resp,HttpSession se) {
+		System.out.println("Came to welcome here");
 		ModelAndView model = new ModelAndView();
 		if(req.getUserPrincipal() == null) {
 			try {

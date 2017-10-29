@@ -23,7 +23,7 @@
   	<div class="col-md-4">
   	<h4>
   	 <span class="glyphicon glyphicon-home"></span>
-  	 	 <a href="${pageContext.request.contextPath}/welcome">
+  	 	 <a href="${pageContext.request.contextPath}/Merchant/Welcome">
   	 		Welcome ${pageContext.request.userPrincipal.name}
   		 </a>
   	 </h4>
@@ -42,7 +42,7 @@
 			</script>
 			<div class="row">
 				<a href="${pageContext.request.contextPath}/Merchanteditprofile" class="btn btn-default navbar-btn pull-right"  >Edit Profile</a>		
-				<a href="${pageContext.request.contextPath}/Merchant/viewtransaction" class="btn btn-default navbar-btn pull-right"  >View Transactions</a>
+				<a href="${pageContext.request.contextPath}/Merchantviewtransaction" class="btn btn-default navbar-btn pull-right"  >View Transactions</a>
 				<a href="${pageContext.request.contextPath}/Merchantuserapprovals" class="btn btn-default navbar-btn pull-right"  >Approvals Needed</a>
 				<c:if test="${pageContext.request.userPrincipal.name != null}">
 						<a href="javascript:formSubmit()" type="button" class="btn btn-default navbar-btn pull-right" >
