@@ -28,6 +28,7 @@ import com.ss.dao.UserDao;
 
 @Controller
 public class RequestController {
+	private static String SAVINGS_ACCOUNT_TYPE = "Saving";
 
 	@Autowired
 	AccountDaoImpl accountDaoImpl;
@@ -89,24 +90,30 @@ public class RequestController {
 		boolean critical=false;
 		ModelAndView notifyPage=new ModelAndView("notify");
 		System.out.println(accountType + " " + type + " " +amount);
+		if(amount>=threshold) {
+			critical=true;
+		}
+		String status="pending";
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Date date = new Date();
 		if(type.equalsIgnoreCase("Debit")){
 			if(accountDaoImpl.checkAmount(accountType, amount,transacterUserName)){
-				String detail="Debit to "+transacterUserName+ " accountType " + accountType + " by " + byUser + " for amount " + amount;
+				String detail="Debit from "+transacterUserName+ " accountType " + accountType + " by " + byUser + " for amount " + amount;
 				System.out.println(detail);
-				String status="pending";
-				DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-				Date date = new Date();
-				if(amount>=threshold)
-					critical=true;
-				transactionBO.insertTransaction(amount, detail, status, transacterUserName, date, null, critical, accountType, accountType);
+				transactionBO.insertTransaction(-amount, detail, status, transacterUserName, date, null, critical, accountType, accountType);
 				//accountDaoImpl.doCreditDebit(accountType, amount, type);
 				notifyPage.addObject("notification","Payment Processed sucessfully");
 			}else {
+				
 				notifyPage.addObject("notification","Insufficient Funds");
 			}	
 		}else if (type.equalsIgnoreCase("Credit")) {
+			String detail="Credit from "+transacterUserName+ " accountType " + accountType + " by " + byUser + " for amount " + amount;
+			System.out.println(detail);
+			transactionBO.insertTransaction(amount, detail, status, transacterUserName, date, null, critical, accountType, accountType);
+			
 			//TODO: what if it is a critical credit? also, don't we want to add a transaction in this case?
-			accountDaoImpl.doCreditDebit(accountType, amount, type);
+			//accountDaoImpl.doCreditDebit(accountType, amount, type);
 			notifyPage.addObject("notification","Payment Processed sucessfully");
 		} else {
 			notifyPage.addObject("notification", "Incorrect Banking Function accessed");
@@ -242,11 +249,13 @@ public class RequestController {
 	@RequestMapping(value="/tier1/paymentForUser", method=RequestMethod.POST)
 	public ModelAndView createPaymentRequestForUser(HttpServletRequest req, Authentication auth) {
 		String byusername=auth.getName();
+		String accountTypeTo = SAVINGS_ACCOUNT_TYPE;
 		boolean critical=false;
 		ModelAndView notifyPage=new ModelAndView("notify");
 		String fromUser = req.getParameter("forUser");
 		String accountTypeFrom=req.getParameter("from");
-		String accountTypeTo=req.getParameter("to");
+		String recipientEmail=req.getParameter("to");
+		String toUserName = userDao.getUserbyEmail(recipientEmail).getUsername();
 		double amount=Double.parseDouble(req.getParameter("amount"));
 		System.out.println(accountTypeFrom + " " + accountTypeTo + " " +amount);
 		
@@ -260,8 +269,7 @@ public class RequestController {
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			Date date = new Date();
 			if(amount>threshold) critical=true;
-			accountDaoImpl.addToTransaction(amount, detail, status, byusername, date, null, critical); 
-			accountDaoImpl.doPayment(accountTypeFrom,amount);
+			transactionBO.insertTransaction(amount, detail, status, fromUser, date, toUserName, critical, accountTypeFrom, accountTypeTo);
 			notifyPage.addObject("notification","Payment Processed sucessfully");
 		}else{
 			notifyPage.addObject("notification","Insufficient Funds");

@@ -2,6 +2,7 @@ package com.ss.daoImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.PreparedStatementCallback;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -9,10 +10,17 @@ import com.ss.dao.TransactionBO;
 
 import java.util.Date;
 import java.util.List;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.ss.model.TransactionDO;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
+
 
 public class TransactionBOImpl implements TransactionBO {
 private static final String USER_ROLE_TIER1 = "ROLE_TIER1";
@@ -50,11 +58,27 @@ private static final String USER_ROLE_TIER2 = "ROLE_TIER2";
     
     @Override
     public void insertTransaction(double amount, String detail, String status, String username, Date date, String to, boolean critical, String fromAccountType, String toAccountType) {
-    	// TODO Auto-generated method stub
-    	String sql="Insert into transaction(amount,detail,status,transacterusername,transactiondate, transferto,critical, fromAccountType, toAccountType) values "
-    			+ "(" +amount+",'"+detail+"','"+status+"','"+username+"','"+date+"','"+to+"',"+critical +","+"'"+ fromAccountType + "','" + toAccountType+"'" +");";
-    	
-    	jdbcTemplate.execute(sql);
+    	String sql1 = "insert into transaction(amount,detail,status,transacterusername,transactiondate,transferto,critical, fromAccountType, toAccountType) values "
+    			+ "(?,?,?,?,?,?,?,?,?)";
+    	jdbcTemplate.execute(sql1, new PreparedStatementCallback<Boolean>() {
+
+			@Override
+			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+				ps.setDouble(1, amount);
+				ps.setString(2, detail);
+				ps.setString(3, status);
+				ps.setString(4, username);
+				ZoneId zoneId = ZoneId.of("America/Phoenix");
+				ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(), zoneId);
+				LocalDate localDate = zdt.toLocalDate();
+				ps.setDate(5, java.sql.Date.valueOf( localDate ));
+				ps.setString(6, to);
+				ps.setBoolean(7, critical);
+				ps.setString(8, fromAccountType);
+				ps.setString(9, toAccountType);
+				return ps.execute();
+			}
+    	});
     	
     }
     
