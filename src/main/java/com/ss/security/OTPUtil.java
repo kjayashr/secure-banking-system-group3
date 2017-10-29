@@ -23,7 +23,7 @@ public class OTPUtil {
 	
 	private User user = null;
 	
-	private void generateOTP(String username, boolean isResend) {
+	private void createOTP(String username, boolean isResend) {
 		
 		if(user == null) {
 			user = userDao.getUserbyUsername(username);
@@ -59,12 +59,12 @@ public class OTPUtil {
 
 	}
 
-	public void createOTP(String username) {
-		generateOTP(username, false);
+	public void generateOTP(String username) {
+		createOTP(username, false);
 	}
 
 	public void resendOTP(String username) {
-		generateOTP(username, true);
+		createOTP(username, true);
 	}
 
 	public boolean validateOTP(String username, int userOTP) {
