@@ -79,6 +79,11 @@ public class Registration {
 			int i=registrationImpl.addNewUser(username,password,firstname,lastname, dateofbirth, email, address,
 				contactno, ssn, city, state, country, postcode);
 			int accountCrRet=accountDao.createAccount(balance,username,type,interest);
+			System.out.println(":::type::"+type);
+			if(type.equalsIgnoreCase("Credit Card"))
+			{
+				String createCreditCardRet=accountDao.createCreditCard(username,email);
+			}
 			int numOfAttempt=0;
 			int userAttempt=userAttemptDao.insertUser(username,password,1,numOfAttempt,new Date(),true,true,true);
 		}catch(Exception e) {

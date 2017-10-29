@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -15,6 +16,9 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.ss.dao.AccountDao;
 import com.ss.model.Account;
+import com.ss.service.CreditCardNumberGenerator;
+import com.ss.service.MailService;
+import com.sun.istack.internal.logging.Logger;;
 
 public class AccountDaoImpl implements AccountDao {
 
@@ -44,8 +48,35 @@ public class AccountDaoImpl implements AccountDao {
 				retMap.put("Credit", a);
 			}
 		}
+		System.out.println("::::::::----------------"+retMap);
+		for (Map.Entry entry : retMap.entrySet()) {
+		    System.out.println(entry.getKey() + ", " + entry.getValue());
+		}
 		return retMap;
 
+	}
+	
+	@Override
+	public String createCreditCard(String username,String email)
+	{
+		CreditCardNumberGenerator cGen = new CreditCardNumberGenerator();
+		String bin = "5422";
+		int length = 16;
+		String cardNumber = cGen.generate(bin, length);
+		System.out.println(cardNumber);
+		String cvv = cGen.generate("9",3);
+		double creditlimit = 10000;
+		double currentBalance = 10000;
+		double currentdue = 0;
+		
+		String sql="Insert into creditcard values("+cardNumber+","+cvv+",'"+username+"',"+currentBalance+","+currentdue+","+creditlimit+");";
+		//String sql="Insert into account values("+balance+",'"+type+"','"+username+"',"+interest+");";
+		int ret=jdbcTemplate.update(sql);
+		System.out.println("After creating card"+ret);
+		String carddetails = cardNumber+" and your CVV is : "+cvv;
+		MailService.carddetails(email, username, carddetails);
+		
+		return carddetails;
 	}
 
 	public void doCreditDebit(String accountType, double amount, String type, String username) {

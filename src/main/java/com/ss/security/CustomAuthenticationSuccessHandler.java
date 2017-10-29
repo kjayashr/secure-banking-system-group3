@@ -2,6 +2,7 @@ package com.ss.security;
 
 import java.io.IOException;
 import java.util.Set;
+import java.io.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 			response.sendRedirect(tier1TargetURL);
 
 	      }else if (roles.contains("ROLE_MERCHANT")) {
+	    	   System.out.println("This is crazy..");
 				response.sendRedirect(merchantTargetURL);
 
 	      }
