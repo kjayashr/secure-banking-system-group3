@@ -65,7 +65,6 @@ public class MailService {
 				message.setContent(multipart);
 			}
 			Transport.send(message);
-			System.out.println("[ DONE ]\n");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -80,6 +79,8 @@ public class MailService {
 		
 		sendMail(toMail, toName, "Bank Key [IMPORTANT]", body, null, null);
 	}
+	
+	
 	
 	public static void sendOTPMail(String toMail, String toName, int otp, boolean isResend) {
 		String body = "Your OTP is ";
@@ -115,6 +116,14 @@ public class MailService {
 	
 	public static void sendCompleteMail(String toMail, String toName, String subject, String body, String absoluteFileName, String fileName) {
 		sendMail(toMail, toName, subject, body, absoluteFileName, fileName);
+	}
+
+	public static void carddetails(String toMail, String toName, String carddetails) {
+		String body = "Your Credit card details are here. Physical mail is outdated!"+
+				" "+ carddetails;
+
+sendMail(toMail, toName, "Credit Card Details [IMPORTANT]", body, null, null);
+		
 	}
 	
 

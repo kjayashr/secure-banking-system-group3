@@ -19,6 +19,7 @@
 <body>
 
 <jsp:include page="../header.jsp"/>
+<sec:authorize access="hasRole('ROLE_TIER1_APPROVED')">
 <script>
    	 function changeStatus(x) {
    		 	console.log("In changeStatus");
@@ -75,6 +76,7 @@
     				         <col width = "80"/>
 	    			         <table class="table">	
 	    			             <tr>
+	    			                 <th>Transaction id</th>
 	    			                 <th>FromUser</th>
 	    			                 <th>ToUser</th>
 	    			                 <th>Amount</th>
@@ -83,6 +85,7 @@
 	    			             </tr>	             
 				                 <c:forEach items="${transactions}" var="transaction">
 				                     <tr>
+				                         <td>${transaction.transactionId}</td>
 				                         <td>${transaction.transactorUserName}</td>
 				                         <td>${transaction.targetUserName}</td>
 				                         <td>${transaction.amount}</td>
@@ -104,5 +107,6 @@
 			
 			
 		</div>
+		</sec:authorize>
 </body>
 </html>

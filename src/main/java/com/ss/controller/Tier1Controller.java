@@ -60,6 +60,14 @@ public class Tier1Controller {
 		return model;
 
 	}    
+	
+	@RequestMapping(value = "/tier1/createExternalUser", method = RequestMethod.GET)
+	public ModelAndView createExternalUser() {
+		ModelAndView model = new ModelAndView();
+		model.setViewName("registration");
+		return model;
+	}  
+	
     
 	@RequestMapping(value= "/tier1/transaction/approve", method = RequestMethod.POST)
 	public @ResponseBody String approveTransaction(@RequestParam("transactionId") int transactionId) {
@@ -70,10 +78,82 @@ public class Tier1Controller {
 		    UserDetails userDetail = (UserDetails) auth.getPrincipal();
 		    userInSession = userDetail.getUsername();
 		}
-		boolean transactionSuccess = transactionBO
-				.approveTransaction(transactionId, userInSession);
+		
+		TransactionDO transaction = transactionBO.getTransactionFromId(transactionId);
+		System.out.println("checking values :" + transaction.getTargetUserName() + " " + transaction.getFromAccountType() + transaction.getToAccountType());
+		// handles either internal transfer or debit and credit
+		if (transaction.getTargetUserName() == null) {
+			if (transaction.getFromAccountType().equals(transaction.getToAccountType())) {
+				//credit
+				if( transaction.getAmount()>0) {
+					boolean transactionSuccess = transactionBO.approveTransaction(transactionId, userInSession);
+					if (transactionSuccess) {
+						accountDaoImpl.doCreditDebit(transaction.getFromAccountType(), transaction.getAmount(), "credit", transaction.getTransactorUserName());
+					    return "Transaction approval processed successfully!";
+					} else {
+						return "Transaction failed";
+					}
+					
+				} else {
+					//debit
+					boolean amountCheck = accountDaoImpl.checkAmount(transaction.getFromAccountType(), transaction.getAmount(), transaction.getTransactorUserName());
+					boolean transactionSuccess = false;
+					String transactionMessage = "";
+					if (amountCheck) {
+						transactionSuccess = transactionBO
+								.approveTransaction(transactionId, userInSession);
+					} else {
+						transactionMessage = "Not enough balance to perform debit";
+					}
+					
+					if (transactionSuccess) {
+						accountDaoImpl.doCreditDebit(transaction.getFromAccountType(), -transaction.getAmount(), "debit", transaction.getTransactorUserName());
+						transactionMessage = "Transaction approval processed successfully!";
+					} else {
+						transactionMessage = "Transaction approval failed!";
+					}
+					System.out.println(transactionMessage);
+					return transactionMessage;
+				}
+				
+			} else {
+				//internal transfer
+				boolean amountCheck = accountDaoImpl.checkAmount(transaction.getFromAccountType(), transaction.getAmount(), transaction.getTransactorUserName());
+				boolean transactionSuccess = false;
+				String transactionMessage = "";
+				if (amountCheck) {
+					transactionSuccess = transactionBO
+							.approveTransaction(transactionId, userInSession);
+				} else {
+					transactionMessage = "Not enough balance in transfer initiator account";
+				}
+				
+				if (transactionSuccess) {
+					accountDaoImpl.doTransfer(transaction.getTransactorUserName(), transaction.getFromAccountType(), transaction.getTransactorUserName(), transaction.getToAccountType(), transaction.getAmount());
+					transactionMessage = "Transaction approval processed successfully!";
+				} else {
+					transactionMessage = "Transaction approval failed!";
+				}
+				System.out.println(transactionMessage);
+				return transactionMessage;
+				
+			}
+		}
+		boolean amountCheck = accountDaoImpl.checkAmount(transaction.getFromAccountType(), transaction.getAmount(), transaction.getTransactorUserName());
+		boolean transactionSuccess = false; 
 		String transactionMessage = "";
+		
+		//Checking if balance is available
+		if (amountCheck) {
+		    transactionSuccess = transactionBO
+				.approveTransaction(transactionId, userInSession);
+		} else {
+			transactionMessage = "Not enough balance in transfer initiator";
+		}
+		
+		//setting message depending on transaction.
 		if (transactionSuccess) {
+			accountDaoImpl.doTransfer(transaction.getTransactorUserName(), transaction.getFromAccountType(), transaction.getTargetUserName(), transaction.getToAccountType(), transaction.getAmount());
 			transactionMessage = "Transaction approval processed successfully!";
 		} else {
 			transactionMessage = "Transaction approval failed!";

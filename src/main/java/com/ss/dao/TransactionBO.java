@@ -1,6 +1,8 @@
 package com.ss.dao;
 
 import com.ss.model.TransactionDO;
+
+import java.util.Date;
 import java.util.List;
 
 public interface TransactionBO {
@@ -12,5 +14,7 @@ public interface TransactionBO {
     List<TransactionDO> getUnapprovedCriticalTransactions(String userRole);
 	boolean approveTransaction(int transactionId, String approverUserId);
 	boolean declineTransaction(int transactionId, String approverUserId);
-	    
+	void insertTransaction(double amount, String detail, String status, String username, Date date, String to,
+			boolean critical, String fromAccountType, String toAccountType);
+	TransactionDO getTransactionFromId(int transactionId);
 }

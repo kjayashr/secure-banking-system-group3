@@ -11,7 +11,7 @@
 </head>
 <body>
 <h2>Welcome ${pageContext.request.userPrincipal.name}</h2>
-    <sec:authorize access="hasRole('ROLE_USER')">
+    <sec:authorize access="hasRole('ROLE_TIER2')">
 		<!-- For login user -->
 		<c:url value="/j_spring_security_logout" var="logoutUrl" />
 		<form action="${logoutUrl}" method="post" id="logoutForm">
@@ -34,7 +34,7 @@
 	<a href="${pageContext.request.contextPath}/tier2/t1users">Authorize tier 1 employees</a>
 </div>
 <div class="row" align="center">
-			<a href="${pageContext.request.contextPath}/tier2">Modify Personal Account</a>
+			<a href="${pageContext.request.contextPath}/tier2/searchExternalUser">Delete/Modify External User</a>
 </div>
 <div class="row" align="center">
 			<a href="${pageContext.request.contextPath}/tier2/transactions">View Critical Transactions</a>
@@ -46,7 +46,7 @@
 			<a href="${pageContext.request.contextPath}/tier2/createExternalUser">Create External User Account</a>
 </div>
 <div class="row" align="center">
-			<a href="${pageContext.request.contextPath}/tier2">View User Account Requests</a>
+			<a href="${pageContext.request.contextPath}/tier2/modifyPersonalAccount">Modify Personal Account</a>
 </div>
 </body>
 
