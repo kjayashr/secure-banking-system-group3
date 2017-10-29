@@ -31,9 +31,10 @@ public class MerchantController {
 	@Autowired
 	AccountDaoImpl accountDoaImpl;
 	
-	@RequestMapping(value = "/Merchanthello" , method = RequestMethod.GET)
+	@RequestMapping(value = "/Merchant/Welcome" , method = RequestMethod.GET)
 	public ModelAndView welcomePage(HttpServletRequest req, HttpServletResponse resp) {
-
+		
+		System.out.println("merchant");
 		ModelAndView model = new ModelAndView();
 		req.getUserPrincipal();
 		if(req.getUserPrincipal() == null) {

@@ -89,6 +89,19 @@ public void doPayment(String accountTypeFrom, double amount) {
 		jdbcTemplate.execute(sql1);
 }
 
+
+public void MPayment(String cardno,String cvv,double amount,String usernameofuser, String username,String accountTypeTo) {
+	
+	String sqlmc="Update creditcard set current_balance = current_balance- "+amount+"where cardnumber='"+cardno+"'AND cvv='"+cvv+"';";
+	String sqlcurrdue="Update creditcard set current_due=creditlimit-current_balance where cardnumber='"+cardno+"';";
+	String sqlacc="Update account set balance=balance-"+amount+"where username='"+usernameofuser+"'AND accountType='Credit Card';";
+	String sqlMacc="Update account set balance=balance-"+amount+"where username='"+username+"'AND accountType='"+accountTypeTo+"';";
+	jdbcTemplate.execute(sqlmc);
+	jdbcTemplate.execute(sqlacc);
+	jdbcTemplate.execute(sqlcurrdue);
+	jdbcTemplate.execute(sqlMacc);
+}
+
 public boolean checkAmount(String accountType,double amount, String username){
 	String sql="Select balance from account where accountType='"+ accountType+"' AND username='"+ username+"';";
 	System.out.println(sql);
@@ -96,6 +109,35 @@ public boolean checkAmount(String accountType,double amount, String username){
 	System.out.println(ret);
 	return ret - amount > 0;
 }
+
+
+public boolean checkCAmount(String cardno,String cvv,double amount){
+	String sql="Select current_balance from creditcard where cardnumber='"+ cardno+"' AND cvv='"+ cvv+"';";
+	Integer ret= jdbcTemplate.queryForObject(sql, Integer.class);
+	String limit="Select creditlimit from creditcard where cardnumber='"+cardno+"';";
+	
+	Double credit = jdbcTemplate.queryForObject(limit, Double.class);
+	System.out.println(ret);
+	System.out.println(credit);
+	if (((ret-amount)>0)&&((credit-amount)>0))
+		return true;
+	else
+		return false;
+}
+
+public boolean checkDet(String accountFrom,String cardno) {
+	String a="Select count(*) from creditcard where username='"+accountFrom+"' AND cardnumber='" + cardno +"';";
+	Integer count=jdbcTemplate.queryForObject(a, Integer.class);
+	if(count > 0)
+		return true;
+	else
+		return false;
+}
+	
+	
+	
+	
+
 
 public String getusername(String email){
 	
@@ -123,6 +165,14 @@ public List<String> getValidAccounts(String name) {
 		ret.add(a.getAccountType());
 	}
 	return ret;
+}
+
+public String getusernameMerchant(String cardno) {
+	
+	String sql1="select username from creditcard where cardnumber='"+cardno+"';";
+	String ret= jdbcTemplate.queryForObject(sql1,String.class);
+	
+	return null;
 }
 
 

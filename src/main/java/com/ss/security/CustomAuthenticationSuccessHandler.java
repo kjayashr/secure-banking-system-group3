@@ -31,6 +31,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 		}else if(roles.contains("ROLE_TIER1")){
 			response.sendRedirect(tier1TargetURL);
 
+	      }else if (roles.contains("ROLE_MERCHANT")) {
+				response.sendRedirect(merchantTargetURL);
+
 	      }
 		else if(roles.contains("ROLE_MERCHANT")){
 			response.sendRedirect(merchantTargetURL);
