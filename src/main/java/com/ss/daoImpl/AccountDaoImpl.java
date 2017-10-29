@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -43,6 +44,10 @@ public class AccountDaoImpl implements AccountDao {
 			}else{
 				retMap.put("Credit", a);
 			}
+		}
+		System.out.println("::::::::----------------"+retMap);
+		for (Map.Entry entry : retMap.entrySet()) {
+		    System.out.println(entry.getKey() + ", " + entry.getValue());
 		}
 		return retMap;
 

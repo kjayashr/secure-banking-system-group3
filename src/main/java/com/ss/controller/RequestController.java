@@ -71,6 +71,38 @@ public class RequestController {
 		return notifyPage;
 	}
 	
+	@RequestMapping(value="/Merchantrequest", method=RequestMethod.POST)
+	public ModelAndView merchantcreditDebitRequest(HttpServletRequest req,Authentication auth){
+		String username=auth.getName();
+		boolean critical=false;
+		//ModelAndView notifyPage=new ModelAndView("notify");
+		ModelAndView notifyPageM=new ModelAndView("notifyMer");
+		String accountType=req.getParameter("accountType");
+		String type=req.getParameter("type");
+		double amount=Double.parseDouble(req.getParameter("amount"));
+		System.out.println(accountType + " " + type + " " +amount);
+		// add validation over credit and debit
+		if(type.equalsIgnoreCase("Debit")){
+			if(accountDaoImpl.checkAmount(accountType, amount,username)){
+				String detail="Debit to "+accountType;
+				//System.out.println("           &&&\n\n***This is the detail:::                :::"+detail);
+				String status="pending";
+				DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+				Date date = new Date();
+				if(amount>=threshold)
+					critical=true;
+				accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical);
+				accountDaoImpl.doCreditDebit(accountType, amount, type, username);
+				notifyPageM.addObject("notification","Payment Processed sucessfully");
+			}else{
+				notifyPageM.addObject("notification","Insufficient Funds");
+			}	
+		}else{
+			accountDaoImpl.doCreditDebit(accountType, amount, type, username);
+			notifyPageM.addObject("notification","Payment Processed sucessfully");
+		}
+		return notifyPageM;
+	}
 
 	@RequestMapping(value="/tier1/requestForUser", method=RequestMethod.POST)
 	public ModelAndView creditDebitRequestForUser(HttpServletRequest req,Authentication auth){

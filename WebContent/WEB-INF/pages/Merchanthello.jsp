@@ -93,7 +93,7 @@ $('.dropdown-menu li a').click(function(){
 
 					<div class="container">
 						<form:form class="form-horizontal" method="post" 
-							action="${pageContext.request.contextPath}/request"
+							action="${pageContext.request.contextPath}/Merchantrequest"
 							onsubmit="validateAmountCD()">
 							<div class="form-group" style="padding-top: 40px">
 								<label class="control-label col-sm-2" for="amount">Amount($):</label>

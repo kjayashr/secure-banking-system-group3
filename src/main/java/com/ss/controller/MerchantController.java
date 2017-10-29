@@ -32,11 +32,11 @@ public class MerchantController {
 	AccountDaoImpl accountDoaImpl;
 	
 	@RequestMapping(value = "/Merchant/Welcome" , method = RequestMethod.GET)
-	public ModelAndView welcomePage(HttpServletRequest req, HttpServletResponse resp) {
+	public ModelAndView welcomePage(HttpServletRequest req, HttpServletResponse resp,HttpSession se) {
 		
-		System.out.println("merchant");
+		
 		ModelAndView model = new ModelAndView();
-		req.getUserPrincipal();
+		//req.getUserPrincipal();
 		if(req.getUserPrincipal() == null) {
 			try {
 				req.getRequestDispatcher("/login?expired").forward(req, resp);
@@ -54,6 +54,9 @@ public class MerchantController {
 		model.addObject("savings", "Spring Security Hello World");
 		model.addObject("message", "This is welcome page!");
 		model.addObject("accountData", accountinfo);
+		List<String> validAccounts = accountDoaImpl.getValidAccounts(name);
+		se.setAttribute("validAccounts",validAccounts);
+		
 		model.setViewName("Merchanthello");
 		return model;
 
