@@ -27,12 +27,13 @@ import com.ss.model.Account;
 
 import com.ss.model.T1userDO;
 import com.ss.model.TransactionDO;
+import com.ss.model.User;
 
 import jdk.nashorn.internal.ir.RuntimeNode.Request;
 
 import com.ss.dao.RegistrationDao;
 import java.util.List;
-
+import com.ss.daoImpl.UserDaoImpl;
 import javax.servlet.http.HttpServletRequest;
 
 
@@ -52,6 +53,9 @@ public class Tier2Controller {
 	
 	@Autowired
 	T1userBO t1userBO;
+	
+    @Autowired
+	UserDaoImpl userDaoImpl;
 	
     @RequestMapping(value="/tier2", method=RequestMethod.GET)
 	public ModelAndView hellotier2Page() {
@@ -115,7 +119,65 @@ public class Tier2Controller {
     	model.setViewName("tier2TransactionUser");
     	return model;
     }
+    @RequestMapping(value="/tier2/searchExternalUser",method=RequestMethod.GET)
+    public ModelAndView searchExternaluser() {
+    	ModelAndView model = new ModelAndView();
+    	model.addObject("pagename","Search External Users Profile");
+    	model.setViewName("t2searchExternalUser");
+    	return model;
+    }
+    @RequestMapping(value="/tier2/modifyExternalUser",method=RequestMethod.POST)
+    public ModelAndView ModifyInternalUserAccount(HttpServletRequest req,Authentication auth) {
+    	ModelAndView model = new ModelAndView();
+		String username=req.getParameter("username");
+		/// named internal user below but works for external users as well
+    	List<User> InternaluserInfo = userDaoImpl.getExternalUserInfo(username);
+    	System.out.println(username);
+		System.out.println("user-size" + InternaluserInfo.size());
+		if(InternaluserInfo.size() > 0 ) {
+			System.out.println("userrr" + InternaluserInfo.get(0).getFirstname());
+			model.addObject("userInfo",InternaluserInfo.get(0));
+			model.addObject("message", "This is welcome page!");
+			model.setViewName("t2modifyExternalUser");			
+		} else {
+			model.setViewName("t2searchExternalUser");			
+		}
+		return model;  
+	}
     
+	@RequestMapping(value="/tier2/checkinternalusername*",method=RequestMethod.POST)
+	public @ResponseBody String CheckInternalUsername(@RequestParam("username") String username){
+		System.out.print("Username to check " +username);
+    	List<User> InternaluserInfo = userDaoImpl.getExternalUserInfo(username);
+		System.out.println("user-size" + InternaluserInfo.size());
+		if(InternaluserInfo.size() > 0 ) {
+			return "true";
+		} else {
+			return "false";
+		}
+		
+	}	
+
+    @RequestMapping(value=	"/tier2/updateOrDeleteExternalUser", method=RequestMethod.POST)
+    public ModelAndView UpdateOrDeleteInternalUserAccount(HttpServletRequest req,Authentication auth) {
+    	ModelAndView model = new ModelAndView();
+    	String operation=req.getParameter("operation");
+		String username=req.getParameter("username");
+    	if(operation.equals("update")) {
+    		System.out.println("Updating");
+    		int s = userDaoImpl.ProcessInternalUserProfileUpdate(req,username);
+    	}
+
+    	if(operation.equals("delete")) {
+    		System.out.println("Deleting");
+    		int s = userDaoImpl.ProcessInternalUserProfileDelete(username);
+    	}
+
+    	model.setViewName("searchprofile");
+    	return model;   
+	    
+	}
+
 	@RequestMapping(value="/tier2/t1users", method = RequestMethod.GET)
 	public ModelAndView viewT1Users() {
 		List<T1userDO> t1users = t1userBO.gett1users(USER_ROLE_TIER2);
