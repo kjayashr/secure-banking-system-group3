@@ -54,11 +54,11 @@ public class AccountDaoImpl implements AccountDao {
 		
 		if(type.equalsIgnoreCase("credit")){
 			
-			String sql="Update account set balance= balance + "+ amount + " where accountType= '"+ accountType + "';";
+			String sql="Update account set balance= balance + "+ amount + " where accountType= '"+ accountType + "' and username='"+username+"';";
 			jdbcTemplate.execute(sql);
 		}
 		else{
-			String sql="Update account set balance= balance - "+ amount + " where accountType= '"+ accountType+ "';";
+			String sql="Update account set balance= balance - "+ amount + " where accountType= '"+ accountType+ "' and username='"+username+"';";
 			jdbcTemplate.execute(sql);
 
 		}
@@ -99,10 +99,10 @@ public String getusername(String email){
 	return ret;
 }
 
-public void addToTransaction(double amount, String detail, String status, String username, Date date, String to, boolean critical) {
+public void addToTransaction(double amount, String detail, String status, String username, Date date, String to, boolean critical,String approvalUsername) {
 	// TODO Auto-generated method stub
-	String sql="Insert into transaction(amount,detail,status,transacterusername,transactiondate, transferto,critical) values "
-			+ "(" +amount+",'"+detail+"','"+status+"','"+username+"','"+date+"','"+to+"',"+critical+");";
+	String sql="Insert into transaction(amount,detail,status,transacterusername,transactiondate, transferto,critical,approverUserName) values "
+			+ "(" +amount+",'"+detail+"','"+status+"','"+username+"','"+date+"','"+to+"',"+critical+",'"+approvalUsername+"');";
 	
 	jdbcTemplate.execute(sql);
 	

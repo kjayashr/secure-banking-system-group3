@@ -36,7 +36,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 			response.sendRedirect(merchantTargetURL);
 
 	      }
-		else if {
+		else{
 			response.sendRedirect(tier2TargetURL);
 
 		}

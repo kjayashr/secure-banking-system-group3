@@ -39,6 +39,7 @@ public class RequestController {
 		ModelAndView notifyPage=new ModelAndView("notify");
 		String accountType=req.getParameter("accountType");
 		String type=req.getParameter("type");
+		String approverusername="";
 		double amount=Double.parseDouble(req.getParameter("amount"));
 		System.out.println(accountType + " " + type + " " +amount);
 		// add validation over credit and debit
@@ -50,7 +51,7 @@ public class RequestController {
 				Date date = new Date();
 				if(amount>=threshold)
 					critical=true;
-				accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical);
+				accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,approverusername);
 				accountDaoImpl.doCreditDebit(accountType, amount, type, username);
 				notifyPage.addObject("notification","Payment Processed sucessfully");
 			}else{
@@ -94,7 +95,7 @@ public class RequestController {
 				 detail="Transfer to "+ recipient + " from "+ accountTypeFrom;
 			}
 			
-			accountDaoImpl.addToTransaction(amount, detail, status, username, date, tousername, critical); 
+			accountDaoImpl.addToTransaction(amount, detail, status, username, date, tousername, critical,""); 
 			accountDaoImpl.doTransfer(accountTypeFrom,tousername,amount);
 			notifyPage.addObject("notification","Payment Processed sucessfully");
 		}else{
@@ -123,7 +124,7 @@ public class RequestController {
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			Date date = new Date();
 			if(amount>threshold) critical=true;
-			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical); 
+			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,""); 
 			accountDaoImpl.doPayment(accountTypeFrom,amount);
 			notifyPage.addObject("notification","Payment Processed sucessfully");
 		}else{
