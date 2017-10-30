@@ -18,6 +18,7 @@ public interface UserDao {
 	public int ProcessInternalUserProfileUpdate(HttpServletRequest req, String username);
 	public int ProcessInternalUserProfileDelete(String username);
 	List<UserRequest> getUserRequestsInfo();
+	List<UserRequest> getExternalUserRequestsInfo();
 	List<UserRequestDetails> getUserRequestsDetailsInfo(int requestid);
 	int ProcessRejectUserRequest(int requestid, String approverusername);
 }

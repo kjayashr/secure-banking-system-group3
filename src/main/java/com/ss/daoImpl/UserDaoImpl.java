@@ -210,6 +210,14 @@ public class UserDaoImpl implements UserDao {
 		return data;
 	}
 	
+	@Override
+	public List<UserRequest> getExternalUserRequestsInfo() {
+		String sql="select requests.id as id,requesterusername,approverusername,status from requests inner join user_roles on "
+				+ "requests.requesterusername = user_roles.username where user_roles.role like ('ROLE_USER%' or 'ROLE_MERCHANT%') and requests.status = 'pending' ";
+		List<UserRequest> data =jdbcTemplate.query(sql, new userRequestsInfoMapper()) ;
+		return data;
+	}
+	
 	class userRequestsInfoMapper implements RowMapper<UserRequest> {
 		  public UserRequest mapRow(ResultSet rs, int arg1) throws SQLException {
 			UserRequest userrequestdata = new UserRequest();

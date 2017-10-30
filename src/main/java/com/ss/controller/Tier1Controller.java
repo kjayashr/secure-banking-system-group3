@@ -1,5 +1,6 @@
 package com.ss.controller;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,18 +14,23 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
+import com.ss.dao.RegistrationDao;
 import com.ss.dao.TransactionBO;
 import com.ss.daoImpl.AccountDaoImpl;
 import com.ss.daoImpl.UserDaoImpl;
 import com.ss.model.Account;
 import com.ss.model.TransactionDO;
 import com.ss.model.User;
+import com.ss.model.UserRequest;
+import com.ss.model.UserRequestDetails;
 
 import java.util.List;
 
@@ -43,6 +49,9 @@ public class Tier1Controller {
 	
 	@Autowired
 	UserDaoImpl userDaoImpl;
+	
+	@Autowired
+	RegistrationDao registrationImpl;
 	
     @RequestMapping(value="/tier1", method=RequestMethod.GET)
 	public ModelAndView hellotier1Page() {
@@ -246,8 +255,8 @@ public class Tier1Controller {
 	}
 	
     @RequestMapping(value=	"/tier1/updateOrDeleteExternalUser", method=RequestMethod.POST)
-    public ModelAndView UpdateOrDeleteInternalUserAccount(HttpServletRequest req,Authentication auth) {
-    	ModelAndView model = new ModelAndView();
+    public RedirectView UpdateOrDeleteInternalUserAccount(HttpServletRequest req,Authentication auth) {
+    	RedirectView view = new RedirectView();
     	String operation=req.getParameter("operation");
 		String username=req.getParameter("username");
     	if(operation.equals("update")) {
@@ -260,8 +269,94 @@ public class Tier1Controller {
     		int s = userDaoImpl.ProcessInternalUserProfileDelete(username);
     	}
 
-    	model.setViewName("tier1/hellotier1");
-    	return model;   
-	    
+    	view.setUrl("/SS/tier1");
+    	return view;   
+	}
+    
+	@RequestMapping(value="/tier1/modifyPersonalAccount", method = RequestMethod.GET)
+	public ModelAndView modifyPersonalAccount(HttpServletRequest req,Authentication auth) {
+		ModelAndView model = new ModelAndView();
+		String uName="";
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+			UserDetails userDetail = (UserDetails) auth.getPrincipal();
+			model.addObject("username", userDetail.getUsername());
+			uName = userDetail.getUsername();
+		}
+		
+		List<User> InternaluserInfo = userDaoImpl.getInternalUserInfo(uName);
+		System.out.println("user-size" + InternaluserInfo.size());
+		
+		model.addObject("userInfo",InternaluserInfo.get(0));
+		model.addObject("message", "This is welcome page!");
+		model.setViewName("tier1/t1modifyPersonalAccount");			
+		
+		return model;
+	
+	}
+	
+    @RequestMapping(value="/tier1/changedDetails", method=RequestMethod.POST)
+    public RedirectView changedDetails(HttpServletRequest req,Authentication auth) {
+    	RedirectView model = new RedirectView();
+		String uName = "";
+		UserDetails userDetail = (UserDetails) auth.getPrincipal();
+		uName = userDetail.getUsername();
+		String firstname=req.getParameter("firstname");
+		String lastname=req.getParameter("lastname");
+		String contactno=req.getParameter("contactno");
+		String address=req.getParameter("address");
+		String city	=req.getParameter("city");
+		String state=req.getParameter("state");
+		String country=req.getParameter("country");
+		String postcode=req.getParameter("postcode");
+		// validation left
+		registrationImpl.myNewMethod(uName,firstname,lastname,address,
+			 city, state, country, postcode,contactno);
+		
+		model.setUrl("/SS/tier1");
+		return model;
+	}
+    
+    @RequestMapping(value="/tier1/viewrequests", method=RequestMethod.GET)
+	public ModelAndView ShowUserChangeRequests() {
+		ModelAndView model = new ModelAndView();
+		List<UserRequest> userrequests=userDaoImpl.getExternalUserRequestsInfo();
+		model.addObject("userrequests",userrequests);
+		model.addObject("pagename","Current User Change Requests");
+		model.setViewName("tier1/viewrequests");
+ 		return model;  
+	}
+    
+    @RequestMapping(value="/tier1/showrequestdetails/{id}/{requesterusername}", method=RequestMethod.GET)
+    public ModelAndView ShowRequestDetails(@PathVariable("id")int requestid, @PathVariable("requesterusername")String requesterusername) throws IOException {
+    	ModelAndView model = new ModelAndView();
+		List<UserRequestDetails> userrequestdetails=userDaoImpl.getUserRequestsDetailsInfo(requestid);
+    	List<User> existinguserInfo = userDaoImpl.getInternalUserInfo(requesterusername);
+    	if(existinguserInfo.size() > 0 ) {
+	    	model.addObject("existinguserdetails",existinguserInfo.get(0));
+			model.addObject("requestid", requestid);
+			model.addObject("userrequestdetails",userrequestdetails);
+	    	model.setViewName("tier1/showrequestdetails");
+		} else {
+	    	model.setViewName("tier1/viewrequests");			
+		}
+	    return model;  
+    }
+    
+    @RequestMapping(value=	"/tier1/processapproveorrejectrequest", method=RequestMethod.POST)
+    public RedirectView ApproveOrRejectUserRequest(HttpServletRequest req,Authentication auth) {
+    	RedirectView model = new RedirectView();
+    	String operation=req.getParameter("operation");
+    	String requesterusername=req.getParameter("requesterusername");
+    	int requestid=Integer.parseInt(req.getParameter("requestid"));
+    	if(operation.equals("Approve")) {
+    		System.out.println(auth.getName());
+    		int s = userDaoImpl.ProcessApproveUserRequest(req,requestid,requesterusername,auth.getName());
+    	}
+    	if(operation.equals("Reject")) {
+    		int s = userDaoImpl.ProcessRejectUserRequest(requestid, auth.getName());
+    	}
+
+    	model.setUrl("/SS/tier1");
+    	return model;   	    
 	}
 }
