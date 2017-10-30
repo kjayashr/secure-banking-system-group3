@@ -23,7 +23,8 @@ public class MailService {
 	private static final String username = "ssgrp3f17@gmail.com";
 	private static final String pass = "SS@Group3";
 
-	private static void sendMail(String toMail, String toName, String subject, String body, String absoluteFileName, String fileName) {
+	private static void sendMail(String toMail, String toName, String subject, String body, String absoluteFileName,
+			String fileName) {
 		Properties props = new Properties();
 		props.put("mail.smtp.host", "smtp.gmail.com");
 		props.put("mail.smtp.socketFactory.port", "465");
@@ -69,19 +70,16 @@ public class MailService {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void sendKey(String toMail, String toName, String key) {
-		String body = "Your Key for future use is generated."+
-						"\n\nYour Key is :\n\n" + key + 
-						"\n\nPlease mark this mail as important. and DON'T delete this. " +
-						"This key is needed to complete some Banking activities. " +
-						"For safety, you can keep this key stored in some secure place.";
-		
+		String body = "Your Key for future use is generated." + "\n\nYour Key is :\n\n" + key
+				+ "\n\nPlease mark this mail as important. and DON'T delete this. "
+				+ "This key is needed to complete some Banking activities. "
+				+ "For safety, you can keep this key stored in some secure place.";
+
 		sendMail(toMail, toName, "Bank Key [IMPORTANT]", body, null, null);
 	}
-	
-	
-	
+
 	public static void sendOTPMail(String toMail, String toName, int otp, boolean isResend) {
 		String body = "Your OTP is ";
 		if (isResend) {
@@ -89,42 +87,51 @@ public class MailService {
 		} else {
 			body = body + "Generated. ";
 		}
-		body = body + "The OTP is : [ " + otp + 
-				" ]\n\nPlease use this OTP to validate.";
-		
+		body = body + "The OTP is : [ " + otp + " ]\n\nPlease use this OTP to validate.";
+
 		sendMail(toMail, toName, "OTP [IMPORTANT]", body, null, null);
 	}
-	
+
 	public static void sendStatement(String toMail, String toName, String absoluteFileName) {
 		String body = "Your Statement is generated and attached with this mail.";
-		String fileName = "BankStatement_"+(new SimpleDateFormat("yyyy-MM-dd_HH-mm").format(new Date()))+".pdf"; 
-		
+		String fileName = "BankStatement_" + (new SimpleDateFormat("yyyy-MM-dd_HH-mm").format(new Date())) + ".pdf";
+
 		sendMail(toMail, toName, "Bank Statement", body, absoluteFileName, fileName);
 	}
-	
+
 	public static void sendErrorMail(String toMail, String toName, ArrayList<String> errors) {
-		
+
 		String body = "We couldn't process your request for some reasons.\n\n";
-		for(int i=1; i<=errors.size(); i++) {
-			body = body + "		" + i + ". " + errors.get(i-1) + "\n"; 
+		for (int i = 1; i <= errors.size(); i++) {
+			body = body + "		" + i + ". " + errors.get(i - 1) + "\n";
 		}
-		body = body + "\n\nSome of the issues maybe possible to self-resolve. Please contact the Bank admin to resolve these issues." +
-						"\n\nWe sincerely regret the inconvenience caused";
-		
+		body = body
+				+ "\n\nSome of the issues maybe possible to self-resolve. Please contact the Bank admin to resolve these issues."
+				+ "\n\nWe sincerely regret the inconvenience caused";
+
 		sendMail(toMail, toName, "Service Error [IMPORTANT]", body, null, null);
 	}
-	
-	public static void sendCompleteMail(String toMail, String toName, String subject, String body, String absoluteFileName, String fileName) {
+
+	public static void sendCompleteMail(String toMail, String toName, String subject, String body,
+			String absoluteFileName, String fileName) {
 		sendMail(toMail, toName, subject, body, absoluteFileName, fileName);
 	}
 
 	public static void carddetails(String toMail, String toName, String carddetails) {
-		String body = "Your Credit card details are here. Physical mail is outdated!"+
-				" "+ carddetails;
-
-sendMail(toMail, toName, "Credit Card Details [IMPORTANT]", body, null, null);
-		
+		String body = "Your Credit card details are here. Physical mail is outdated!\n" + " " + carddetails;
+		sendMail(toMail, toName, "Credit Card Details [IMPORTANT]", body, null, null);
 	}
-	
+
+	public static void mailCrticalTransaction(String toMail, String toName, Double amount, boolean isApproved) {
+		String body = "";
+		if (!isApproved) {
+			body = "A Critical Transaction of amount $ " + amount
+					+ " has been scheduled from your Account. Transaction is pending for approval by Bank Employee\n";
+		} else {
+			body = "A Critical Transaction of amount $ " + amount
+					+ " scheduled from your Account has been approved. Transaction completed!\n";
+		}
+		sendMail(toMail, toName, "Transaction Alert", body, null, null);
+	}
 
 }

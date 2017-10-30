@@ -121,6 +121,13 @@ $('.dropdown-menu li a').click(function(){
 									</select>
 								</div>
 							</div>
+							
+							<div class="form-group">
+								<label class="control-label col-sm-2" for="pubkey">Secret Key:</label>
+								<div class="col-sm-2">
+									<textarea name="pubKey" cols="50" rows="5" required></textarea>
+								</div>
+							</div>
 
 							<div class="form-group">
 								<div class="col-sm-offset-2 col-sm-10">
@@ -195,6 +202,13 @@ $('.dropdown-menu li a').click(function(){
 										placeholder="Enter email" name="recipient" required disabled>
 								</div>
 							</div>
+							
+							<div class="form-group">
+								<label class="control-label col-sm-2" for="pubkey">Secret Key:</label>
+								<div class="col-sm-2">
+									<textarea name="pubKey" cols="50" rows="5" required></textarea>
+								</div>
+							</div>
 
 							<span id="error" style="color: red"></span>
 
@@ -254,6 +268,13 @@ $('.dropdown-menu li a').click(function(){
 								<div class="col-sm-2 dropdown">
 									<input type="text" class="form-control" id="comments"
 										placeholder="Enter comment" name="comment">
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="control-label col-sm-2" for="pubkey">Secret Key:</label>
+								<div class="col-sm-2">
+									<textarea name="pubKey" cols="50" rows="5" required></textarea>
 								</div>
 							</div>
 
