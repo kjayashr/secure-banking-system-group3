@@ -164,7 +164,10 @@ public class RequestController {
 		String accountTypeFrom=req.getParameter("from");
 		String typeOfTransfer=req.getParameter("typeoftransfer");
 		String toUserEmail=req.getParameter("recipient");
-		String toUserName = userDao.getUserbyEmail(toUserEmail).getUsername();
+		String toUserName = null;
+		if (!typeOfTransfer.equalsIgnoreCase("internal")) {
+			toUserName = userDao.getUserbyEmail(toUserEmail).getUsername();
+		}
 		double amount=Double.parseDouble(req.getParameter("amount"));
 		
 		ModelAndView notifyPage =
