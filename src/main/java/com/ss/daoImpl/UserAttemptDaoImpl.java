@@ -23,8 +23,8 @@ public class UserAttemptDaoImpl implements UserAttemptDao {
 	public int insertUser(String username, String password, int i, int numOfAttempt, Date date, boolean accountNonLocked, boolean credentialsNonExpired,
 			boolean accountNonExpired) {
 		String sql_attempt_insert = "INSERT INTO attempts (username,password,enabled,attempts,lastlogin,accountNonLocked,credentialsNonExpired,accountNonExpired) "
-									+ "VALUES('"+username+"','"+password+"',"+i+","+numOfAttempt+",now(),"+accountNonLocked+","+credentialsNonExpired+","+accountNonExpired+");";
-		return jdbcTemplate.update(sql_attempt_insert);
+									+ "VALUES(?,?,?,?,now(),?,?,?)";
+		return jdbcTemplate.update(sql_attempt_insert, new Object[] {username,password,i,numOfAttempt,accountNonLocked,credentialsNonExpired,accountNonExpired});
 	}
 
 }

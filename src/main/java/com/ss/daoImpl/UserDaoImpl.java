@@ -2,6 +2,7 @@ package com.ss.daoImpl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -241,71 +242,82 @@ public class UserDaoImpl implements UserDao {
 	
 	public int ProcessApproveUserRequest(HttpServletRequest req,int requestid, String requesterusername, String approverusername ) {
 		int i =0;
+		List<Object> paramList = new ArrayList<Object>();
 		String sql="update users set ";
 		if(req.getParameter("firstname") != null) {
 			i=1;
-			sql = sql + "firstname='" +req.getParameter("firstname") + "'";
-
+			sql = sql + "firstname=? ";
+			paramList.add(req.getParameter("firstname"));
 		}
 		if(req.getParameter("lastname") != null) {
 			if(i==1) {
 				sql = sql + ",";								
 			}
-			sql = sql + "lastname='" +req.getParameter("lastname") + "'";				
+			sql = sql + "lastname=?";
+			paramList.add(req.getParameter("lastname"));
 			i=1;
 		}
 		if(req.getParameter("dob") != null) {
 			if(i==1) {
 				sql = sql + ",";								
 			}
-			sql = sql + "dob='" +req.getParameter("dob") + "'";				
+			sql = sql + "dob='?";
+			paramList.add(req.getParameter("dob"));
 			i=1;
 		}
 		if(req.getParameter("address") != null) {
 			if(i==1) {
 				sql = sql + ",";								
 			}
-			sql = sql + "address='" +req.getParameter("address") + "'";				
+			sql = sql + "address=?";
+			paramList.add(req.getParameter("address"));
 			i=1;
 		}
 		if(req.getParameter("city") != null) {
 			if(i==1) {
 				sql = sql + ",";								
 			}
-			sql = sql + "city='" +req.getParameter("city") + "'";				
+			sql = sql + "city=?";
+			paramList.add(req.getParameter("city"));
 			i=1;
 		}
 		if(req.getParameter("state") != null) {
 			if(i==1) {
 				sql = sql + ",";								
 			}
-			sql = sql + "state='" +req.getParameter("state") + "'";				
+			sql = sql + "state=?";
+			paramList.add(req.getParameter("state"));
 			i=1;
 		}
 		if(req.getParameter("country") != null) {
 			if(i==1) {
 				sql = sql + ",";								
 			}
-			sql = sql + "country='" +req.getParameter("country") + "'";				
+			sql = sql + "country=?";
+			paramList.add(req.getParameter("country"));
 			i=1;
 		}
 		if(req.getParameter("postcode") != null) {
 			if(i==1) {
 				sql = sql + ",";								
 			}
-			sql = sql + "postcode='" +req.getParameter("postcode") + "'";				
+			sql = sql + "postcode=?";
+			paramList.add(Integer.parseInt(req.getParameter("postcode")));
 			i=1;
 		}
 		if(req.getParameter("contactno") != null) {
 			if(i==1) {
 				sql = sql + ",";								
 			}
-			sql = sql + "contactno='" +req.getParameter("contactno") + "'";				
+			sql = sql + "contactno=?";
+			paramList.add(Long.parseLong(req.getParameter("contactno")));
 			i=1;
 		}
 		
-		sql = sql + " where username = '" + requesterusername + "' ;" ;
-		int userQ=jdbcTemplate.update(sql);
+		sql = sql + " where username = ?" ;
+		paramList.add(requesterusername);
+		
+		int userQ=jdbcTemplate.update(sql, paramList.toArray(new Object[0]));
 		if(userQ != 0) {
 			UpdateUserRequestStatus(requestid, approverusername, "approved");
 		}
@@ -319,8 +331,8 @@ public class UserDaoImpl implements UserDao {
 	}
 	
 	public int UpdateUserRequestStatus(int requestid, String approverusername, String status) {
-		String sql="update requests set approverusername ='" + approverusername + "', status='" + status + "' where id =" + requestid +";";
-		int update=jdbcTemplate.update(sql);
+		String sql="update requests set approverusername =?, status=? where id =?";
+		int update=jdbcTemplate.update(sql, new Object[] {approverusername, status, requestid});
 		return update;	
 	}
 
