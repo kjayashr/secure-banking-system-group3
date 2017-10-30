@@ -59,10 +59,11 @@ private static final String USER_ROLE_TIER2 = "ROLE_TIER2";
     @Override
     public void insertTransaction(double amount, String detail, String status, String username, Date date, String to, boolean critical, String fromAccountType, String toAccountType) {
     	String sql1 = "insert into transaction(amount,detail,status,transacterusername,transactiondate,transferto,critical, fromAccountType, toAccountType) values "
-    			+ "(?,?,?,?,?,?,?,?,?)";
+    			+ "(?,?,?,?,?,?,?,?,?)"; 
+    	System.out.println("amount " + amount + " detail " + detail + " status " + status + " username " + username + " date " + date + " critical " + critical + " fromactype " + fromAccountType + " toacc " + toAccountType );
+    			
     	jdbcTemplate.execute(sql1, new PreparedStatementCallback<Boolean>() {
-
-			@Override
+       	@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
 				ps.setDouble(1, amount);
 				ps.setString(2, detail);
@@ -91,7 +92,7 @@ private static final String USER_ROLE_TIER2 = "ROLE_TIER2";
     }
     public List<TransactionDO> getUnapprovedCriticalTransactions(String userRole) {
     	String sql = "";
-    	sql="select * from transaction where ((approverUserName is null or approverUserName='') and critical=true and transacterusername is not null) and (status ='accepted' and transferto is not null)";
+    	sql="select * from transaction where (approverUserName is null and critical=true and transacterusername is not null) and ((status ='accepted' and transferto is not null) or (status = 'pending' and transferto is null))";
     	List<TransactionDO> transactions =jdbcTemplate.query(sql, new TransactionInfoMapper()) ;
 		return transactions;	
     }

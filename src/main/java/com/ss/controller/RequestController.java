@@ -31,6 +31,7 @@ import com.ss.dao.UserDao;
 @Controller
 public class RequestController {
 	private static String SAVINGS_ACCOUNT_TYPE = "Saving";
+	private static String PAYMENT_ACCOUNT_TYPE = "payment";
 
 	@Autowired
 	AccountDaoImpl accountDaoImpl;
@@ -218,20 +219,24 @@ public class RequestController {
 			if(accountDaoImpl.checkAmount(accountType, amount,transacterUserName)){
 				String detail="Debit from "+transacterUserName+ " accountType " + accountType + " by " + byUser + " for amount " + amount;
 				System.out.println(detail);
+				if (!critical) {
+					status = "approved";
+					accountDaoImpl.doCreditDebit(accountType, amount, type, transacterUserName);
+				}
 				transactionBO.insertTransaction(-amount, detail, status, transacterUserName, date, null, critical, accountType, accountType);
-				//accountDaoImpl.doCreditDebit(accountType, amount, type);
 				notifyPage.addObject("notification","Payment Processed sucessfully");
 			}else {
-				
 				notifyPage.addObject("notification","Insufficient Funds");
-			}	
+			}
 		}else if (type.equalsIgnoreCase("Credit")) {
 			String detail="Credit from "+transacterUserName+ " accountType " + accountType + " by " + byUser + " for amount " + amount;
 			System.out.println(detail);
+			if (!critical) {
+				status = "approved";
+				accountDaoImpl.doCreditDebit(accountType, amount, type, transacterUserName);
+			}
 			transactionBO.insertTransaction(amount, detail, status, transacterUserName, date, null, critical, accountType, accountType);
 			
-			//TODO: what if it is a critical credit? also, don't we want to add a transaction in this case?
-			//accountDaoImpl.doCreditDebit(accountType, amount, type);
 			notifyPage.addObject("notification","Payment Processed sucessfully");
 		} else {
 			notifyPage.addObject("notification", "Incorrect Banking Function accessed");
@@ -318,7 +323,12 @@ public class RequestController {
 				 detail="Transfer to "+ accountTypeTo + " from "+ accountTypeFrom + " for user " + fromUserName + " by user" + byUser;
 				 tousername=accountTypeFrom;
 				 System.out.println("transfer1:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-					
+				 
+				 if (!critical) {
+					 accountDaoImpl.doTransferInternal(fromUserName,amount, accountTypeFrom,accountTypeTo);
+				 status="approved";
+					 
+				 }
 				 transactionBO.insertTransaction(amount, detail, status, fromUserName, date, null, critical, accountTypeFrom, accountTypeTo);
 				 System.out.println("transfer2:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 					
@@ -491,13 +501,12 @@ public class RequestController {
 	@RequestMapping(value="/tier1/paymentForUser", method=RequestMethod.POST)
 	public ModelAndView createPaymentRequestForUser(HttpServletRequest req, Authentication auth) {
 		String byusername=auth.getName();
-		String accountTypeTo = SAVINGS_ACCOUNT_TYPE;
+		String accountTypeTo = PAYMENT_ACCOUNT_TYPE;
 		boolean critical=false;
 		ModelAndView notifyPage=new ModelAndView("notify");
 		String fromUser = req.getParameter("forUser");
 		String accountTypeFrom=req.getParameter("from");
-		String recipientEmail=req.getParameter("to");
-		String toUserName = userDao.getUserbyEmail(recipientEmail).getUsername();
+		String toUserName = null;
 		double amount=Double.parseDouble(req.getParameter("amount"));
 		String pubKey = req.getParameter("pubKey");
 		System.out.println(accountTypeFrom + " " + fromUser + " " +amount+ " " +pubKey);
@@ -509,14 +518,19 @@ public class RequestController {
 		
 		// add validation over cedit and debit
 		// check if both to and from are same
-		boolean check=accountDaoImpl.checkAmount(accountTypeFrom, amount, byusername);
+		boolean check=accountDaoImpl.checkAmount(accountTypeFrom, amount, fromUser);
 		if(check){
 			//ADDING TO TRANSACTION TABLE
 			String detail="Paid to "+ accountTypeTo;
 			String status="pending";
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			Date date = new Date();
-			if(amount>threshold) critical=true;
+			if(amount>=threshold) critical=true;
+			
+			if (!critical) {
+				status = "approved";
+				accountDaoImpl.doCreditDebit(accountTypeFrom, amount, "debit", fromUser);
+			}
 			transactionBO.insertTransaction(amount, detail, status, fromUser, date, toUserName, critical, accountTypeFrom, accountTypeTo);
 			notifyPage.addObject("notification","Payment Processed sucessfully");
 		}else{
@@ -527,13 +541,12 @@ public class RequestController {
 	@RequestMapping(value="/tier2/paymentForUser", method=RequestMethod.POST)
 	public ModelAndView t2createPaymentRequestForUser(HttpServletRequest req, Authentication auth) {
 		String byusername=auth.getName();
-		String accountTypeTo = SAVINGS_ACCOUNT_TYPE;
+		String accountTypeTo = PAYMENT_ACCOUNT_TYPE;
 		boolean critical=false;
 		ModelAndView notifyPage=new ModelAndView("notify");
 		String fromUser = req.getParameter("forUser");
 		String accountTypeFrom=req.getParameter("from");
-		String recipientEmail=req.getParameter("to");
-		String toUserName = userDao.getUserbyEmail(recipientEmail).getUsername();
+		String toUserName = null;
 		double amount=Double.parseDouble(req.getParameter("amount"));
 		String pubKey = req.getParameter("pubKey");
 		System.out.println(amount+ " " +pubKey);
@@ -546,16 +559,29 @@ public class RequestController {
 		
 		// add validation over cedit and debit
 		// check if both to and from are same
-		boolean check=accountDaoImpl.checkAmount(accountTypeFrom, amount, byusername);
+		System.out.println("accountTypeFrom " + accountTypeFrom + " amount " + amount + " fromUser " + fromUser);
+		boolean check=accountDaoImpl.checkAmount(accountTypeFrom, amount, fromUser);
+		
 		if(check){
 			//ADDING TO TRANSACTION TABLE
 			String detail="Paid to "+ accountTypeTo;
 			String status="pending";
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			Date date = new Date();
-			if(amount>threshold) critical=true;
-			transactionBO.insertTransaction(amount, detail, status, fromUser, date, toUserName, critical, accountTypeFrom, accountTypeTo);
-			notifyPage.addObject("notification","Payment Processed sucessfully");
+			if(amount>=threshold) critical=true;
+			
+			if (!critical) {
+				status = "approved";
+				accountDaoImpl.doCreditDebit(accountTypeFrom, amount, "debit", fromUser);
+				notifyPage.addObject("notification","Payment Processed sucessfully");
+				System.out.println("inside non critical");
+			} else {
+				notifyPage.addObject("notification","Payment accepted but needs employee approval");
+				System.out.println("Inside critical");
+			}
+			System.out.println("Inserting payment transaction");
+			transactionBO.insertTransaction(-amount, detail, status, fromUser, date, toUserName, critical, accountTypeFrom, accountTypeTo);
+			
 		}else{
 			notifyPage.addObject("notification","Insufficient Funds");
 		}
