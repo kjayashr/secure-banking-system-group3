@@ -57,20 +57,10 @@
    			$("#invalidPhone").html("");
    		 }
    	 }
-   	 
-   	function checkSSN(){
-  		 var ssn=$("#ssn").val();
-  		 if(ssn.length != 9){
-  			$("#invalidSSN").html("Enter 9-digit SSN");
-  		 }else{
-  			$("#invalidSSN").html("");
-  		 }
-  	 }
-   	   	 
+   	   	   	 
    	 function validate(){
-   		 var ssnError=$("#invalidSSN").html()
    		 var phoneError=$("#invalidPhone").html()
-   		 if(ssnError=="" && phoneError==""){
+   		 if(phoneError==""){
    			 $("#error").html("")
    			 return true;
    		 }else{
@@ -105,12 +95,6 @@
    		    <span id="invalidDOB" name="invalidDOB" style="color:red"></span>
 
 			<div class="form-group">
-				<label for="ssn">SSN *: </label><input type="text"
-					class="form-control" value = ${userInfo.ssn} id="ssn" name="ssn" onblur="checkSSN()" required />
-			</div>
-   		    <span id="invalidSSN" name="invalidSSN" style="color:red"></span>
-
-			<div class="form-group">
 				<label for="contactno">Contact Number *: </label><input type="text"
 					class="form-control" value = ${userInfo.contactno} id="contactno" name="contactno" onblur="checkNumber()" required />
 			</div>
@@ -135,7 +119,7 @@
 			</div>
 
 			<div class="form-group">
-				<label for="postcode">PSC *: </label><input type="text"
+				<label for="postcode">Post code *: </label><input type="text"
 					class="form-control" value = ${userInfo.postcode} id="postcode" name="postcode" required />
 			</div>
 				

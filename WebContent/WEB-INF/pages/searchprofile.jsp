@@ -84,6 +84,8 @@
                 <div class="line submit"><input type="submit" value="Search" class="btn btn-primary" /></div>
                 <span id="error" style="color: red"></span>
  				</p>
+                <a class="alert-link" href="${pageContext.request.contextPath}/admin/Welcome"> Click here to go to home page</a>
+
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
             </form>
         </div>
