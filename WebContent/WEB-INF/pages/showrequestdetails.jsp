@@ -107,12 +107,10 @@
 			<div class="row">
 				<input type="submit" name="operation" value="Approve" class="btn btn-success" />
 				<input type="submit" name="operation" value="Reject" class="btn btn-danger" />
-				<a href="${pageContext.request.contextPath}/admin/Welcome"> Go back to home page</a>
+			</div>
+	                  <a class="alert-link" href="${pageContext.request.contextPath}/admin/Welcome"> Click here to go to home page</a>
 			</div>
             
-	<p>Note: Please make sure your details are correct before
-		submitting form and that all fields marked with * are completed!.</p>
-
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />				
   </form>
 	

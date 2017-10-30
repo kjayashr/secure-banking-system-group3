@@ -53,6 +53,7 @@ public class EditProfileViewTransaction {
 	
 	@RequestMapping(value = "/Merchanteditprofile", method = RequestMethod.GET)
 	public String MerchantgetEditProfile() {
+		
 		return "Merchanteditprofile";
 	}
 	
@@ -69,6 +70,7 @@ public class EditProfileViewTransaction {
 	@RequestMapping(value = "/Merchantviewtransaction", method = RequestMethod.GET)
 	public String MerchantviewtransactionOTP(HttpServletRequest req, Authentication auth, ModelMap model) {
 		String username = auth.getName();
+		System.out.println(username+"This is in ");
 		otpUtil.generateOTP(username);
 		model.addAttribute("page", "Merchantviewtransaction");
 		model.addAttribute("otp_attempts", 3);
@@ -113,6 +115,7 @@ public class EditProfileViewTransaction {
 	@RequestMapping(value = "/Merchantviewtransaction", method = RequestMethod.POST)
 	public ModelAndView Merchantgetviewtransaction(HttpServletRequest req, HttpServletResponse resp, Authentication auth, ModelMap model) {
 		String username = auth.getName();
+		
 		int userOTP = Integer.parseInt(req.getParameter("userOTP"));
 		int count = Integer.parseInt(req.getParameter("otp_attempts"));
 		if (!otpUtil.validateOTP(username, userOTP, count)) {

@@ -91,7 +91,7 @@ private static final String USER_ROLE_TIER2 = "ROLE_TIER2";
     }
     public List<TransactionDO> getUnapprovedCriticalTransactions(String userRole) {
     	String sql = "";
-    	sql="select * from transaction where ((approverUserName is null or approverUserName='') and critical=true and transacterusername is not null) and ((status ='accepted' and transferto is not null) or (status='pending' and transferto='') or (status='pending and transferto is null'))";
+    	sql="select * from transaction where ((approverUserName is null or approverUserName='') and critical=true and transacterusername is not null) and (status ='accepted' and transferto is not null)";
     	List<TransactionDO> transactions =jdbcTemplate.query(sql, new TransactionInfoMapper()) ;
 		return transactions;	
     }
@@ -125,6 +125,7 @@ private static final String USER_ROLE_TIER2 = "ROLE_TIER2";
     
     @Override
     public boolean approveTransaction(int transactionId, String approverUserName) {
+    	System.out.println(":::::::::::__________________:::::::::::::");
     	String sql = "update transaction set approverUserName=?, status='approved' where id=?";
     	boolean success = false;
     	try {

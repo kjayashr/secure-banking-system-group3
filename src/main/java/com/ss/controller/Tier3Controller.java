@@ -160,16 +160,10 @@ public class Tier3Controller {
     @RequestMapping(value="/admin/viewrequests", method=RequestMethod.GET)
 	public ModelAndView ShowUserChangeRequests() {
 		ModelAndView model = new ModelAndView();
-		System.out.println("inside fxn");
 		List<UserRequest> userrequests=userDaoImpl.getUserRequestsInfo();
-    	if(userrequests.size() > 0 ) {
-    		System.out.println("dsada");
-    		model.addObject("userrequests",userrequests);
-			model.addObject("pagename","Current User Change Requests");
-			model.setViewName("viewrequests");
-    	} else {
-    	   	model.setViewName("Admin_Homepage");			    	   	
-    	}	
+		model.addObject("userrequests",userrequests);
+		model.addObject("pagename","Current User Change Requests");
+		model.setViewName("viewrequests");
  		return model;  
 	}
 
@@ -177,14 +171,11 @@ public class Tier3Controller {
     public ModelAndView ShowRequestDetails(@PathVariable("id")int requestid, @PathVariable("requesterusername")String requesterusername) throws IOException {
     	ModelAndView model = new ModelAndView();
 		List<UserRequestDetails> userrequestdetails=userDaoImpl.getUserRequestsDetailsInfo(requestid);
-    	List<User> existinguserInfo = userDaoImpl.getExternalUserInfo(requesterusername);
-    	System.out.println(existinguserInfo);
+    	List<User> existinguserInfo = userDaoImpl.getInternalUserInfo(requesterusername);
     	if(existinguserInfo.size() > 0 ) {
 	    	model.addObject("existinguserdetails",existinguserInfo.get(0));
 			model.addObject("requestid", requestid);
 			model.addObject("userrequestdetails",userrequestdetails);
-	    	System.out.println(requestid);
-	    	System.out.println(requesterusername);
 	    	model.setViewName("showrequestdetails");
 		} else {
 	    	model.setViewName("viewrequests");			
@@ -196,13 +187,14 @@ public class Tier3Controller {
     public ModelAndView ApproveOrRejectUserRequest(HttpServletRequest req,Authentication auth) {
     	ModelAndView model = new ModelAndView();
     	String operation=req.getParameter("operation");
-    	String username=req.getParameter("requesterusername");
+    	String requesterusername=req.getParameter("requesterusername");
     	int requestid=Integer.parseInt(req.getParameter("requestid"));
     	if(operation.equals("Approve")) {
-    		int s = userDaoImpl.ProcessApproveUserRequest(req,requestid,username);
+    		System.out.println(auth.getName());
+    		int s = userDaoImpl.ProcessApproveUserRequest(req,requestid,requesterusername,auth.getName());
     	}
     	if(operation.equals("Reject")) {
-    		int s = userDaoImpl.ProcessRejectUserRequest(requestid);
+    		int s = userDaoImpl.ProcessRejectUserRequest(requestid, auth.getName());
     	}
 
     	model.setViewName("Admin_Homepage");

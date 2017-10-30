@@ -39,7 +39,7 @@ class T1userInfoMapper implements RowMapper<T1userDO>{
 	  public T1userDO mapRow(ResultSet rs, int arg1) throws SQLException {
 		T1userDO t1userData = new T1userDO();
 	    t1userData.setUserName(rs.getString("userName"));
-	    t1userData.setUserRoleId(rs.getString("userRoleId"));
+	    t1userData.setUserRoleId(rs.getString("user_role_id"));
 	    return t1userData;
 	  }
 }

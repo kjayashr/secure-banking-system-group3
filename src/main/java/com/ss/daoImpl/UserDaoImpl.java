@@ -104,6 +104,7 @@ public class UserDaoImpl implements UserDao {
 
 	}
 	
+	
 	public List<User> getExternalUserInfo(String username) {
 		String sql = "select users.username as username, firstname, lastname, dob, address, email, contactno, "
 				+ "ssn, city, state, country, postcode from users inner join user_roles on users.username = user_roles.username where "
@@ -121,16 +122,17 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public int ProcessInternalUserProfileUpdate(HttpServletRequest req, String username) {
-		String sql = "update users set firstname = ?, lastname = ?, dob = ?, ssn = ?, city = ?, state = ?, "
+		System.out.println("ProcessInternalUserProfileUpdate"+   username);
+		String sql = "update users set firstname = ?, lastname = ?, dob = ?, address = ?, city = ?, state = ?, "
 				+ "country = ?, postcode = ?, contactno = ? where username = ?";
-
 		try {
 			return jdbcTemplate.update(sql, new Object[] { req.getParameter("firstname"), req.getParameter("lastname"),
-					req.getParameter("dob"), Long.parseLong(req.getParameter("ssn")), req.getParameter("city"),
-					req.getParameter("state"), req.getParameter("country"),
-					Integer.parseInt(req.getParameter("postcode")), Long.parseLong(req.getParameter("contactno")) });
+					req.getParameter("dob"), req.getParameter("address"), req.getParameter("city"),
+					req.getParameter("state"), req.getParameter("country"), Integer.parseInt(req.getParameter("postcode")),
+					Long.parseLong(req.getParameter("contactno")),username });
 		} catch (DataAccessException e) {
 			// TODO Log message
+			System.out.println("God damn it");
 			return 0;
 		}
 	}
@@ -173,8 +175,8 @@ public class UserDaoImpl implements UserDao {
 	
 	@Override
 	public List<UserRequest> getUserRequestsInfo() {
-		System.out.println("inside dao");
-		String sql="select id,requesterusername,approverusername,status from requests where status = 'pending'";
+		String sql="select requests.id as id,requesterusername,approverusername,status from requests inner join user_roles on "
+				+ "requests.requesterusername = user_roles.username where user_roles.role like 'ROLE_TIER%' and requests.status = 'pending' ";
 		List<UserRequest> data =jdbcTemplate.query(sql, new userRequestsInfoMapper()) ;
 		return data;
 	}
@@ -210,7 +212,7 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	
-	public int ProcessApproveUserRequest(HttpServletRequest req,int requestid, String username) {
+	public int ProcessApproveUserRequest(HttpServletRequest req,int requestid, String requesterusername, String approverusername ) {
 		int i =0;
 		String sql="update users set ";
 		if(req.getParameter("firstname") != null) {
@@ -275,23 +277,22 @@ public class UserDaoImpl implements UserDao {
 			i=1;
 		}
 		
-		sql = sql + " where username = '" + username + "' ;" ;
-		System.out.println(sql);
+		sql = sql + " where username = '" + requesterusername + "' ;" ;
 		int userQ=jdbcTemplate.update(sql);
 		if(userQ != 0) {
-			UpdateUserRequestStatus(requestid, "approved");
+			UpdateUserRequestStatus(requestid, approverusername, "approved");
 		}
 		return userQ;
 	}
 
 	@Override
-	public int ProcessRejectUserRequest(int requestid) {
-		int d = UpdateUserRequestStatus(requestid, "rejected");
+	public int ProcessRejectUserRequest(int requestid, String approverusername) {
+		int d = UpdateUserRequestStatus(requestid,approverusername, "rejected");
 		return d;
 	}
 	
-	public int UpdateUserRequestStatus(int requestid, String status) {
-		String sql="update requests set status ='" + status + "' where id =" + requestid +";";
+	public int UpdateUserRequestStatus(int requestid, String approverusername, String status) {
+		String sql="update requests set approverusername ='" + approverusername + "', status='" + status + "' where id =" + requestid +";";
 		int update=jdbcTemplate.update(sql);
 		return update;	
 	}

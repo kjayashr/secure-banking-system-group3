@@ -193,7 +193,7 @@ $('.dropdown-menu li a').click(function(){
 								<div class="col-sm-2 dropdown">
 									<input type="email" class="form-control" id="recipient"
 										placeholder="Enter email" name="recipient" required disabled>
-								</div>
+									</div>
 							</div>
 
 							<span id="error" style="color: red"></span>

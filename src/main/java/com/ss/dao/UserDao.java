@@ -18,5 +18,5 @@ public interface UserDao {
 	public int ProcessInternalUserProfileDelete(String username);
 	List<UserRequest> getUserRequestsInfo();
 	List<UserRequestDetails> getUserRequestsDetailsInfo(int requestid);
-	int ProcessRejectUserRequest(int requestid);
+	int ProcessRejectUserRequest(int requestid, String approverusername);
 }

@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 
 import javax.sql.DataSource;
 
@@ -24,6 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import com.ss.dao.RegistrationDao;
+import com.ss.model.User;
 import com.ss.security.GenerateKeyPair;
 import com.ss.service.EncryptDecryptUtil;
 import com.ss.service.MailService;
@@ -35,15 +35,20 @@ public class RegistrationDaoImpl implements RegistrationDao {
 	DataSource dataSource;
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+	
+	@Autowired
+	UserDaoImpl userDaoImpl;
 
 	@Override
 	public void myNewMethod(String username, String firstname, String lastname, String address, String city,
 			String state, String country, String postcode, String contactno) {
-
+		User ExistinguserInfo = userDaoImpl.getInternalUserInfo(username).get(0);
+		
 		String sql = "insert into requests (requesterusername,status) values (?,?);";
+			
 		GeneratedKeyHolder holder = new GeneratedKeyHolder();
 		jdbcTemplate.update(new PreparedStatementCreator() {
-
+       
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				// TODO Auto-generated method stub
@@ -53,11 +58,12 @@ public class RegistrationDaoImpl implements RegistrationDao {
 				return ps;
 			}
 		}, holder);
+		System.out.println("Hey there 2");
 		long pid = (long)holder.getKey();
 		System.out.println("[TEST : GENERATED_KEY NEWTEST] " + holder.getKey());
 		
 		
-		if (firstname.length() != 0) {
+		if (!firstname.equals(ExistinguserInfo.getFirstname())) {
 			String sql1 = "insert into request_changes (requestid, fieldname, fieldvalue) values (?,?,?);";
 			GeneratedKeyHolder holder1 = new GeneratedKeyHolder();
 			jdbcTemplate.update(new PreparedStatementCreator() {
@@ -75,7 +81,7 @@ public class RegistrationDaoImpl implements RegistrationDao {
 	
 		}
 
-		if (lastname.length() != 0) {
+		if (!lastname.equals(ExistinguserInfo.getLastname())) {
 			String sql2 = "insert into request_changes (requestid, fieldname, fieldvalue) values (?,?,?);";
 			GeneratedKeyHolder holder2 = new GeneratedKeyHolder();
 			jdbcTemplate.update(new PreparedStatementCreator() {
@@ -93,7 +99,7 @@ public class RegistrationDaoImpl implements RegistrationDao {
 			
 		}
 
-		if (address.length() != 0) {
+		if (!address.equals(ExistinguserInfo.getAddress())) {
 			String sql3 = "insert into request_changes (requestid, fieldname, fieldvalue) values (?,?,?);";
 			GeneratedKeyHolder holder3 = new GeneratedKeyHolder();
 			jdbcTemplate.update(new PreparedStatementCreator() {
@@ -111,7 +117,7 @@ public class RegistrationDaoImpl implements RegistrationDao {
 			
 		}
 		
-		if (city.length() != 0) {
+		if (!city.equals(ExistinguserInfo.getCity())) {
 			String sql4 = "insert into request_changes (requestid, fieldname, fieldvalue) values (?,?,?);";
 			GeneratedKeyHolder holder4 = new GeneratedKeyHolder();
 			jdbcTemplate.update(new PreparedStatementCreator() {
@@ -129,7 +135,7 @@ public class RegistrationDaoImpl implements RegistrationDao {
 
 		}
 		
-		if (state.length() != 0) {
+		if (!state.equals(ExistinguserInfo.getState())) {
 			String sql5 = "insert into request_changes (requestid, fieldname, fieldvalue) values (?,?,?);";
 			GeneratedKeyHolder holder5 = new GeneratedKeyHolder();
 			jdbcTemplate.update(new PreparedStatementCreator() {
@@ -147,7 +153,7 @@ public class RegistrationDaoImpl implements RegistrationDao {
 
 		}
 		
-		if (country.length() != 0) {
+		if (!country.equals(ExistinguserInfo.getCountry())) {
 			String sql6 = "insert into request_changes (requestid, fieldname, fieldvalue) values (?,?,?);";
 			GeneratedKeyHolder holder6 = new GeneratedKeyHolder();
 			jdbcTemplate.update(new PreparedStatementCreator() {
@@ -165,7 +171,7 @@ public class RegistrationDaoImpl implements RegistrationDao {
 
 		}
 		
-		if (postcode.length() != 0) {
+		if (!postcode.equals(Integer.toString(ExistinguserInfo.getPostcode()))) {
 			String sql7 = "insert into request_changes (requestid, fieldname, fieldvalue) values (?,?,?);";
 			GeneratedKeyHolder holder7 = new GeneratedKeyHolder();
 			jdbcTemplate.update(new PreparedStatementCreator() {
@@ -183,7 +189,7 @@ public class RegistrationDaoImpl implements RegistrationDao {
 
 		}
 		
-		if (contactno.length() != 0) {
+		if (!contactno.equals(Long.toString(ExistinguserInfo.getContactno()))) {
 			String sql8 = "insert into request_changes (requestid, fieldname, fieldvalue) values (?,?,?);";
 			GeneratedKeyHolder holder8 = new GeneratedKeyHolder();
 			jdbcTemplate.update(new PreparedStatementCreator() {

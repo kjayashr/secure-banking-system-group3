@@ -88,7 +88,7 @@
 <body>
 
   <h2>User Requests </h2>
-		 <table class="table table-striped">
+		 <table class="table">
             <thead>
               <tr>
                 <th></th>
@@ -98,6 +98,8 @@
               </tr>
             </thead>
             <tbody>
+            <c:choose>
+            <c:when test="${not empty userrequests}">
         	  <c:forEach var="request" items="${userrequests}" >
               <tr>
 	        	<td><a href="<c:url value='/admin/showrequestdetails/${request.id}/${request.requesterusername}' />" >Show details</a></td>
@@ -106,10 +108,22 @@
                 <td>${request.status}</td>
               </tr>
              </c:forEach>
+             </c:when>
+             <c:otherwise>    
+                <td colspan="4">
+                <div class="alert alert-success">
+  					<strong>No pending requests to display</strong> <a class="alert-link" href="${pageContext.request.contextPath}/admin/Welcome"> Click here to go to home page</a>.
+				</div>
+                </td>
+             </c:otherwise>
+             </c:choose>       
             </tbody>
             </table>
-	<p>Note: Please make sure your details are correct before
-		submitting form and that all fields marked with * are completed!.</p>
+             <div class="alert alert-success">
+     		 <tr>
+	                  <a class="alert-link" href="${pageContext.request.contextPath}/admin/Welcome"> Click here to go to home page</a>
+             </tr>
+			</div>
 
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />				
   </form>
