@@ -164,7 +164,7 @@ public class HelloController {
 			// validation left
 			registrationImpl.myNewMethod2(uName,email,address, city, state, country, postcode);
 			
-			model.setViewName("hello");
+			model.setViewName("redirect:/welcome");
 			return model;
 		}
 
