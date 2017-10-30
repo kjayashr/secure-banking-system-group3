@@ -42,6 +42,25 @@ public class RequestController {
 	@Autowired
 	TransactionBO transactionBO;
 	
+	private boolean isKeyValid(String username, Double amount, String pubKey) {
+		boolean retValue = false;
+		if(pubKey!=null && pubKey.trim().length()!=0) {
+			try {
+				String lockedData = PKICertificate.lock(Double.toString(amount), pubKey);
+				String prvKey = userDao.getPrivateKey(username);
+				if (prvKey != null) {
+					prvKey = EncryptDecryptUtil.singleDecryption(prvKey);
+					String unlockedData = PKICertificate.unlock(lockedData, prvKey);
+					if (unlockedData.equals(Double.toString(amount))) {
+						retValue = true;
+					} 
+				}
+			} catch(Exception e) {
+				//TODO log statement
+			}
+		}
+		return retValue;
+	}
 	
 	@RequestMapping(value="/request", method=RequestMethod.POST)
 	public ModelAndView creditDebitRequest(HttpServletRequest req,Authentication auth){
@@ -54,34 +73,8 @@ public class RequestController {
 		double amount=Double.parseDouble(req.getParameter("amount"));
 		String pubKey = req.getParameter("pubKey");
 		System.out.println(accountType + " " + type + " " +amount+ " " +pubKey);
-		boolean toProcess = false;
 		
-		if(pubKey!=null && pubKey.trim().length()!=0) {
-			try {
-				System.out.println("[TEST] 1");
-				String lockedData = PKICertificate.lock(Double.toString(amount), pubKey);
-				String prvKey = userDao.getPrivateKey(username);
-				if (prvKey != null) {
-					System.out.println("[TEST] 2 : Private found");
-					prvKey = EncryptDecryptUtil.singleDecryption(prvKey);
-					String unlockedData = PKICertificate.unlock(lockedData, prvKey);
-					if (unlockedData.equals(Double.toString(amount))) {
-						System.out.println("[TEST] 3 FINE");
-						toProcess = true;
-					} else {
-						//TODO log statement
-						System.out.println("[TEST] 4 WRONG");
-					}
-				} else {
-					System.out.println("[TEST] 5 ; Private not found");
-				}
-			} catch(Exception e) {
-				//TODO log statement
-				System.out.println("[TEST] 6 EXCEPTION");
-			}
-		}
-		
-		if(!toProcess) {
+		if(!isKeyValid(username, amount, pubKey)) {
 			notifyPage.addObject("notification","Wrong key passed. Payment failed.");
 			return notifyPage;
 		}
@@ -135,34 +128,8 @@ public class RequestController {
 		double amount=Double.parseDouble(req.getParameter("amount"));
 		String pubKey = req.getParameter("pubKey");
 		System.out.println(accountType + " " + type + " " +amount+ " " +pubKey);
-		boolean toProcess = false;
 		
-		if(pubKey!=null && pubKey.trim().length()!=0) {
-			try {
-				System.out.println("[TEST] 1");
-				String lockedData = PKICertificate.lock(Double.toString(amount), pubKey);
-				String prvKey = userDao.getPrivateKey(username);
-				if (prvKey != null) {
-					System.out.println("[TEST] 2 : Private found");
-					prvKey = EncryptDecryptUtil.singleDecryption(prvKey);
-					String unlockedData = PKICertificate.unlock(lockedData, prvKey);
-					if (unlockedData.equals(Double.toString(amount))) {
-						System.out.println("[TEST] 3 FINE");
-						toProcess = true;
-					} else {
-						//TODO log statement
-						System.out.println("[TEST] 4 WRONG");
-					}
-				} else {
-					System.out.println("[TEST] 5 ; Private not found");
-				}
-			} catch(Exception e) {
-				//TODO log statement
-				System.out.println("[TEST] 6 EXCEPTION");
-			}
-		}
-		
-		if(!toProcess) {
+		if(!isKeyValid(username, amount, pubKey)) {
 			notifyPageM.addObject("notification","Wrong key passed. Payment failed.");
 			return notifyPageM;
 		}
@@ -204,34 +171,8 @@ public class RequestController {
 		System.out.println("New request function");
 		String pubKey = req.getParameter("pubKey");
 		System.out.println(accountType + " " + type + " " +amount+ " " +pubKey);
-		boolean toProcess = false;
 		
-		if(pubKey!=null && pubKey.trim().length()!=0) {
-			try {
-				System.out.println("[TEST] 1");
-				String lockedData = PKICertificate.lock(Double.toString(amount), pubKey);
-				String prvKey = userDao.getPrivateKey(byUser);
-				if (prvKey != null) {
-					System.out.println("[TEST] 2 : Private found");
-					prvKey = EncryptDecryptUtil.singleDecryption(prvKey);
-					String unlockedData = PKICertificate.unlock(lockedData, prvKey);
-					if (unlockedData.equals(Double.toString(amount))) {
-						System.out.println("[TEST] 3 FINE");
-						toProcess = true;
-					} else {
-						//TODO log statement
-						System.out.println("[TEST] 4 WRONG");
-					}
-				} else {
-					System.out.println("[TEST] 5 ; Private not found");
-				}
-			} catch(Exception e) {
-				//TODO log statement
-				System.out.println("[TEST] 6 EXCEPTION");
-			}
-		}
-		
-		if(!toProcess) {
+		if(!isKeyValid(byUser, amount, pubKey)) {
 			ModelAndView notifyPage=new ModelAndView("notify");
 			notifyPage.addObject("notification","Wrong key passed. Payment failed.");
 			return notifyPage;
@@ -307,34 +248,8 @@ public class RequestController {
 		
 		String pubKey = req.getParameter("pubKey");
 		System.out.println(amount+ " " +pubKey);
-		boolean toProcess = false;
 		
-		if(pubKey!=null && pubKey.trim().length()!=0) {
-			try {
-				System.out.println("[TEST] 1");
-				String lockedData = PKICertificate.lock(Double.toString(amount), pubKey);
-				String prvKey = userDao.getPrivateKey(byUser);
-				if (prvKey != null) {
-					System.out.println("[TEST] 2 : Private found");
-					prvKey = EncryptDecryptUtil.singleDecryption(prvKey);
-					String unlockedData = PKICertificate.unlock(lockedData, prvKey);
-					if (unlockedData.equals(Double.toString(amount))) {
-						System.out.println("[TEST] 3 FINE");
-						toProcess = true;
-					} else {
-						//TODO log statement
-						System.out.println("[TEST] 4 WRONG");
-					}
-				} else {
-					System.out.println("[TEST] 5 ; Private not found");
-				}
-			} catch(Exception e) {
-				//TODO log statement
-				System.out.println("[TEST] 6 EXCEPTION");
-			}
-		}
-		
-		if(!toProcess) {
+		if(!isKeyValid(byUser, amount, pubKey)) {
 			ModelAndView notifyPage=new ModelAndView("notify");
 			notifyPage.addObject("notification","Wrong key passed. Payment failed.");
 			return notifyPage;
@@ -436,35 +351,7 @@ public class RequestController {
 		double amount=Double.parseDouble(req.getParameter("amount"));
 		String pubKey = req.getParameter("pubKey");
 		
-		System.out.println(accountTypeFrom + " " + accountTypeTo + " " +amount+ " " +pubKey);
-		boolean toProcess = false;
-		
-		if(pubKey!=null && pubKey.trim().length()!=0) {
-			try {
-				System.out.println("[TEST] 1");
-				String lockedData = PKICertificate.lock(Double.toString(amount), pubKey);
-				String prvKey = userDao.getPrivateKey(username);
-				if (prvKey != null) {
-					System.out.println("[TEST] 2 : Private found");
-					prvKey = EncryptDecryptUtil.singleDecryption(prvKey);
-					String unlockedData = PKICertificate.unlock(lockedData, prvKey);
-					if (unlockedData.equals(Double.toString(amount))) {
-						System.out.println("[TEST] 3 FINE");
-						toProcess = true;
-					} else {
-						//TODO log statement
-						System.out.println("[TEST] 4 WRONG");
-					}
-				} else {
-					System.out.println("[TEST] 5 ; Private not found");
-				}
-			} catch(Exception e) {
-				//TODO log statement
-				System.out.println("[TEST] 6 EXCEPTION");
-			}
-		}
-		
-		if(!toProcess) {
+		if(!isKeyValid(username, amount, pubKey)) {
 			notifyPage.addObject("notification","Wrong key passed. Payment failed.");
 			return notifyPage;
 		}
@@ -565,34 +452,8 @@ public class RequestController {
 		double amount=Double.parseDouble(req.getParameter("amount"));
 		String pubKey = req.getParameter("pubKey");
 		System.out.println(accountTypeFrom + " " + accountTypeTo + " " +amount+ " " +pubKey);
-		boolean toProcess = false;
 		
-		if(pubKey!=null && pubKey.trim().length()!=0) {
-			try {
-				System.out.println("[TEST] 1");
-				String lockedData = PKICertificate.lock(Double.toString(amount), pubKey);
-				String prvKey = userDao.getPrivateKey(username);
-				if (prvKey != null) {
-					System.out.println("[TEST] 2 : Private found");
-					prvKey = EncryptDecryptUtil.singleDecryption(prvKey);
-					String unlockedData = PKICertificate.unlock(lockedData, prvKey);
-					if (unlockedData.equals(Double.toString(amount))) {
-						System.out.println("[TEST] 3 FINE");
-						toProcess = true;
-					} else {
-						//TODO log statement
-						System.out.println("[TEST] 4 WRONG");
-					}
-				} else {
-					System.out.println("[TEST] 5 ; Private not found");
-				}
-			} catch(Exception e) {
-				//TODO log statement
-				System.out.println("[TEST] 6 EXCEPTION");
-			}
-		}
-		
-		if(!toProcess) {
+		if(!isKeyValid(username, amount, pubKey)) {
 			notifyPage.addObject("notification","Wrong key passed. Payment failed.");
 			return notifyPage;
 		}
@@ -636,34 +497,8 @@ public class RequestController {
 		double amount=Double.parseDouble(req.getParameter("amount"));
 		String pubKey = req.getParameter("pubKey");
 		System.out.println(accountTypeFrom + " " + fromUser + " " +amount+ " " +pubKey);
-		boolean toProcess = false;
 		
-		if(pubKey!=null && pubKey.trim().length()!=0) {
-			try {
-				System.out.println("[TEST] 1");
-				String lockedData = PKICertificate.lock(Double.toString(amount), pubKey);
-				String prvKey = userDao.getPrivateKey(byusername);
-				if (prvKey != null) {
-					System.out.println("[TEST] 2 : Private found");
-					prvKey = EncryptDecryptUtil.singleDecryption(prvKey);
-					String unlockedData = PKICertificate.unlock(lockedData, prvKey);
-					if (unlockedData.equals(Double.toString(amount))) {
-						System.out.println("[TEST] 3 FINE");
-						toProcess = true;
-					} else {
-						//TODO log statement
-						System.out.println("[TEST] 4 WRONG");
-					}
-				} else {
-					System.out.println("[TEST] 5 ; Private not found");
-				}
-			} catch(Exception e) {
-				//TODO log statement
-				System.out.println("[TEST] 6 EXCEPTION");
-			}
-		}
-		
-		if(!toProcess) {
+		if(!isKeyValid(byusername, amount, pubKey)) {
 			notifyPage.addObject("notification","Wrong key passed. Payment failed.");
 			return notifyPage;
 		}
@@ -734,34 +569,8 @@ public class RequestController {
 		double amount=Double.parseDouble(req.getParameter("amount"));
 		String pubKey = req.getParameter("pubKey");
 		System.out.println(amount+ " " +pubKey);
-		boolean toProcess = false;
 		
-		if(pubKey!=null && pubKey.trim().length()!=0) {
-			try {
-				System.out.println("[TEST] 1");
-				String lockedData = PKICertificate.lock(Double.toString(amount), pubKey);
-				String prvKey = userDao.getPrivateKey(username);
-				if (prvKey != null) {
-					System.out.println("[TEST] 2 : Private found");
-					prvKey = EncryptDecryptUtil.singleDecryption(prvKey);
-					String unlockedData = PKICertificate.unlock(lockedData, prvKey);
-					if (unlockedData.equals(Double.toString(amount))) {
-						System.out.println("[TEST] 3 FINE");
-						toProcess = true;
-					} else {
-						//TODO log statement
-						System.out.println("[TEST] 4 WRONG");
-					}
-				} else {
-					System.out.println("[TEST] 5 ; Private not found");
-				}
-			} catch(Exception e) {
-				//TODO log statement
-				System.out.println("[TEST] 6 EXCEPTION");
-			}
-		}
-		
-		if(!toProcess) {
+		if(!isKeyValid(username, amount, pubKey)) {
 			notifyPageM.addObject("notification","Wrong key passed. Payment failed.");
 			return notifyPageM;
 		}
