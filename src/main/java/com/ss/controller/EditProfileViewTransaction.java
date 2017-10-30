@@ -45,10 +45,10 @@ public class EditProfileViewTransaction {
 	@Autowired
 	OTPUtil otpUtil;
 
-	@RequestMapping(value = "/editprofile", method = RequestMethod.GET)
-	public String getEditProfile() {
-		return "editprofile";
-	}
+//	@RequestMapping(value = "/editprofile", method = RequestMethod.GET)
+//	public String getEditProfile() {
+//		return "editprofile";
+//	}
 	
 	
 	@RequestMapping(value = "/Merchanteditprofile", method = RequestMethod.GET)

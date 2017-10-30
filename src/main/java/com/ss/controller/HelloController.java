@@ -1,10 +1,10 @@
 package com.ss.controller;
-
+import com.ss.daoImpl.UserDaoImpl;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-
+import com.ss.dao.RegistrationDao;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,12 +23,20 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.ss.daoImpl.AccountDaoImpl;
 import com.ss.model.Account;
+import com.ss.model.User;
+
 import org.apache.log4j.Logger;
 @Controller
 public class HelloController {
 	
 	@Autowired
 	AccountDaoImpl accountDoaImpl;
+	
+	@Autowired
+	UserDaoImpl userDaoImpl;
+	
+	@Autowired
+	RegistrationDao	registrationImpl;
 	
 	@RequestMapping(value = "/welcome**" , method = RequestMethod.GET)
 	public ModelAndView welcomePage(HttpServletRequest req, HttpServletResponse resp,HttpSession se) {
@@ -110,6 +118,54 @@ public class HelloController {
 		  model.setViewName("403");
 		  return model;
 
+		}
+		
+		@RequestMapping(value="/editProfile",method = RequestMethod.GET)
+		public ModelAndView modifyPersonalAccount(HttpServletRequest req,Authentication auth) {
+			ModelAndView model = new ModelAndView();
+			System.out.println("hello from user controller");
+			String uName="";
+			if (!(auth instanceof AnonymousAuthenticationToken)) {
+				UserDetails userDetail = (UserDetails) auth.getPrincipal();
+				model.addObject("username", userDetail.getUsername());
+				uName = userDetail.getUsername();
+			}
+			System.out.println(uName);
+			List<User> InternaluserInfo = userDaoImpl.getExternalUserInfo(uName);
+			System.out.println("user-size" + InternaluserInfo.size());
+			
+			model.addObject("userInfo",InternaluserInfo.get(0));
+			model.addObject("message", "This is welcome page!");
+			model.setViewName("editprofile");			
+			
+			return model;
+		}
+
+	    @RequestMapping(value="/user/changedDetails", method=RequestMethod.GET)
+	    public ModelAndView changedDetails(HttpServletRequest req,Authentication auth) {
+	    	ModelAndView model = new ModelAndView();
+			String uName = "";
+			String role = "ROLE_USER";
+			if (!(auth instanceof AnonymousAuthenticationToken)) {
+				UserDetails userDetail = (UserDetails) auth.getPrincipal();
+				model.addObject("username", userDetail.getUsername());
+				uName = userDetail.getUsername();
+				}
+			
+			model.addObject("savings", "Spring Security Hello World");
+			model.addObject("message", "This is welcome page!");
+			
+			String email=req.getParameter("email");
+			String address=req.getParameter("address");
+			String city	=req.getParameter("city");
+			String state=req.getParameter("state");
+			String country=req.getParameter("country");
+			String postcode=req.getParameter("postcode");
+			// validation left
+			registrationImpl.myNewMethod2(uName,email,address, city, state, country, postcode);
+			
+			model.setViewName("hello");
+			return model;
 		}
 
 	
