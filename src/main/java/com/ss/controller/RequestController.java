@@ -190,6 +190,15 @@ public class RequestController {
 		String forUser = req.getParameter("forUser");
 		String byUser = auth.getName();
 		System.out.println("New request function");
+		String pubKey = req.getParameter("pubKey");
+		System.out.println(accountType + " " + type + " " +amount+ " " +pubKey);
+		
+		if(!isKeyValid(byUser, amount, pubKey)) {
+			ModelAndView notifyPage=new ModelAndView("notify");
+			notifyPage.addObject("notification","Wrong key passed. Payment failed.");
+			return notifyPage;
+		}
+		
 		ModelAndView resultPage = checkBalanceAndCreditDebit(forUser, accountType, amount, type, byUser);
 		return resultPage;
 	}
@@ -263,39 +272,29 @@ public class RequestController {
 	
 	@RequestMapping(value="/tier2/transferForUser", method=RequestMethod.POST)
 	public ModelAndView t2transferRequestForUser(HttpServletRequest req,Authentication auth){
-		System.out.println("1");
 		String byUser=auth.getName();
-		System.out.println("2");
-		
 		System.out.println("New transfer function");
-		System.out.println("3");
-		
 		String fromUserName=req.getParameter("forUser");
-		System.out.println("4");
-		
 		String accountTypeTo=req.getParameter("to");
-		System.out.println("5");
-		
 		String accountTypeFrom=req.getParameter("from");
-		System.out.println("6");
-		
 		String typeOfTransfer=req.getParameter("typeoftransfer");
-		System.out.println("7");
-		
 		String toUserEmail=req.getParameter("recipient");
-		System.out.println("8");
 		String toUserName = null;
 		if(!typeOfTransfer.equalsIgnoreCase("internal")) {
 			toUserName = userDao.getUserbyEmail(toUserEmail).getUsername();
 		}
-		System.out.println("9");
-		
 		double amount=Double.parseDouble(req.getParameter("amount"));
-		System.out.println("10");
+		String pubKey = req.getParameter("pubKey");
+		System.out.println(amount+ " " +pubKey);
+		
+		if(!isKeyValid(byUser, amount, pubKey)) {
+			ModelAndView notifyPage=new ModelAndView("notify");
+			notifyPage.addObject("notification","Wrong key passed. Payment failed.");
+			return notifyPage;
+		}
 		
 		ModelAndView notifyPage =
 				checkBalanceAndPerformTransfer(fromUserName, accountTypeFrom, amount, toUserName, accountTypeTo, typeOfTransfer, byUser);
-		System.out.println("11");
 		
 		return notifyPage;
 	}
@@ -531,7 +530,14 @@ public class RequestController {
 		String recipientEmail=req.getParameter("to");
 		String toUserName = userDao.getUserbyEmail(recipientEmail).getUsername();
 		double amount=Double.parseDouble(req.getParameter("amount"));
-		System.out.println(accountTypeFrom + " " + accountTypeTo + " " +amount);
+		String pubKey = req.getParameter("pubKey");
+		System.out.println(amount+ " " +pubKey);
+		
+		if(!isKeyValid(byusername, amount, pubKey)) {
+			notifyPage.addObject("notification","Wrong key passed. Payment failed.");
+			return notifyPage;
+		}
+		
 		
 		// add validation over cedit and debit
 		// check if both to and from are same
