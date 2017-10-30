@@ -3,6 +3,7 @@ package com.ss.daoImpl;
 import java.util.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -15,6 +16,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -376,15 +378,14 @@ public class RegistrationDaoImpl implements RegistrationDao {
 		
 		String sql = "Insert into users(username,password,firstname,lastname,dob, address,"
 				+ "email, contactno, ssn, city, state,country,postcode,key_private) values "
-				+ "('" +username+"','"+password+"','"+firstname+"','"+lastname+"','"+dateofbirth+"','"+address+"','"+email+"',"+contactno+","+ssn+",'"+city+"','"+state+"','"+country+"',"+postcode+",'"+privateKey+"');";
+				+ "(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
-		int userQ=jdbcTemplate.update(sql);
+		int userQ=jdbcTemplate.update(sql, new Object[] {username, password, firstname, lastname, dateofbirth, address, email, contactno, ssn, city, state, country, postcode, privateKey});
 		
 		//String role="ROLE_USER";
-		String sql2="Insert into user_roles(username,role) values"
-					+ "('" +username+"','"+role+"');";
+		String sql2="Insert into user_roles(username,role) values (?,?)";
 		
-		int roleQ=jdbcTemplate.update(sql2);
+		int roleQ=jdbcTemplate.update(sql2, new Object[] {username, role});
 
 		MailService.sendKey(email, firstname+" "+lastname, publicKey);
 		
@@ -394,10 +395,22 @@ public class RegistrationDaoImpl implements RegistrationDao {
 	}
 
 	public String check(String username) {
-		String sql = "SELECT username from users where username = '" + username + "';";
+		String sql = "SELECT username from users where username = ?";
 		try {
-			String ret = jdbcTemplate.queryForObject(sql, String.class);
-			return "false";
+			List<String> ret = jdbcTemplate.query(sql, new Object[] {username}, new RowMapper<String>() {
+
+				@Override
+				public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+					return rs.getString("username");
+				}
+				
+			});
+			
+			if(ret.size()==0) {
+				return "true";
+			} else {
+				return "false";
+			}
 		} catch (EmptyResultDataAccessException e) {
 			return "true";
 		}
@@ -405,21 +418,42 @@ public class RegistrationDaoImpl implements RegistrationDao {
 	}
 
 	public String getRole(String un) {
-		String sql = "SELECT role from user_roles where username = '" + un + "';";
+		String sql = "SELECT role from user_roles where username = ?";
 		try {
-			String ret = jdbcTemplate.queryForObject(sql, String.class);
-			return ret;
+			List<String> ret = jdbcTemplate.query(sql, new Object[] {un}, new RowMapper<String> () {
 
+				@Override
+				public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+					return rs.getString("role");
+				}
+				
+			});
+			if(ret.size() == 0) {
+				return "error";
+			} else {
+				return ret.get(0);
+			}
 		} catch (EmptyResultDataAccessException e) {
 			return "error";
 		}
 	}
 
 	public String checkEmail(String email) {
-		String sql = "SELECT email from users where email = '" + email + "';";
+		String sql = "SELECT email from users where email = ?";
 		try {
-			String ret = jdbcTemplate.queryForObject(sql, String.class);
-			return "false";
+			List<String> ret = jdbcTemplate.query(sql, new Object[] {email}, new RowMapper<String>() {
+
+				@Override
+				public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+					return rs.getString("email");
+				}
+				
+			});
+			if (ret.size() == 0) {
+				return "true";
+			} else {
+				return "false";
+			}
 		} catch (EmptyResultDataAccessException e) {
 			return "true";
 		}
@@ -427,14 +461,15 @@ public class RegistrationDaoImpl implements RegistrationDao {
 
 	@Override
 	public void rollback(String username) {
-		String delete_user="DELETE FROM users where username = '"+username+"'";
-		jdbcTemplate.update(delete_user);
-		String delete_user_role="DELETE FROM user_roles where username = '"+username+"'";
-		jdbcTemplate.update(delete_user_role);
-		String delete_accounts="DELETE FROM account where username = '"+username+"'";
-		jdbcTemplate.update(delete_accounts);
-		String delete_attempts="DELETE FROM attempts where username = '"+username+"'";
-		jdbcTemplate.update(delete_attempts);
+		String delete_user="DELETE FROM users where username = ?";
+		String delete_user_role="DELETE FROM user_roles where username = ?";
+		String delete_accounts="DELETE FROM account where username = ?";
+		String delete_attempts="DELETE FROM attempts where username = ?";
+		
+		jdbcTemplate.update(delete_user, new Object[] {username});
+		jdbcTemplate.update(delete_user_role, new Object[] {username});
+		jdbcTemplate.update(delete_accounts, new Object[] {username});
+		jdbcTemplate.update(delete_attempts, new Object[] {username});
 		
 	}
 
