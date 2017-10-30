@@ -41,12 +41,8 @@
 	<br></br>
 	<div align="center" class="row"><a href="${pageContext.request.contextPath}/admin/searchprofile">View/Modify/Delete Internal User Account</a> </div>
 	<br></br>
-	<div align="center" class="row"><a href="${pageContext.request.contextPath}/admin">Authorize Internal User Account</a> </div>
+	<div align="center" class="row"><a href="${pageContext.request.contextPath}/admin/viewrequests">Authorize/Decline Internal Users Request</a> </div>
 	<br></br>
-	<div align="center" class="row"><a href="${pageContext.request.contextPath}/admin">Authorize Internal Users Request</a> </div>
-	<br></br>
-	<div align="center" class="row"><a href="${pageContext.request.contextPath}/admin">Decline Internal Users Request</a> </div>
-	<br></br>	
 	<div align="center" class="row"><a href="${pageContext.request.contextPath}/admin/viewlogs">Access Log File</a> </div>
 	<br></br>	
 	<div align="center" class="row"><a href="${pageContext.request.contextPath}/admin/pii">Access PII</a> </div>

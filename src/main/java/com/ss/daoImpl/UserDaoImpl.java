@@ -15,6 +15,8 @@ import org.springframework.stereotype.Repository;
 
 import com.ss.dao.UserDao;
 import com.ss.model.User;
+import com.ss.model.UserRequest;
+import com.ss.model.UserRequestDetails;
 
 @Repository
 public class UserDaoImpl implements UserDao {
@@ -168,5 +170,132 @@ public class UserDaoImpl implements UserDao {
 			return userdata;
 		}
 	}
+	
+	@Override
+	public List<UserRequest> getUserRequestsInfo() {
+		System.out.println("inside dao");
+		String sql="select id,requesterusername,approverusername,status from requests where status = 'pending'";
+		List<UserRequest> data =jdbcTemplate.query(sql, new userRequestsInfoMapper()) ;
+		return data;
+	}
+	
+	class userRequestsInfoMapper implements RowMapper<UserRequest> {
+		  public UserRequest mapRow(ResultSet rs, int arg1) throws SQLException {
+			UserRequest userrequestdata = new UserRequest();
+			userrequestdata.setId(rs.getInt("id"));
+			userrequestdata.setRequesterusername(rs.getString("requesterusername"));
+			userrequestdata.setApproverusername(rs.getString("approverusername"));
+			userrequestdata.setStatus(rs.getString("status"));
+		    return userrequestdata;
+		  }
+	}
+	
+	
+	@Override
+	public List<UserRequestDetails> getUserRequestsDetailsInfo(int requestid) {
+		String sql="select requestid,fieldname,fieldvalue from request_changes where requestid =" + requestid ;
+		List<UserRequestDetails> userrequestdetails =jdbcTemplate.query(sql, new userRequestsIDetailsnfoMapper()) ;
+		System.out.println(userrequestdetails.get(0).getFieldname());
+		return userrequestdetails;
+	}
+	
+	class userRequestsIDetailsnfoMapper implements RowMapper<UserRequestDetails> {
+		  public UserRequestDetails mapRow(ResultSet rs, int arg1) throws SQLException {
+			UserRequestDetails userrequestdetails = new UserRequestDetails();
+			userrequestdetails.setRequestid(rs.getInt("requestid"));
+			userrequestdetails.setFieldname(rs.getString("fieldname"));
+			userrequestdetails.setFieldvalue(rs.getString("fieldvalue"));
+		    return userrequestdetails;
+		  }
+	}
+
+	
+	public int ProcessApproveUserRequest(HttpServletRequest req,int requestid, String username) {
+		int i =0;
+		String sql="update users set ";
+		if(req.getParameter("firstname") != null) {
+			i=1;
+			sql = sql + "firstname='" +req.getParameter("firstname") + "'";
+
+		}
+		if(req.getParameter("lastname") != null) {
+			if(i==1) {
+				sql = sql + ",";								
+			}
+			sql = sql + "lastname='" +req.getParameter("lastname") + "'";				
+			i=1;
+		}
+		if(req.getParameter("dob") != null) {
+			if(i==1) {
+				sql = sql + ",";								
+			}
+			sql = sql + "dob='" +req.getParameter("dob") + "'";				
+			i=1;
+		}
+		if(req.getParameter("address") != null) {
+			if(i==1) {
+				sql = sql + ",";								
+			}
+			sql = sql + "address='" +req.getParameter("address") + "'";				
+			i=1;
+		}
+		if(req.getParameter("city") != null) {
+			if(i==1) {
+				sql = sql + ",";								
+			}
+			sql = sql + "city='" +req.getParameter("city") + "'";				
+			i=1;
+		}
+		if(req.getParameter("state") != null) {
+			if(i==1) {
+				sql = sql + ",";								
+			}
+			sql = sql + "state='" +req.getParameter("state") + "'";				
+			i=1;
+		}
+		if(req.getParameter("country") != null) {
+			if(i==1) {
+				sql = sql + ",";								
+			}
+			sql = sql + "country='" +req.getParameter("country") + "'";				
+			i=1;
+		}
+		if(req.getParameter("postcode") != null) {
+			if(i==1) {
+				sql = sql + ",";								
+			}
+			sql = sql + "postcode='" +req.getParameter("postcode") + "'";				
+			i=1;
+		}
+		if(req.getParameter("contactno") != null) {
+			if(i==1) {
+				sql = sql + ",";								
+			}
+			sql = sql + "contactno='" +req.getParameter("contactno") + "'";				
+			i=1;
+		}
+		
+		sql = sql + " where username = '" + username + "' ;" ;
+		System.out.println(sql);
+		int userQ=jdbcTemplate.update(sql);
+		if(userQ != 0) {
+			UpdateUserRequestStatus(requestid, "approved");
+		}
+		return userQ;
+	}
+
+	@Override
+	public int ProcessRejectUserRequest(int requestid) {
+		int d = UpdateUserRequestStatus(requestid, "rejected");
+		return d;
+	}
+	
+	public int UpdateUserRequestStatus(int requestid, String status) {
+		String sql="update requests set status ='" + status + "' where id =" + requestid +";";
+		int update=jdbcTemplate.update(sql);
+		return update;	
+	}
+
+	
 
 }

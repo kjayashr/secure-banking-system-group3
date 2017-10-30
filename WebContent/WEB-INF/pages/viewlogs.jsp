@@ -13,43 +13,27 @@
 
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
-        <style type="text/css">
- 
-            body {font-family:Arial, Sans-Serif;}
- 
-            #container {width:300px; margin:0 auto;}
- 
-            /* Nicely lines up the labels. */
-            form label {display:inline-block; width:140px;}
- 
-            /* You could add a class to all the input boxes instead, if you like. That would be safer, and more backwards-compatible */
-            form input[type="text"],
-            form input[type="password"],
-            form input[type="email"] {width:160px;}
- 
-            form .line {clear:both;}
-            form .line.submit {text-align:right;}
- 
-        </style>
     
     <meta name="_csrf" content="${_csrf.token}"/>
 	<!-- default header name is X-CSRF-TOKEN -->
 	<meta name="_csrf_header" content="${_csrf.headerName}"/>
     </head>
     <body>
-    
-   	<table>
-	<c:if test="${not empty existinglogfiles}">
-		<ul>
-			<c:forEach var="listValue" items="${existinglogfiles}">
-	        <tr><td><a href="<c:url value='downloadlog/${listValue}' />" >${listValue}</a></td> </tr>
-			</br>
+     
+<div class="container">
+  <h2>Log files</h2>     
+	<table class="table">
+	<tbody>
+		<c:if test="${not empty existinglogfiles}">
+			<c:forEach var="logfile" items="${existinglogfiles}">
+				<tr>
+					<td> ${logfile} </td>
+					<td><a href="<c:url value='/admin/downloadlog/${logfile}' />"> Click here to download </a></td>
+				</tr>
 			</c:forEach>
-		</ul>
-
-	</c:if>    
-	
+		</c:if>    
+	</tbody>
 	</table>
-    </body>
+</div>
+</body>
 </html>

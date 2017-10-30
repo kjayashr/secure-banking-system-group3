@@ -37,6 +37,8 @@ import com.ss.daoImpl.AccountDaoImpl;
 import com.ss.model.Account;
 import com.ss.model.TransactionDO;
 import com.ss.model.User;
+import com.ss.model.UserRequest;
+import com.ss.model.UserRequestDetails;
 
 import java.util.List;
 
@@ -111,11 +113,9 @@ public class Tier3Controller {
 		return model;  
 	}
 
-	@RequestMapping(value="/checkinternalusername*",method=RequestMethod.POST)
+	@RequestMapping(value="/admin/checkinternalusername*",method=RequestMethod.POST)
 	public @ResponseBody String CheckInternalUsername(@RequestParam("username") String username){
-		System.out.print("Username to check " +username);
     	List<User> InternaluserInfo = userDaoImpl.getInternalUserInfo(username);
-		System.out.println("user-size" + InternaluserInfo.size());
 		if(InternaluserInfo.size() > 0 ) {
 			return "true";
 		} else {
@@ -145,35 +145,82 @@ public class Tier3Controller {
     	ModelAndView model = new ModelAndView();
     	String operation=req.getParameter("operation");
 		String username=req.getParameter("username");
-    	if(operation.equals("update")) {
-    		System.out.println("Updating");
+    	if(operation.equals("Update")) {
     		int s = userDaoImpl.ProcessInternalUserProfileUpdate(req,username);
     	}
 
-    	if(operation.equals("delete")) {
-    		System.out.println("Deleting");
+    	if(operation.equals("Delete")) {
     		int s = userDaoImpl.ProcessInternalUserProfileDelete(username);
     	}
 
     	model.setViewName("searchprofile");
-    	return model;   
-	    
+    	return model;   	    
+	}
+    
+    @RequestMapping(value="/admin/viewrequests", method=RequestMethod.GET)
+	public ModelAndView ShowUserChangeRequests() {
+		ModelAndView model = new ModelAndView();
+		System.out.println("inside fxn");
+		List<UserRequest> userrequests=userDaoImpl.getUserRequestsInfo();
+    	if(userrequests.size() > 0 ) {
+    		System.out.println("dsada");
+    		model.addObject("userrequests",userrequests);
+			model.addObject("pagename","Current User Change Requests");
+			model.setViewName("viewrequests");
+    	} else {
+    	   	model.setViewName("Admin_Homepage");			    	   	
+    	}	
+ 		return model;  
+	}
+
+    @RequestMapping(value="/admin/showrequestdetails/{id}/{requesterusername}", method=RequestMethod.GET)
+    public ModelAndView ShowRequestDetails(@PathVariable("id")int requestid, @PathVariable("requesterusername")String requesterusername) throws IOException {
+    	ModelAndView model = new ModelAndView();
+		List<UserRequestDetails> userrequestdetails=userDaoImpl.getUserRequestsDetailsInfo(requestid);
+    	List<User> existinguserInfo = userDaoImpl.getExternalUserInfo(requesterusername);
+    	System.out.println(existinguserInfo);
+    	if(existinguserInfo.size() > 0 ) {
+	    	model.addObject("existinguserdetails",existinguserInfo.get(0));
+			model.addObject("requestid", requestid);
+			model.addObject("userrequestdetails",userrequestdetails);
+	    	System.out.println(requestid);
+	    	System.out.println(requesterusername);
+	    	model.setViewName("showrequestdetails");
+		} else {
+	    	model.setViewName("viewrequests");			
+		}
+	    return model;  
+    }    
+
+    @RequestMapping(value=	"/admin/processapproveorrejectrequest", method=RequestMethod.POST)
+    public ModelAndView ApproveOrRejectUserRequest(HttpServletRequest req,Authentication auth) {
+    	ModelAndView model = new ModelAndView();
+    	String operation=req.getParameter("operation");
+    	String username=req.getParameter("requesterusername");
+    	int requestid=Integer.parseInt(req.getParameter("requestid"));
+    	if(operation.equals("Approve")) {
+    		int s = userDaoImpl.ProcessApproveUserRequest(req,requestid,username);
+    	}
+    	if(operation.equals("Reject")) {
+    		int s = userDaoImpl.ProcessRejectUserRequest(requestid);
+    	}
+
+    	model.setViewName("Admin_Homepage");
+    	return model;   	    
 	}
     
     @RequestMapping(value="/admin/viewlogs", method=RequestMethod.GET)
 	public ModelAndView ViewExistingLogs() {
 		ModelAndView model = new ModelAndView();
-		model.addObject("message", "Existing Logs");
-		
+		model.addObject("message", "Existing Logs");		
 		List<String> logFiles=adminDaoImpl.getExistingLogFilesPaths();
-		
+		System.out.println(logFiles);
 		model.addObject("existinglogfiles",logFiles);
-
 		model.setViewName("viewlogs");
 		return model;  
 	}
 
-    @RequestMapping(value="*/downloadlog/{filename}", method=RequestMethod.GET)
+    @RequestMapping(value="/admin/downloadlog/{filename}", method=RequestMethod.GET)
     public void download(@PathVariable("filename")String filename, HttpServletResponse response) throws IOException {
  //TO-DO Check the user is admin before downloading
     	
