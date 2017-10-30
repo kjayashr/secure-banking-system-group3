@@ -97,7 +97,7 @@ public class MerchantController {
 		// validation left
 		registrationImpl.myNewMethod2(uName,email,address, city, state, country, postcode);
 		
-		model.setViewName("Merchanthello");
+		model.setViewName("redirect:/Merchant/Welcome");
 		return model;
 	}
 
