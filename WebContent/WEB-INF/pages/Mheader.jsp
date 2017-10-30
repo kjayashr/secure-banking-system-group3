@@ -41,7 +41,7 @@
 			</script>
 			<div class="row">
     		<sec:authorize access="hasRole('ROLE_MERCHANT')">
-				<a href="${pageContext.request.contextPath}/Merchanteditprofile" class="btn btn-default navbar-btn pull-right"  >Edit Profile</a>		
+				<a href="${pageContext.request.contextPath}/Merchant/merchantEditProfile" class="btn btn-default navbar-btn pull-right"  >Edit Profile</a>		
 				<a href="${pageContext.request.contextPath}/Merchantviewtransaction" class="btn btn-default navbar-btn pull-right"  >View Transactions</a>
 				<a href="${pageContext.request.contextPath}/Merchantuserapprovals" class="btn btn-default navbar-btn pull-right"  >Approvals Needed</a>
 				

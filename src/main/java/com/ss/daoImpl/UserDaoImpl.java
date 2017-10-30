@@ -106,17 +106,22 @@ public class UserDaoImpl implements UserDao {
 	
 	
 	public List<User> getExternalUserInfo(String username) {
+		System.out.println("Inside getExternaluserinfo");
 		String sql = "select users.username as username, firstname, lastname, dob, address, email, contactno, "
 				+ "ssn, city, state, country, postcode from users inner join user_roles on users.username = user_roles.username where "
-				+ "users.username=? and user_roles.role like 'ROLE_USER%' or 'ROLE_MERCHANT%'";
+				+ "users.username=? and (user_roles.role like 'ROLE_USER%' or user_roles.role like 'ROLE_MERCHANT%')";
+				
 		try {
+			System.out.println("This");
 			return jdbcTemplate.query(sql, new Object[] { username }, new userinfoMapper());
 		} catch (DataAccessException e) {
 			// TODO Log message
+			System.out.println("Or This");
 			return null;
 		}
 
 	}
+	
 
 	
 

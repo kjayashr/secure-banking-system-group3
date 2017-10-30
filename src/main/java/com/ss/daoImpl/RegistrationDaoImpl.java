@@ -208,7 +208,141 @@ public class RegistrationDaoImpl implements RegistrationDao {
 		}
 
 	}
+	
+	@Override
+	public void myNewMethod2(String uName,String email,String address,String city,String state,String country,String postcode) {
+		User ExistinguserInfo = userDaoImpl.getExternalUserInfo(uName).get(0);
+		
+		String sql = "insert into requests (requesterusername,status) values (?,?);";
+			
+		GeneratedKeyHolder holder = new GeneratedKeyHolder();
+		jdbcTemplate.update(new PreparedStatementCreator() {
+       
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				// TODO Auto-generated method stub
+				PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+				ps.setString(1, uName);
+				ps.setString(2, "pending");
+				return ps;
+			}
+		}, holder);
+		System.out.println("Hey there 2");
+		long pid = (long)holder.getKey();
+		System.out.println("[TEST : GENERATED_KEY NEWTEST] " + holder.getKey());
+		
+		
 
+		if (!address.equals(ExistinguserInfo.getAddress())) {
+			String sql3 = "insert into request_changes (requestid, fieldname, fieldvalue) values (?,?,?);";
+			GeneratedKeyHolder holder3 = new GeneratedKeyHolder();
+			jdbcTemplate.update(new PreparedStatementCreator() {
+
+				@Override
+				public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+					// TODO Auto-generated method stub
+					PreparedStatement ps = con.prepareStatement(sql3, Statement.RETURN_GENERATED_KEYS);
+					ps.setString(1, Long.toString(pid));
+					ps.setString(2, "address");
+					ps.setString(3, address);
+					return ps;
+				}
+			}, holder3);
+			
+		}
+		
+		if (!city.equals(ExistinguserInfo.getCity())) {
+			String sql4 = "insert into request_changes (requestid, fieldname, fieldvalue) values (?,?,?);";
+			GeneratedKeyHolder holder4 = new GeneratedKeyHolder();
+			jdbcTemplate.update(new PreparedStatementCreator() {
+
+				@Override
+				public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+					// TODO Auto-generated method stub
+					PreparedStatement ps = con.prepareStatement(sql4, Statement.RETURN_GENERATED_KEYS);
+					ps.setString(1, Long.toString(pid));
+					ps.setString(2, "city");
+					ps.setString(3, city);
+					return ps;
+				}
+			}, holder4);
+
+		}
+		
+		if (!state.equals(ExistinguserInfo.getState())) {
+			String sql5 = "insert into request_changes (requestid, fieldname, fieldvalue) values (?,?,?);";
+			GeneratedKeyHolder holder5 = new GeneratedKeyHolder();
+			jdbcTemplate.update(new PreparedStatementCreator() {
+
+				@Override
+				public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+					// TODO Auto-generated method stub
+					PreparedStatement ps = con.prepareStatement(sql5, Statement.RETURN_GENERATED_KEYS);
+					ps.setString(1, Long.toString(pid));
+					ps.setString(2, "state");
+					ps.setString(3, state);
+					return ps;
+				}
+			}, holder5);
+
+		}
+		
+		if (!country.equals(ExistinguserInfo.getCountry())) {
+			String sql6 = "insert into request_changes (requestid, fieldname, fieldvalue) values (?,?,?);";
+			GeneratedKeyHolder holder6 = new GeneratedKeyHolder();
+			jdbcTemplate.update(new PreparedStatementCreator() {
+
+				@Override
+				public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+					// TODO Auto-generated method stub
+					PreparedStatement ps = con.prepareStatement(sql6, Statement.RETURN_GENERATED_KEYS);
+					ps.setString(1, Long.toString(pid));
+					ps.setString(2, "country");
+					ps.setString(3, country);
+					return ps;
+				}
+			}, holder6);
+
+		}
+		
+		if (!postcode.equals(Integer.toString(ExistinguserInfo.getPostcode()))) {
+			String sql7 = "insert into request_changes (requestid, fieldname, fieldvalue) values (?,?,?);";
+			GeneratedKeyHolder holder7 = new GeneratedKeyHolder();
+			jdbcTemplate.update(new PreparedStatementCreator() {
+
+				@Override
+				public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+					// TODO Auto-generated method stub
+					PreparedStatement ps = con.prepareStatement(sql7, Statement.RETURN_GENERATED_KEYS);
+					ps.setString(1, Long.toString(pid));
+					ps.setString(2, "postcode");
+					ps.setString(3, postcode);
+					return ps;
+				}
+			}, holder7);
+
+		}
+		
+		if (!email.equals(Long.toString(ExistinguserInfo.getContactno()))) {
+			String sql8 = "insert into request_changes (requestid, fieldname, fieldvalue) values (?,?,?);";
+			GeneratedKeyHolder holder8 = new GeneratedKeyHolder();
+			jdbcTemplate.update(new PreparedStatementCreator() {
+
+				@Override
+				public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+					// TODO Auto-generated method stub
+					PreparedStatement ps = con.prepareStatement(sql8, Statement.RETURN_GENERATED_KEYS);
+					ps.setString(1, Long.toString(pid));
+					ps.setString(2, "email");
+					ps.setString(3, email);
+					return ps;
+				}
+			}, holder8);
+		
+		}
+
+	}
+	
 	@Override
 	public int addNewUser(String username, String password, String firstname, String lastname, String dateofbirth,
 			String email, String address, Long contactno, Long ssn, String city, String state, String country,
