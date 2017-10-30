@@ -47,16 +47,19 @@ public class AccountDaoImpl implements AccountDao {
 				retMap.put("Credit", a);
 			}
 		}
-		System.out.println("::::::::----------------" + retMap);
+
+		System.out.println("::::::::----------------"+retMap);
 		for (Map.Entry entry : retMap.entrySet()) {
-			System.out.println(entry.getKey() + ", " + entry.getValue());
+		    System.out.println(entry.getKey() + ", " + entry.getValue());
+
 		}
 		return retMap;
 
 	}
-
+	
 	@Override
-	public String createCreditCard(String username, String email) {
+	public String createCreditCard(String username,String email)
+	{
 		CreditCardNumberGenerator cGen = new CreditCardNumberGenerator();
 		String bin = "5422";
 		int length = 16;
@@ -93,7 +96,6 @@ public class AccountDaoImpl implements AccountDao {
 		} else {
 			String sql = "Update account set balance = balance - ? where accountType = ?";
 			jdbcTemplate.update(sql, new Object[] { amount, accountType });
-
 		}
 	}
 

@@ -23,12 +23,13 @@
   	<div class="col-md-4">
   	<h4>
   	 <span class="glyphicon glyphicon-home"></span>
-  	 	 <a href="${pageContext.request.contextPath}/welcome">
+  	 	 <a href="${pageContext.request.contextPath}/Merchant/Welcome">
   	 		Welcome ${pageContext.request.userPrincipal.name}
   		 </a>
   	 </h4>
   	 </div>
      <div class="col-md-8">
+    		<sec:authorize access="hasRole('ROLE_MERCHANT')">
 		<!-- For login user -->
 			<c:url value="/j_spring_security_logout" var="logoutUrl" />
 				<form action="${logoutUrl}" method="post" id="logoutForm" >
@@ -40,18 +41,16 @@
 				}
 			</script>
 			<div class="row">
-    		<sec:authorize access="hasRole('ROLE_USER')">
-				<a href="${pageContext.request.contextPath}/editprofile" class="btn btn-default navbar-btn pull-right"  >Edit Profile</a>		
-				<a href="${pageContext.request.contextPath}/viewtransaction" class="btn btn-default navbar-btn pull-right"  >View Transactions</a>
-				<a href="${pageContext.request.contextPath}/userapprovals" class="btn btn-default navbar-btn pull-right"  >Approvals Needed</a>
-				
-			</sec:authorize>
+				<a href="${pageContext.request.contextPath}/Merchanteditprofile" class="btn btn-default navbar-btn pull-right"  >Edit Profile</a>		
+				<a href="${pageContext.request.contextPath}/Merchantviewtransaction" class="btn btn-default navbar-btn pull-right"  >View Transactions</a>
+				<a href="${pageContext.request.contextPath}/Merchantuserapprovals" class="btn btn-default navbar-btn pull-right"  >Approvals Needed</a>
 				<c:if test="${pageContext.request.userPrincipal.name != null}">
 						<a href="javascript:formSubmit()" type="button" class="btn btn-default navbar-btn pull-right" >
     						  <span class="glyphicon glyphicon-log-out"></span>Logout
     						</a>
 				</c:if>
 			</div>
+			</sec:authorize>
 		</div>
 	</div>
 	</div>

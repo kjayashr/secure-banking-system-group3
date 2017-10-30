@@ -15,9 +15,10 @@ public interface AccountDao {
 	//  List<LoggedData> getLogData(String username);
 	
 	 HashMap<String, Account> getAccountInfo(String username);
-	 void doCreditDebit(String accountType, double amount, String type);
-	 void addToTransaction(double amount, String detail, String status, String username, Date date, String object, boolean critical);
+	 void doCreditDebit(String accountType, double amount, String type, String username);
+	 void addToTransaction(double amount, String detail, String status, String username, Date date, String object, boolean critical, String approverUSername);
 	int createAccount(int balance,String username, String type,int interest);
+	String createCreditCard(String username,String email);
 	List<String> getValidAccounts(String name);
 	
 	

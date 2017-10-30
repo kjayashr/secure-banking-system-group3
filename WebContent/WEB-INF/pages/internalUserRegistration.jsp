@@ -38,6 +38,7 @@
 	<meta name="_csrf_header" content="${_csrf.headerName}"/>
     </head>
     <body>
+    
     <script>
    	 function checkAvailabilityUsername() {
 	   		var token = $("meta[name='_csrf']").attr("content");
@@ -121,7 +122,7 @@
 	 
     
     </script>
-            <form action="${pageContext.request.contextPath}/registration" method="post" onsubmit="return validate()">
+            <form action="${pageContext.request.contextPath}/admin/addInternalUser" method="post" onsubmit="return validate()">
               <h2 align="center">REGISTER</h2>
             <div id="container" class="container">
               <div class="row">
@@ -155,11 +156,11 @@
 						<option>Credit Card</option>
 					</select>
 				</div>
-				
-				<div class="line"><label class="control-label" for="userType">Type*:</label>
-					<select class="form-control" id="userType" name="userType" required>
-						<option>User</option>	
-						<option>Merchant</option>
+                <div class="line"><label class="control-label" for="UserType">User Type*:</label>
+					<select class="form-control" id="UserType" name="UserType" required>
+						<option>ROLE_TIER1</option>	
+						<option>ROLE_TIER2</option>
+						<option>ROLE_ADMIN</option>
 					</select>
 				</div>
 				 <div class="line"><label for="balance">Initial Balance*: </label><input type="number" id="balance" name="balance"  min=0 required/></div>

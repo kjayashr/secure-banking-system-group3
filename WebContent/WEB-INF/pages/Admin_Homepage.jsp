@@ -37,23 +37,19 @@
 		</c:if>
     </sec:authorize>
      	
-	<div align="center" class="row"><a href="${pageContext.request.contextPath}/tier3">View Internal User Account</a> </div>
+	<div align="center" class="row"><a href="${pageContext.request.contextPath}/admin/registration">Create Internal User Account</a> </div>
 	<br></br>
-	<div align="center" class="row"><a href="${pageContext.request.contextPath}/tier3/createaccount">Create Internal User Account</a> </div>
+	<div align="center" class="row"><a href="${pageContext.request.contextPath}/admin/searchprofile">View/Modify/Delete Internal User Account</a> </div>
 	<br></br>
-	<div align="center" class="row"><a href="${pageContext.request.contextPath}/tier3/editprofile">Modify Internal User Account</a> </div>
+	<div align="center" class="row"><a href="${pageContext.request.contextPath}/admin">Authorize Internal User Account</a> </div>
 	<br></br>
-	<div align="center" class="row"><a href="${pageContext.request.contextPath}/tier3/deleteprofile">Delete Internal User Account</a> </div>
+	<div align="center" class="row"><a href="${pageContext.request.contextPath}/admin">Authorize Internal Users Request</a> </div>
 	<br></br>
-	<div align="center" class="row"><a href="${pageContext.request.contextPath}/tier3">Authorize Internal User Account</a> </div>
-	<br></br>
-	<div align="center" class="row"><a href="${pageContext.request.contextPath}/tier3">Authorize Internal Users Request</a> </div>
-	<br></br>
-	<div align="center" class="row"><a href="${pageContext.request.contextPath}/tier3">Decline Internal Users Request</a> </div>
+	<div align="center" class="row"><a href="${pageContext.request.contextPath}/admin">Decline Internal Users Request</a> </div>
 	<br></br>	
-	<div align="center" class="row"><a href="${pageContext.request.contextPath}/tier3/viewlogs">Access Log File</a> </div>
+	<div align="center" class="row"><a href="${pageContext.request.contextPath}/admin/viewlogs">Access Log File</a> </div>
 	<br></br>	
-	<div align="center" class="row"><a href="${pageContext.request.contextPath}/tier3">Access PII</a> </div>
+	<div align="center" class="row"><a href="${pageContext.request.contextPath}/admin/pii">Access PII</a> </div>
 	<br></br>	
 
 </body>

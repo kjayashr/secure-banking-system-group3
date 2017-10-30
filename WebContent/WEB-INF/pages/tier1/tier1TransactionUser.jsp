@@ -11,6 +11,7 @@
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
+<sec:authorize access="hasRole('ROLE_TIER1_APPROVED')">
 <div class="container">
 							<div id="payment">
 					<h3>Please Provide Customer User Name:</h3>
@@ -41,8 +42,10 @@
 
 				</div>
 </div>
+</sec:authorize>
 <div class="row" align="left">
 			<a href="${pageContext.request.contextPath}/tier1">Go Back To Home Page</a>
 		</div>
+		
 </body>
 </html>

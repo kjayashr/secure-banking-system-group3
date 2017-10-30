@@ -53,7 +53,7 @@ $('.dropdown-menu li a').click(function(){
   });
 </script>
 
-	<sec:authorize access="hasRole('ROLE_USER')">
+	<sec:authorize access="hasRole('ROLE_TIER1_APPROVED')">
 		<!-- For login user -->
 		<c:url value="/j_spring_security_logout" var="logoutUrl" />
 		<form action="${logoutUrl}" method="post" id="logoutForm">
@@ -85,8 +85,10 @@ $('.dropdown-menu li a').click(function(){
 
 					<div class="container">
 						<form class="form-horizontal" method="post"
-							action="${pageContext.request.contextPath}/request"
+							action="${pageContext.request.contextPath}/tier1/requestForUser"
 							onsubmit="validateAmountCD()">
+							<input type="hidden" name="forUser"
+								value="${customerUser}" />
 							<div class="form-group" style="padding-top: 40px">
 								<label class="control-label col-sm-2" for="amount">Amount($):</label>
 								<div class="col-sm-2">
@@ -131,11 +133,13 @@ $('.dropdown-menu li a').click(function(){
 					</div>
 				</div>
 				<div id="transfer" class="tab-pane fade">
-					<h3>Tranfer Money</h3>
+					<h3>Transfer Money</h3>
 					<div class="container">
 						<form class="form-horizontal" method="post"
-							action="${pageContext.request.contextPath}/transfer"
+							action="${pageContext.request.contextPath}/tier1/transferForUser"
 							onsubmit=" return validateTransfer()">
+							<input type="hidden" name="forUser"
+								value="${customerUser}" />
 							<div class="form-group" style="padding-top: 40px">
 								<label class="control-label col-sm-2" for="amount">Amount($):</label>
 								<div class="col-sm-2">
@@ -209,7 +213,9 @@ $('.dropdown-menu li a').click(function(){
 					<h3>Make a Payment</h3>
 					<div class="container">
 						<form class="form-horizontal" method="post"
-							action="${pageContext.request.contextPath}/payment">
+							action="${pageContext.request.contextPath}/tier1/paymentForUser">
+							<input type="hidden" name="forUser"
+								value="${customerUser}" />
 							<div class="form-group" style="padding-top: 40px">
 								<label class="control-label col-sm-2" for="amount">Amount($):</label>
 								<div class="col-sm-2">

@@ -8,6 +8,8 @@ public class TransactionDO {
 	private String approverUserName;
 	private String targetUserName;
 	private String transactorUserName;
+	private String toAccountType;
+	private String fromAccountType;
 	
 	public int getTransactionId() {
 		return transactionId;
@@ -51,5 +53,21 @@ public class TransactionDO {
 	}
 	public void setTransactorUserName(String transactorUserName) {
 		this.transactorUserName = transactorUserName;
+	}
+	
+	public void setFromAccountType(String fromAccountType) {
+		this.fromAccountType = fromAccountType;
+	}
+	
+	public void setToAccountType(String toAccountType) {
+		this.toAccountType = toAccountType;
+	}
+	
+	public String getFromAccountType() {
+		return fromAccountType;
+	}
+	
+	public String getToAccountType() {
+		return toAccountType;
 	}
 }
