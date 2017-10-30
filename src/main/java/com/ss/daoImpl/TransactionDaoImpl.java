@@ -13,7 +13,10 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.ss.dao.TransactionDao;
 import com.ss.model.TransactionList;
-import com.ss.model.ApprovalList;;;
+
+
+import com.ss.model.ApprovalList;
+import com.ss.model.TransactionDetails;;;
 
 
 public class TransactionDaoImpl implements TransactionDao{
@@ -35,9 +38,24 @@ public class TransactionDaoImpl implements TransactionDao{
 		}
 	}
 
-	public int changestatus(String transactionId, String status) {
-		String sql="Update transaction set status='"+status+"' where id="+transactionId;
-		int i=jdbcTemplate.update(sql);
+	public int changestatus(String transactionId, String status, String amount) {
+		Double sum=Double.parseDouble(amount);
+		int i=0;
+		if(sum>1000 && status.equalsIgnoreCase("accepted")){
+			// critical
+			String sql="Update transaction set status='accepted' where id=?";
+			i=jdbcTemplate.update(sql, new Object[] {transactionId});
+		}else if (sum<=1000 && status.equalsIgnoreCase("accepted")){
+			//non critical
+			System.out.println("inside change status: non critical and approved");
+			String sql="Update transaction set status='approved' where id=?";
+			i=jdbcTemplate.update(sql, new Object[] {transactionId});
+			
+		}else{
+			String sql="Update transaction set status='rejected' where id=?";
+			i=jdbcTemplate.update(sql, new Object[] {transactionId});
+		}
+		
 		return i;
 	}
 
@@ -52,7 +70,43 @@ public class TransactionDaoImpl implements TransactionDao{
 
 	}
 
+	public List<TransactionDetails> getDetailsforInternalTransfer(String transactionId) {
+		// TODO Auto-generated method stub
+		String sql="Select * from transaction where id=?";
+		List<TransactionDetails> list=jdbcTemplate.query(sql,new Object[] {transactionId}, new TransactionDetailMapper() );
+		return list;
+		
+	}
+
+	public void setApproverUserName(String username, String transactionId) {
+		// TODO Auto-generated method stub
+		int id=Integer.parseInt(transactionId);
+		String sql="Update transaction set approverUserName=? where id=?";
+		int i=jdbcTemplate.update(sql, new Object[] {username,id});
+
+		
+	}
+
 }
+
+class TransactionDetailMapper implements RowMapper<TransactionDetails> {
+	public TransactionDetails mapRow(ResultSet rs, int arg1) throws SQLException {
+		TransactionDetails list = new TransactionDetails();
+		list.setDate(rs.getString("transactiondate"));
+		list.setId(rs.getInt("id"));
+		list.setAmount(rs.getDouble("amount"));
+		list.setDetail(rs.getString("detail"));
+		list.setStatus(rs.getString("status"));
+		list.setTransacterUsername(rs.getString("transacterusername"));
+		list.setTransferto(rs.getString("transferto"));
+		list.setCritical(rs.getBoolean("critical"));
+		list.setApproverUsername(rs.getString("approverUserName"));
+		list.setFromAccountType(rs.getString("fromAccountType"));
+		list.setToAccounttype(rs.getString("toAccountType"));
+		return list;
+	}
+}
+
 
 class approvalListMapper implements RowMapper<ApprovalList> {
 	public ApprovalList mapRow(ResultSet rs, int arg1) throws SQLException {

@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ss.daoImpl.AccountDaoImpl;
 import com.ss.daoImpl.TransactionDaoImpl;
 import com.ss.model.ApprovalList;
+import com.ss.model.TransactionDetails;
 
 
 @Controller
@@ -20,6 +22,9 @@ public class ApprovalController {
 	
 	@Autowired
 	TransactionDaoImpl transactionDaoImpl;
+	
+	@Autowired
+	AccountDaoImpl accountDaoImpl;
 	
 	@RequestMapping(value="/userapprovals",method=RequestMethod.GET)
 	public String getListOfApprovals(Authentication auth,ModelMap model){
@@ -62,10 +67,25 @@ public class ApprovalController {
 	
 	
 	@RequestMapping(value="/approveByUser*",method=RequestMethod.POST)
-	public @ResponseBody String checkUserName(@RequestParam("transactionId") String transactionId,@RequestParam("status") String status){
+	public @ResponseBody String checkUserName(@RequestParam("transactionId") String transactionId,@RequestParam("status") String status,@RequestParam("amount") String amount){
 		//System.out.print("Username to check " +transactionId);
-		//System.out.print("Username to check " +status);
-		int ret = transactionDaoImpl.changestatus(transactionId,status);
+		System.out.print("inside approverBy user");
+		int ret = transactionDaoImpl.changestatus(transactionId,status,amount);
+		Double a=Double.parseDouble(amount);
+		// approve non critical transactions
+		if(a<1000){
+			
+			List<TransactionDetails> transactionlist=transactionDaoImpl.getDetailsforInternalTransfer(transactionId);
+			TransactionDetails list=transactionlist.get(0);
+			System.out.println(list.getTransferto());
+			if(!list.getTransferto().equals("null")){
+				// non critical external transfer
+				System.out.println("inside external");
+
+				accountDaoImpl.doTransferExternal(list.getTransacterUsername(), a, list.getFromAccountType(), list.getTransferto());
+				transactionDaoImpl.setApproverUserName(list.getTransferto(),transactionId);
+				}
+		}
 		return "ret";
 	}
 	
@@ -76,7 +96,7 @@ public class ApprovalController {
 	public @ResponseBody String MerchantcheckUserName(@RequestParam("transactionId") String transactionId,@RequestParam("status") String status){
 		//System.out.print("Username to check " +transactionId);
 		//System.out.print("Username to check " +status);
-		int ret = transactionDaoImpl.changestatus(transactionId,status);
+		//int ret = transactionDaoImpl.changestatus(transactionId,status);
 		return "ret";
 	}
 

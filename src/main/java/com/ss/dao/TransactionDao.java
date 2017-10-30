@@ -8,6 +8,6 @@ import com.ss.model.TransactionList;
 public interface TransactionDao {
 
 	List<ApprovalList> getApprovalList(String username);
-	int changestatus(String transactionId, String status);
+	int changestatus(String transactionId, String status, String amount);
 	List<TransactionList> viewTransaction(String username);
 }

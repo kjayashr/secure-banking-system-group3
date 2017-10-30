@@ -40,11 +40,10 @@ public class ApprovalController {
 	
 	
 	@RequestMapping(value="/approveByUser*",method=RequestMethod.POST)
-	public @ResponseBody String checkUserName(@RequestParam("transactionId") String transactionId,@RequestParam("status") String status){
+	public @ResponseBody String checkUserName(@RequestParam("transactionId") String transactionId,@RequestParam("status") String status,@RequestParam("amount") String amount){
 		//System.out.print("Username to check " +transactionId);
 		//System.out.print("Username to check " +status);
-		int ret = transactionDaoImpl.changestatus(transactionId,status);
+		int ret = transactionDaoImpl.changestatus(transactionId,status,amount);
 		return "ret";
 	}
-
 }

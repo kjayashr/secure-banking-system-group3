@@ -324,7 +324,7 @@ public void MPayment(String cardno,String cvv,double amount,String usernameofuse
 
 	public void doTransferExternal(String username, double amount, String accountTypeFrom, String tousername) {
 		// TODO Auto-generated method stub
-		System.out.println("inside fxn");
+		System.out.println("amount:"+ amount);
 		String sql1 = "update account set balance = balance - ? where username=? and accountType=?";
 		String sql2 = "update account set balance = balance + ? where username=? and accountType ='Saving'";
 		jdbcTemplate.update(sql1, new Object[] { amount, username, accountTypeFrom });

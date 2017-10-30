@@ -60,10 +60,13 @@ public class RequestController {
 				String status="pending";
 				DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 				Date date = new Date();
-				if(amount>=threshold)
+				if(amount<threshold){
 					critical=true;
+					//accountDaoImpl.doCreditDebit(accountType, amount, type, username);
+
+				}
+				amount=amount*(-1);
 				accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,approverusername,accountType,accountType);
-				accountDaoImpl.doCreditDebit(accountType, amount, type, username);
 				notifyPage.addObject("notification","Payment Processed sucessfully");
 			}else{
 				notifyPage.addObject("notification","Insufficient Funds");
@@ -74,10 +77,11 @@ public class RequestController {
 			Date date = new Date();
 			String detail="Credit to "+accountType;
 			String status="pending";
-			if(amount>=threshold)
+			if(amount<threshold){
 				critical=true;
+				//accountDaoImpl.doCreditDebit(accountType, amount, type, username);
+				}
 			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,approverusername,accountType,accountType);
-			accountDaoImpl.doCreditDebit(accountType, amount, type, username);
 			notifyPage.addObject("notification","Payment Processed sucessfully");
 		}
 		return notifyPage;
@@ -250,8 +254,12 @@ public class RequestController {
 			if(typeOfTransfer.equalsIgnoreCase("internal")){
 				 detail="Transfer to "+ accountTypeTo + " from "+ accountTypeFrom;
 				 tousername=accountTypeTo;
+				 if(critical==false){
+					 accountDaoImpl.doTransferInternal(username,amount, accountTypeFrom,accountTypeTo);
+					 status="approved";
+
+				 }
 				 accountDaoImpl.addToTransaction(amount, detail, status, username, date, tousername, critical,null,accountTypeFrom,accountTypeTo); 
-				 accountDaoImpl.doTransferInternal(username,amount, accountTypeFrom,accountTypeTo);
 
 			}
 			else{    // external
@@ -260,7 +268,7 @@ public class RequestController {
 				 detail="Transfer to "+ recipient + " from "+ accountTypeFrom;
 				 System.out.println("inside external");
 				accountDaoImpl.addToTransaction(amount, detail, status, username, date, tousername, critical,null,accountTypeFrom,"Saving"); 
-				accountDaoImpl.doTransferExternal(username, amount, accountTypeFrom, tousername);
+				//accountDaoImpl.doTransferExternal(username, amount, accountTypeFrom, tousername);
 			}
 			
 			//accountDaoImpl.doTransfer(accountTypeFrom,tousername,amount, username);
@@ -292,7 +300,7 @@ public class RequestController {
 			Date date = new Date();
 			if(amount>threshold) critical=true;
 			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,null, accountTypeFrom,"payment"); 
-			accountDaoImpl.doPayment(accountTypeFrom,amount,username);
+			//accountDaoImpl.doPayment(accountTypeFrom,amount,username);
 			notifyPage.addObject("notification","Payment Processed sucessfully");
 		}else{
 			notifyPage.addObject("notification","Insufficient Funds");

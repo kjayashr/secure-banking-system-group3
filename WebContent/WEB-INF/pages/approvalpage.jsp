@@ -14,16 +14,17 @@
 <body>
 <jsp:include page="header.jsp"/>
 <script>
-   	 function changeStatus(x,y) {
+   	 function changeStatus(x,y,z) {
    		 	console.log("dsa");
 	   		var token = $("meta[name='_csrf']").attr("content");
    			var header = $("meta[name='_csrf_header']").attr("content");
    			var transactionId=x;
    			var status=y;
+   			var amount=z;
 			$.ajax({
 				type:"POST",
 				url:"${pageContext.request.contextPath}/approveByUser",
-				data:{transactionId:transactionId, status:status},
+				data:{transactionId:transactionId, status:status, amount:amount},
 			    success:function(response){
 			    		console.log(response);
 			    		$("#accepted").attr("disabled", true);
@@ -64,8 +65,8 @@
 					<td>${log.sender}</td>
 
 					<td>${log.amount}</td>
-						<td><button id="accepted" onclick="changeStatus(${log.id}, this.id)">Approve</button></td>
-					<td><button id="declined" onclick="changeStatus(${log.id}, this.id)">Decline</button></td>
+						<td><button id="accepted" onclick="changeStatus(${log.id}, this.id,${log.amount})">Approve</button></td>
+					<td><button id="declined" onclick="changeStatus(${log.id}, this.id,${log.amount})">Decline</button></td>
 					
 				</tr>
 			</c:forEach>
