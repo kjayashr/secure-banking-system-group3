@@ -104,6 +104,7 @@ public class UserDaoImpl implements UserDao {
 
 	}
 	
+	
 	public List<User> getExternalUserInfo(String username) {
 		String sql = "select users.username as username, firstname, lastname, dob, address, email, contactno, "
 				+ "ssn, city, state, country, postcode from users inner join user_roles on users.username = user_roles.username where "
@@ -121,16 +122,19 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public int ProcessInternalUserProfileUpdate(HttpServletRequest req, String username) {
+		System.out.println("my bear");
 		String sql = "update users set firstname = ?, lastname = ?, dob = ?, ssn = ?, city = ?, state = ?, "
 				+ "country = ?, postcode = ?, contactno = ? where username = ?";
-
+		System.out.println("my dog");
 		try {
 			return jdbcTemplate.update(sql, new Object[] { req.getParameter("firstname"), req.getParameter("lastname"),
 					req.getParameter("dob"), Long.parseLong(req.getParameter("ssn")), req.getParameter("city"),
 					req.getParameter("state"), req.getParameter("country"),
-					Integer.parseInt(req.getParameter("postcode")), Long.parseLong(req.getParameter("contactno")) });
+					Integer.parseInt(req.getParameter("postcode")), Long.parseLong(req.getParameter("contactno")), username });
+				
 		} catch (DataAccessException e) {
 			// TODO Log message
+			System.out.println("God damn it");
 			return 0;
 		}
 	}

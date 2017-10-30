@@ -12,12 +12,17 @@
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
+ <meta name="_csrf" content="${_csrf.token}"/>
+	<!-- default header name is X-CSRF-TOKEN -->
+<meta name="_csrf_header" content="${_csrf.headerName}"/>
 <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
 <body>
 <jsp:include page="header.jsp"></jsp:include>
 
 <script>
-   	 function changeStatus(x) {
+   	 function approve(x) {
    		 	console.log("In changeStatus");
 	   		var token = $("meta[name='_csrf']").attr("content");
    			var header = $("meta[name='_csrf_header']").attr("content");
@@ -84,7 +89,7 @@
 				                         <td>${transaction.targetUserName}</td>
 				                         <td>${transaction.amount}</td>
 				                         <td>
-					                          <button id="accepted" onclick="changeStatus(${transaction.transactionId})">Approve</button>
+					                          <button id="accepted" onclick="approve(${transaction.transactionId})">Approve</button>
 				                         </td>
 				                         <td>
                                               <button id="declined" onclick="decline(${transaction.transactionId})">Decline</button>
