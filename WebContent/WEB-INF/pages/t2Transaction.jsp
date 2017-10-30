@@ -77,6 +77,7 @@
     				         <col width = "80"/>
 	    			         <table class="table">	
 	    			             <tr>
+	    			                 <th>Transaction id</th>
 	    			                 <th>FromUser</th>
 	    			                 <th>ToUser</th>
 	    			                 <th>Amount</th>
@@ -85,6 +86,7 @@
 	    			             </tr>	             
 				                 <c:forEach items="${transactions}" var="transaction">
 				                     <tr>
+				                         <td>${transaction.transactionId }</td>
 				                         <td>${transaction.transactorUserName}</td>
 				                         <td>${transaction.targetUserName}</td>
 				                         <td>${transaction.amount}</td>
@@ -93,12 +95,6 @@
 				                         </td>
 				                         <td>
                                               <button id="declined" onclick="decline(${transaction.transactionId})">Decline</button>
-				                         </td>
-				                         <td>
-				                             <FORM NAME="form1" METHOD="POST">
-				                                 <INPUT TYPE="HIDDEN" NAME="buttonName">
-                                                 <INPUT TYPE="BUTTON" VALUE="decline">
-				                             </FORM>
 				                         </td>
 				                     </tr>
 				                 </c:forEach>

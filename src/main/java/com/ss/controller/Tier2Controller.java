@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class Tier2Controller {
 	private static final String USER_ROLE_TIER2 = "ROLE_TIER2";
+	private static String PAYMENT_ACCOUNT_TYPE = "payment";
 	@Autowired
 	RegistrationDao registrationImpl;
 	
@@ -263,6 +264,25 @@ public class Tier2Controller {
 			}
 			
 			TransactionDO transaction = transactionBO.getTransactionFromId(transactionId);
+			//handling payments
+			if (PAYMENT_ACCOUNT_TYPE.equals(transaction.getToAccountType())) {
+			    boolean amountCheck = accountDaoImpl.checkAmount(transaction.getFromAccountType(), transaction.getAmount(), transaction.getTransactorUserName());
+			    boolean transactionSuccess = false;
+			    String transactionMessage = "";
+				if (amountCheck) {
+					transactionSuccess = transactionBO
+							.approveTransaction(transactionId, userInSession);
+				} else {
+					transactionMessage = "Not enough balance to perform debit";
+				}
+				if (transactionSuccess) {
+					accountDaoImpl.doCreditDebit(transaction.getFromAccountType(), transaction.getAmount(), "credit", transaction.getTransactorUserName());
+				    return "Transaction approval processed successfully!";
+				} else {
+					return "Transaction failed";
+				}
+			}
+			
 			System.out.println("checking values :" + transaction.getTargetUserName() + " " + transaction.getFromAccountType() + transaction.getToAccountType());
 			// handles either internal transfer or debit and credit
 			if (transaction.getTargetUserName() == null) {
