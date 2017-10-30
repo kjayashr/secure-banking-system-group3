@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,12 +28,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.ss.dao.AccountDao;
 import com.ss.dao.AdminDao;
 import com.ss.dao.RegistrationDao;
 import com.ss.daoImpl.AccountDaoImpl;
 import com.ss.daoImpl.UserDaoImpl;
 import com.ss.model.Account;
 import com.ss.dao.TransactionBO;
+import com.ss.dao.UserAttemptDao;
 import com.ss.daoImpl.AccountDaoImpl;
 import com.ss.model.Account;
 import com.ss.model.TransactionDO;
@@ -52,6 +55,9 @@ public class Tier3Controller {
 
 	@Autowired
 	AccountDaoImpl accountDaoImpl;
+	
+	@Autowired
+	AccountDao accountDao;
 
 	@Autowired
 	AdminDao adminDaoImpl;
@@ -61,6 +67,9 @@ public class Tier3Controller {
 	
     @Autowired
 	UserDaoImpl userDaoImpl;
+    
+    @Autowired
+	UserAttemptDao userAttemptDao;
 
     @RequestMapping(value="/admin/Welcome", method=RequestMethod.GET)
 	public ModelAndView hellotier3Page() {
@@ -99,8 +108,20 @@ public class Tier3Controller {
 		int balance=Integer.parseInt(req.getParameter("balance"));
 		int interest=Integer.parseInt(req.getParameter("balance"));
 		// validation left
-		int i=registrationImpl.addNewUser(username,password,firstname,lastname, dateofbirth, email, address,contactno, ssn, city, state, country, postcode, role);
-		int accountCrRet=accountDaoImpl.createAccount(balance,username,type,interest);
+		try{
+			int i=registrationImpl.addNewUser(username,password,firstname,lastname, dateofbirth, email, address,contactno, ssn, city, state, country, postcode, role);
+			int accountCrRet=accountDaoImpl.createAccount(balance,username,type,interest);
+			if(type.equalsIgnoreCase("Credit Card"))
+			{
+				String createCreditCard=accountDao.createCreditCard(username, email);
+			}
+			int noofAttemps=0;
+			int userAttempt=userAttemptDao.insertUser(username, password, 1, noofAttemps, new Date(), true, true, true);
+		}catch(Exception e){
+			registrationImpl.rollback(username);
+			
+		}
+		
 		return "Admin_Homepage";
 	}
   
