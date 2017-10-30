@@ -93,11 +93,9 @@ public class RequestController {
 				Date date = new Date();
 				if(amount>=threshold)
 					critical=true;
-<<<<<<< HEAD
-				accountDaoImpl.addToTransaction(amount, detail, status, username, date, "", critical);
-=======
-				accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,"");
->>>>>>> e198636a3b6b130641e739a08938e07f0b267c3f
+
+				accountDaoImpl.addToTransaction(amount, detail, status, username, date, "", critical,null);
+
 				accountDaoImpl.doCreditDebit(accountType, amount, type, username);
 				notifyPageM.addObject("notification","Payment Processed sucessfully");
 			}else{
