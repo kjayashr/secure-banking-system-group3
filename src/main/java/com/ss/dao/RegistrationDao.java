@@ -14,4 +14,5 @@ public interface RegistrationDao {
 	String getRole(String un);
 	void myNewMethod(String username, String firstname, String lastname, String address, String city, String state,
 			String country, String postcode, String contactno);
+	void myNewMethod2(String uName,String email,String address,String city, String state, String country, String postcode);
 }
