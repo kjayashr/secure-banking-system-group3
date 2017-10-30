@@ -64,7 +64,6 @@
 					<td>${log.sender}</td>
 
 					<td>${log.amount}</td>
-					<td>${log.id}</td>
 					<td><button id="accepted" onclick="changeStatus(${log.id}, this.id)">Approve</button></td>
 					<td><button id="declined" onclick="changeStatus(${log.id}, this.id)">Decline</button></td>
 					

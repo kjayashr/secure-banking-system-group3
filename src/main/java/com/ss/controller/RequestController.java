@@ -295,22 +295,26 @@ public class RequestController {
 			if(typeOfTransfer.equalsIgnoreCase("internal")){
 				 detail="Transfer to "+ accountTypeTo + " from "+ accountTypeFrom;
 				 tousername=accountTypeTo;
+				 accountDaoImpl.addToTransaction(amount, detail, status, username, date, tousername, critical,null,accountTypeFrom,accountTypeTo); 
+				 accountDaoImpl.doTransferInternal(username,amount, accountTypeFrom,accountTypeTo);
+
 			}
-			else{
+			else{    // external
 				  String to=accountDaoImpl.getusername(recipient);
 				  tousername=to;
 				 detail="Transfer to "+ recipient + " from "+ accountTypeFrom;
+				 System.out.println("inside external");
+				accountDaoImpl.addToTransaction(amount, detail, status, username, date, tousername, critical,null,accountTypeFrom,"Saving"); 
+				accountDaoImpl.doTransferExternal(username, amount, accountTypeFrom, tousername);
 			}
 			
-			accountDaoImpl.addToTransaction(amount, detail, status, username, date, tousername, critical,""); 
-			accountDaoImpl.doTransfer(accountTypeFrom,tousername,amount);
+			//accountDaoImpl.doTransfer(accountTypeFrom,tousername,amount, username);
 			notifyPageM.addObject("notification","Payment Processed sucessfully");
 		}else{
 			notifyPageM.addObject("notification","Insufficient Funds");
 		}
 		return notifyPageM;
 	}
-	
 	
 	
 	@RequestMapping(value="/payment", method=RequestMethod.POST)
@@ -334,7 +338,7 @@ public class RequestController {
 			Date date = new Date();
 			if(amount>threshold) critical=true;
 
-			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,null, accountTypeFrom,"payment"); 
+			accountDaoImpl.addToTransaction(amount, detail, status, username, date,accountTypeTo, critical,null, accountTypeFrom,"payment"); 
 			accountDaoImpl.doPayment(accountTypeFrom,amount,username);
 
 			notifyPage.addObject("notification","Payment Processed sucessfully");
@@ -345,34 +349,6 @@ public class RequestController {
 	}
 	
 
-	@RequestMapping(value="/Merchantpayment", method=RequestMethod.POST)
-	public ModelAndView MerchantpaymentRequest(HttpServletRequest req,Authentication auth){
-		String username=auth.getName();
-		boolean critical=false;
-		ModelAndView notifyPageM=new ModelAndView("notifyMer");
-		String accountTypeFrom=req.getParameter("from");
-		String accountTypeTo=req.getParameter("to");
-		double amount=Double.parseDouble(req.getParameter("amount"));
-		System.out.println(accountTypeFrom + " " + accountTypeTo + " " +amount);
-		
-		// add validation over cedit and debit
-		// check if both to and from are same
-		boolean check=accountDaoImpl.checkAmount(accountTypeFrom, amount, username);
-		if(check){
-			//ADDING TO TRANSACTION TABLE
-			String detail="Paid to "+ accountTypeTo;
-			String status="pending";
-			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-			Date date = new Date();
-			if(amount>threshold) critical=true;
-			accountDaoImpl.addToTransaction(amount, detail, status, username, date,accountTypeTo, critical,""); 
-			accountDaoImpl.doPayment(accountTypeFrom,amount);
-			notifyPageM.addObject("notification","Payment Processed sucessfully");
-		}else{
-			notifyPageM.addObject("notification","Insufficient Funds");
-		}
-		return notifyPageM;
-	}
 	
 	
 	

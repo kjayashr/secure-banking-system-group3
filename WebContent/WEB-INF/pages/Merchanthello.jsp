@@ -60,7 +60,6 @@ $('.dropdown-menu li a').click(function(){
 				<li class="active"><a data-toggle="tab" href="#account">Accounts</a></li>
 				<li><a data-toggle="tab" href="#creditdebit">Credit/Debit</a></li>
 				<li><a data-toggle="tab" href="#transfer">Transfer</a></li>
-				<li><a data-toggle="tab" href="#payment">Payment</a></li>
 				<li><a data-toggle="tab" href="#GetCustomerPayment">GetCustomerPayment</a></li>
 			</ul>
 
@@ -89,6 +88,7 @@ $('.dropdown-menu li a').click(function(){
 
 
 				</div>
+				
 				<div id="creditdebit" class="tab-pane fade">
 
 					<div class="container">
@@ -215,63 +215,9 @@ $('.dropdown-menu li a').click(function(){
 
 
 
-				<div id="payment" class="tab-pane fade">
-					<h3>Make a Payment</h3>
-					<div class="container">
-						<form class="form-horizontal" method="post"
-							action="${pageContext.request.contextPath}/Merchantpayment">
-							<div class="form-group" style="padding-top: 40px">
-								<label class="control-label col-sm-2" for="amount">Amount($):</label>
-								<div class="col-sm-2">
-									<input type="number" class="form-control" id="amount"
-										placeholder="Enter amount" name="amount" min=1 required>
-								</div>
-							</div>
+				
 
-							<div class="form-group">
-								<label class="control-label col-sm-2" for="from">From: :</label>
-								<div class="col-sm-2 dropdown">
-
-									<select class="form-control" id="from" name="from">
-									<c:forEach items="${validAccounts}" var="account">
-										<option value="${account}">${account}</option>
-									</c:forEach>
-								</select>
-
-
-								</div>
-							</div>
-
-							<div class="form-group">
-								<label class="control-label col-sm-2" for="to">To :</label>
-								<div class="col-sm-2 dropdown">
-
-									<input type="text" class="form-control" id="to"
-										placeholder="Enter email" name="to" required>
-
-								</div>
-							</div>
-
-							<div class="form-group">
-								<label class="control-label col-sm-2" for="comments">
-									Comments:</label>
-								<div class="col-sm-2 dropdown">
-									<input type="text" class="form-control" id="comments"
-										placeholder="Enter comment" name="comment">
-								</div>
-							</div>
-
-							<div class="form-group">
-								<div class="col-sm-offset-2 col-sm-10">
-									<button type="submit" class="btn btn-default">Submit</button>
-								</div>
-							</div>
-							<input type="hidden" name="${_csrf.parameterName}"
-								value="${_csrf.token}" />
-						</form>
-					</div>
-
-				</div>
+							
 				
 				
 				<div id="GetCustomerPayment" class="tab-pane fade">
