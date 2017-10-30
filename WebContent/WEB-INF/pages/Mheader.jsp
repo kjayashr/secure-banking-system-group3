@@ -29,7 +29,6 @@
   	 </h4>
   	 </div>
      <div class="col-md-8">
-    		<sec:authorize access="hasRole('ROLE_MERCHANT')">
 		<!-- For login user -->
 			<c:url value="/j_spring_security_logout" var="logoutUrl" />
 				<form action="${logoutUrl}" method="post" id="logoutForm" >
@@ -41,16 +40,18 @@
 				}
 			</script>
 			<div class="row">
+    		<sec:authorize access="hasRole('ROLE_MERCHANT')">
 				<a href="${pageContext.request.contextPath}/Merchanteditprofile" class="btn btn-default navbar-btn pull-right"  >Edit Profile</a>		
 				<a href="${pageContext.request.contextPath}/Merchantviewtransaction" class="btn btn-default navbar-btn pull-right"  >View Transactions</a>
 				<a href="${pageContext.request.contextPath}/Merchantuserapprovals" class="btn btn-default navbar-btn pull-right"  >Approvals Needed</a>
+				
+			</sec:authorize>
 				<c:if test="${pageContext.request.userPrincipal.name != null}">
 						<a href="javascript:formSubmit()" type="button" class="btn btn-default navbar-btn pull-right" >
     						  <span class="glyphicon glyphicon-log-out"></span>Logout
     						</a>
 				</c:if>
 			</div>
-			</sec:authorize>
 		</div>
 	</div>
 	</div>

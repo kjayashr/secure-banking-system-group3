@@ -49,6 +49,13 @@ public class EditProfileViewTransaction {
 	public String getEditProfile() {
 		return "editprofile";
 	}
+	
+	
+	@RequestMapping(value = "/Merchanteditprofile", method = RequestMethod.GET)
+	public String MerchantgetEditProfile() {
+		return "Merchanteditprofile";
+	}
+	
 
 	@RequestMapping(value = "/viewtransaction", method = RequestMethod.GET)
 	public String viewtransactionOTP(HttpServletRequest req, Authentication auth, ModelMap model) {
@@ -59,6 +66,15 @@ public class EditProfileViewTransaction {
 		return "otpPage";
 	}
 
+	@RequestMapping(value = "/Merchantviewtransaction", method = RequestMethod.GET)
+	public String MerchantviewtransactionOTP(HttpServletRequest req, Authentication auth, ModelMap model) {
+		String username = auth.getName();
+		otpUtil.generateOTP(username);
+		model.addAttribute("page", "Merchantviewtransaction");
+		model.addAttribute("otp_attempts", 3);
+		return "MerchantotpPage";
+	}
+	
 	@RequestMapping(value = "/viewtransaction", method = RequestMethod.POST)
 	public ModelAndView getviewtransaction(HttpServletRequest req, HttpServletResponse resp, Authentication auth, ModelMap model) {
 		String username = auth.getName();
@@ -91,6 +107,43 @@ public class EditProfileViewTransaction {
 		// return "transactionpage";
 		return new ModelAndView("transactionpage", "list", data);
 	}
+	
+	
+	
+	@RequestMapping(value = "/Merchantviewtransaction", method = RequestMethod.POST)
+	public ModelAndView Merchantgetviewtransaction(HttpServletRequest req, HttpServletResponse resp, Authentication auth, ModelMap model) {
+		String username = auth.getName();
+		int userOTP = Integer.parseInt(req.getParameter("userOTP"));
+		int count = Integer.parseInt(req.getParameter("otp_attempts"));
+		if (!otpUtil.validateOTP(username, userOTP, count)) {
+			count--;
+			if (count > 0) {
+				model.addAttribute("page", "Merchantviewtransaction");
+				model.addAttribute("otp_attempts", count);
+				return new ModelAndView("MerchantotpPage");
+			} else {
+				try {
+					new CustomAuthenticationSuccessHandler().onAuthenticationSuccess(req, resp, auth);
+				} catch (IOException | ServletException e) {
+					
+				}
+			}
+		}
+
+		List<TransactionList> data = transactionDaoImpl.viewTransaction(username);
+		if (data == null || data.isEmpty()) {
+			model.addAttribute("emptyMsg", "No Transaction available to view");
+		}
+		model.addAttribute("list", data);
+		model.addAttribute("column1", "Date");
+		model.addAttribute("column2", "Details");
+		model.addAttribute("column3", "Amount");
+		model.addAttribute("title", "Transaction List");
+		// return "transactionpage";
+		return new ModelAndView("Merchanttransactionpage", "list", data);
+	}
+	
+	
 
 	@RequestMapping(value = "/downloadPDF")
 	public void downloadPDF(Authentication auth, HttpServletRequest request, HttpServletResponse response)
