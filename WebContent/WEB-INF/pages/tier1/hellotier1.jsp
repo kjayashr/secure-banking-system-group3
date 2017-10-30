@@ -27,7 +27,7 @@
 			<a href="${pageContext.request.contextPath}/tier1/createExternalUser">Create External User Account</a>
 </div>
 <div class="row" align="center">
-	<a href="${pageContext.request.contextPath}/tier1">Modify External User Account</a>
+	<a href="${pageContext.request.contextPath}/tier1/searchExternalUser">Modify External User Account</a>
 </div>
 </sec:authorize>
 <div class="row" align="center">

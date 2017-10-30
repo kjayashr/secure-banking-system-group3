@@ -21,8 +21,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.ss.dao.TransactionBO;
 import com.ss.daoImpl.AccountDaoImpl;
+import com.ss.daoImpl.UserDaoImpl;
 import com.ss.model.Account;
 import com.ss.model.TransactionDO;
+import com.ss.model.User;
+
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +40,9 @@ public class Tier1Controller {
 	
 	@Autowired
 	TransactionBO transactionBO;
+	
+	@Autowired
+	UserDaoImpl userDaoImpl;
 	
     @RequestMapping(value="/tier1", method=RequestMethod.GET)
 	public ModelAndView hellotier1Page() {
@@ -197,5 +203,65 @@ public class Tier1Controller {
 		mav.addObject("customerUser", fromUserName);
 		mav.setViewName("tier1/paymentRequest");
 		return mav;
+	}
+	
+    @RequestMapping(value="/tier1/searchExternalUser",method=RequestMethod.GET)
+    public ModelAndView searchExternaluser() {
+    	ModelAndView model = new ModelAndView();
+    	model.addObject("pagename","Search External Users Profile");
+    	model.setViewName("tier1/t1searchExternalUser");
+    	return model;
+    }
+	
+	@RequestMapping(value="/tier1/modifyExternalUser",method=RequestMethod.POST)
+    public ModelAndView ModifyInternalUserAccount(HttpServletRequest req,Authentication auth) {
+    	ModelAndView model = new ModelAndView();
+		String username=req.getParameter("username");
+		/// named internal user below but works for external users as well
+    	List<User> InternaluserInfo = userDaoImpl.getExternalUserInfo(username);
+    	System.out.println(username);
+		System.out.println("user-size" + InternaluserInfo.size());
+		if(InternaluserInfo.size() > 0 ) {
+			System.out.println("user" + InternaluserInfo.get(0).getFirstname());
+			model.addObject("userInfo",InternaluserInfo.get(0));
+			model.addObject("message", "This is welcome page!");
+			model.setViewName("tier1/t1modifyExternalUser");			
+		} else {
+			model.setViewName("tier1/t1searchExternalUser");			
+		}
+		return model;  
+	}
+	
+	@RequestMapping(value="/tier1/checkinternalusername*",method=RequestMethod.POST)
+	public @ResponseBody String CheckInternalUsername(@RequestParam("username") String username){
+		System.out.print("Username to check " +username);
+    	List<User> InternaluserInfo = userDaoImpl.getExternalUserInfo(username);
+		System.out.println("user-size" + InternaluserInfo.size());
+		if(InternaluserInfo.size() > 0 ) {
+			return "true";
+		} else {
+			return "false";
+		}
+		
+	}
+	
+    @RequestMapping(value=	"/tier1/updateOrDeleteExternalUser", method=RequestMethod.POST)
+    public ModelAndView UpdateOrDeleteInternalUserAccount(HttpServletRequest req,Authentication auth) {
+    	ModelAndView model = new ModelAndView();
+    	String operation=req.getParameter("operation");
+		String username=req.getParameter("username");
+    	if(operation.equals("update")) {
+    		System.out.println("Updating");
+    		int s = userDaoImpl.ProcessInternalUserProfileUpdate(req,username);
+    	}
+
+    	if(operation.equals("delete")) {
+    		System.out.println("Deleting");
+    		int s = userDaoImpl.ProcessInternalUserProfileDelete(username);
+    	}
+
+    	model.setViewName("tier1/hellotier1");
+    	return model;   
+	    
 	}
 }

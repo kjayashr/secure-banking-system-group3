@@ -154,6 +154,7 @@ public class UserDaoImpl implements UserDao {
 		String sql = "update users set firstname = ?, lastname = ?, dob = ?, address = ?, city = ?, state = ?, "
 				+ "country = ?, postcode = ?, contactno = ? where username = ?";
 		try {
+			System.out.println(req.getParameter("firstname"));
 			return jdbcTemplate.update(sql, new Object[] { req.getParameter("firstname"), req.getParameter("lastname"),
 					req.getParameter("dob"), req.getParameter("address"), req.getParameter("city"),
 					req.getParameter("state"), req.getParameter("country"), Integer.parseInt(req.getParameter("postcode")),
