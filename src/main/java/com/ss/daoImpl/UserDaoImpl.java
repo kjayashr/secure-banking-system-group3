@@ -213,8 +213,12 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public List<UserRequest> getExternalUserRequestsInfo() {
 		String sql="select requests.id as id,requesterusername,approverusername,status from requests inner join user_roles on "
-				+ "requests.requesterusername = user_roles.username where user_roles.role like ('ROLE_USER%' or 'ROLE_MERCHANT%') and requests.status = 'pending' ";
+				+ "requests.requesterusername = user_roles.username where ((user_roles.role like 'ROLE_USER%') or (user_roles.role like 'ROLE_MERCHANT%')) and requests.status = 'pending' ";
 		List<UserRequest> data =jdbcTemplate.query(sql, new userRequestsInfoMapper()) ;
+		System.out.println("Size of user requests:" + data.size());
+		for (UserRequest x : data) {
+			System.out.println("value " + x.getApproverusername());
+		}
 		return data;
 	}
 	
