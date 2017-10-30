@@ -48,25 +48,35 @@ public class RequestController {
 		ModelAndView notifyPage=new ModelAndView("notify");
 		String accountType=req.getParameter("accountType");
 		String type=req.getParameter("type");
-		String approverusername="";
+		String approverusername=null;
 		double amount=Double.parseDouble(req.getParameter("amount"));
 		System.out.println(accountType + " " + type + " " +amount);
 		// add validation over credit and debit
 		if(type.equalsIgnoreCase("Debit")){
 			if(accountDaoImpl.checkAmount(accountType, amount,username)){
+				System.out.println("inside debit");
+
 				String detail="Debit to "+accountType;
 				String status="pending";
 				DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 				Date date = new Date();
 				if(amount>=threshold)
 					critical=true;
-				accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,approverusername);
+				accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,approverusername,accountType,accountType);
 				accountDaoImpl.doCreditDebit(accountType, amount, type, username);
 				notifyPage.addObject("notification","Payment Processed sucessfully");
 			}else{
 				notifyPage.addObject("notification","Insufficient Funds");
 			}	
 		}else{
+			System.out.println("inside credit");
+			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			Date date = new Date();
+			String detail="Credit to "+accountType;
+			String status="pending";
+			if(amount>=threshold)
+				critical=true;
+			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,approverusername,accountType,accountType);
 			accountDaoImpl.doCreditDebit(accountType, amount, type, username);
 			notifyPage.addObject("notification","Payment Processed sucessfully");
 		}
@@ -94,7 +104,9 @@ public class RequestController {
 				if(amount>=threshold)
 					critical=true;
 
-				accountDaoImpl.addToTransaction(amount, detail, status, username, date, "", critical, null);
+
+				//accountDaoImpl.addToTransaction(amount, detail, status, username, date, "", critical, null);
+
 
 				accountDaoImpl.doCreditDebit(accountType, amount, type, username);
 				notifyPageM.addObject("notification","Payment Processed sucessfully");
@@ -237,15 +249,20 @@ public class RequestController {
 			if(typeOfTransfer.equalsIgnoreCase("internal")){
 				 detail="Transfer to "+ accountTypeTo + " from "+ accountTypeFrom;
 				 tousername=accountTypeTo;
+				 accountDaoImpl.addToTransaction(amount, detail, status, username, date, tousername, critical,null,accountTypeFrom,accountTypeTo); 
+				 accountDaoImpl.doTransferInternal(username,amount, accountTypeFrom,accountTypeTo);
+
 			}
-			else{
+			else{    // external
 				  String to=accountDaoImpl.getusername(recipient);
 				  tousername=to;
 				 detail="Transfer to "+ recipient + " from "+ accountTypeFrom;
+				 System.out.println("inside external");
+				accountDaoImpl.addToTransaction(amount, detail, status, username, date, tousername, critical,null,accountTypeFrom,"Saving"); 
+				accountDaoImpl.doTransferExternal(username, amount, accountTypeFrom, tousername);
 			}
 			
-			accountDaoImpl.addToTransaction(amount, detail, status, username, date, tousername, critical,""); 
-			accountDaoImpl.doTransfer(accountTypeFrom,tousername,amount);
+			//accountDaoImpl.doTransfer(accountTypeFrom,tousername,amount, username);
 			notifyPage.addObject("notification","Payment Processed sucessfully");
 		}else{
 			notifyPage.addObject("notification","Insufficient Funds");
@@ -316,8 +333,10 @@ public class RequestController {
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			Date date = new Date();
 			if(amount>threshold) critical=true;
-			accountDaoImpl.addToTransaction(amount, detail, status, username, date,accountTypeTo, critical,""); 
-			accountDaoImpl.doPayment(accountTypeFrom,amount);
+
+			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,null, accountTypeFrom,"payment"); 
+			accountDaoImpl.doPayment(accountTypeFrom,amount,username);
+
 			notifyPage.addObject("notification","Payment Processed sucessfully");
 		}else{
 			notifyPage.addObject("notification","Insufficient Funds");
@@ -428,7 +447,7 @@ public class RequestController {
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			Date date = new Date();
 			if(amount>threshold) critical=true;
-			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,""); 
+			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,"",accountFrom, accountTypeTo); 
 			accountDaoImpl.MPayment(cardno,cvv,amount,usernameofuser,username,accountTypeTo);
 			//accountDaoImpl.doPayment(accountTypeTo,-amount);
 			notifyPageM.addObject("notification","Payment Processed sucessfully");
