@@ -41,27 +41,30 @@ public class TransactionDaoImpl implements TransactionDao{
 	public int changestatus(String transactionId, String status, String amount) {
 		Double sum=Double.parseDouble(amount);
 		int i=0;
-		if(sum>1000 && status.equalsIgnoreCase("accepted")){
+		if(sum>=1000 && status.equalsIgnoreCase("accepted")){
 			// critical
 			String sql="Update transaction set status='accepted' where id=?";
 			i=jdbcTemplate.update(sql, new Object[] {transactionId});
-		}else if (sum<=1000 && status.equalsIgnoreCase("accepted")){
+		}else if (sum<1000 && status.equalsIgnoreCase("accepted")){
 			//non critical
 			System.out.println("inside change status: non critical and approved");
 			String sql="Update transaction set status='approved' where id=?";
 			i=jdbcTemplate.update(sql, new Object[] {transactionId});
 			
 		}else{
+			//rejection
 			String sql="Update transaction set status='rejected' where id=?";
 			i=jdbcTemplate.update(sql, new Object[] {transactionId});
 		}
 		
 		return i;
 	}
+	
+	
 
 	public List<TransactionList> viewTransaction(String username) {
 		try {
-			String sql="Select transactiondate, amount, detail from transaction where (transferto=? or transacterusername=?) and (status='approve');";
+			String sql="Select transactiondate, amount, detail from transaction where (transferto=? or transacterusername=?) and (status='approved');";
 			List<TransactionList> data =jdbcTemplate.query(sql, new Object[] {username, username}, new viewTransactionMapper());
 			return data.size()!=0?data:null;
 		}catch(EmptyResultDataAccessException erda) {

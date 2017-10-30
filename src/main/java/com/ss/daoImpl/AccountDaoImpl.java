@@ -129,31 +129,7 @@ public class AccountDaoImpl implements AccountDao {
 		jdbcTemplate.update(sql, new Object[] { amount, accountTypeFrom , username});
 	}
 
-	public void MPayment(String cardno, String cvv, double amount, String usernameofuser, String username,
-			String accountTypeTo) {
-
-		// String sqlmc = "Update creditcard set current_balance = current_balance- " +
-		// amount + "where cardnumber='"
-		// + cardno + "'AND cvv='" + cvv + "';";
-		// String sqlcurrdue = "Update creditcard set
-		// current_due=creditlimit-current_balance where cardnumber='" + cardno
-		// + "';";
-		// String sqlacc = "Update account set balance=balance-" + amount + "where
-		// username='" + usernameofuser
-		// + "'AND accountType='Credit Card';";
-		// String sqlMacc = "Update account set balance=balance-" + amount + "where
-		// username='" + username
-		// + "'AND accountType='" + accountTypeTo + "';";
-
-		String sqlmc = "Update creditcard set current_balance = current_balance- ? where cardnumber=? AND cvv=?";
-		String sqlcurrdue = "Update creditcard set current_due=creditlimit-current_balance where cardnumber=?";
-		String sqlacc = "Update account set balance=balance-? where username=? AND accountType='Credit Card';";
-		String sqlMacc = "Update account set balance=balance+? where username=? AND accountType=?";
-		jdbcTemplate.update(sqlmc, new Object[] { amount, cardno, cvv });
-		jdbcTemplate.update(sqlacc, new Object[] { amount, usernameofuser });
-		jdbcTemplate.update(sqlcurrdue, new Object[] { cardno });
-		jdbcTemplate.update(sqlMacc, new Object[] { amount, username, accountTypeTo });
-	}
+	
 
 	public boolean checkAmount(String accountType, double amount, String username) {
 		// String sql="Select balance from account where accountType='"+ accountType+"'
@@ -191,7 +167,7 @@ public class AccountDaoImpl implements AccountDao {
 		if(retList.size() != 0) {
 			ret = retList.get(0);
 		}
-
+		System.out.println(ret);
 		String limit = "Select creditlimit from creditcard where cardnumber=?";
 
 		List<Double> creditList = jdbcTemplate.query(limit, new Object[] { cardno }, new RowMapper<Double>() {
@@ -207,7 +183,7 @@ public class AccountDaoImpl implements AccountDao {
 		if(creditList.size() != 0) {
 			credit = creditList.get(0);
 		}
-		
+		System.out.println(credit);
 		System.out.println("[TEST NEW 1] " + ret);
 		System.out.println("[TEST NEW 2] " + credit);
 		
@@ -218,21 +194,14 @@ public class AccountDaoImpl implements AccountDao {
 	}
 
 	public boolean checkDet(String accountFrom, String cardno) {
+		System.out.println("i am in checkDet");
+		System.out.println(accountFrom);
+		System.out.println(cardno);
 		String a = "Select count(*) from creditcard where username=? AND cardnumber=?";
 		List<Integer> countList = jdbcTemplate.query(a, new Object[] { accountFrom, cardno }, new RowMapper<Integer>() {
 
 
-public void MPayment(String cardno,String cvv,double amount,String usernameofuser, String username,String accountTypeTo) {
-	
-	String sqlmc="Update creditcard set current_balance = current_balance- "+amount+"where cardnumber='"+cardno+"'AND cvv='"+cvv+"';";
-	String sqlcurrdue="Update creditcard set current_due=creditlimit-current_balance where cardnumber='"+cardno+"';";
-	String sqlacc="Update account set balance=balance-"+amount+"where username='"+usernameofuser+"'AND accountType='Credit Card';";
-	String sqlMacc="Update account set balance=balance+"+amount+"where username='"+username+"'AND accountType='"+accountTypeTo+"';";
-	jdbcTemplate.execute(sqlmc);
-	jdbcTemplate.execute(sqlacc);
-	jdbcTemplate.execute(sqlcurrdue);
-	jdbcTemplate.execute(sqlMacc);
-}
+
 
 			@Override
 			public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -241,16 +210,32 @@ public void MPayment(String cardno,String cvv,double amount,String usernameofuse
 
 
 		});
-		Integer count = 0;
+		Integer b = 0;
 		if(countList.size() != 0) {
-			count = countList.get(0);
+			b = countList.get(0);
 		}
-		if (count > 0)
+		System.out.println(b);
+		if (b > 0)
 			return true;
 		else
 			return false;
 	}
 
+	
+	
+	public void MPayment(String cardno,String cvv,double amount,String usernameofuser, String username,String accountTypeTo) {
+		
+		String sqlmc="Update creditcard set current_balance = current_balance- "+amount+"where cardnumber='"+cardno+"'AND cvv='"+cvv+"';";
+		String sqlcurrdue="Update creditcard set current_due=creditlimit-current_balance where cardnumber='"+cardno+"';";
+		String sqlacc="Update account set balance=balance-"+amount+"where username='"+usernameofuser+"'AND accountType='Credit Card';";
+		String sqlMacc="Update account set balance=balance+"+amount+"where username='"+username+"'AND accountType='"+accountTypeTo+"';";
+		jdbcTemplate.execute(sqlmc);
+		jdbcTemplate.execute(sqlacc);
+		jdbcTemplate.execute(sqlcurrdue);
+		jdbcTemplate.execute(sqlMacc);
+	}
+	
+	
 	public String getusername(String email) {
 
 		String sql = "select username from users where email = ?";
