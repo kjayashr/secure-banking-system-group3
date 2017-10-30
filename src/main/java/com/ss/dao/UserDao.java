@@ -12,6 +12,7 @@ public interface UserDao {
 	public User getUserbyUsername(String username);
 	public User getUserbyEmail(String email);
 	public User getUserbyPhone(Long phone);
+	public String getPrivateKey(String username);
 	public List<User> getUserInfo();
 	public List<User> getInternalUserInfo(String username);
 	public int ProcessInternalUserProfileUpdate(HttpServletRequest req, String username);

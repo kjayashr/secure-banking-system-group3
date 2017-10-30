@@ -77,6 +77,28 @@ public class UserDaoImpl implements UserDao {
 			return null;
 		}
 	}
+	
+	@Override
+	public String getPrivateKey(String username) {
+		String sql = "select key_private from users where username = ?";
+		try {
+			List<String> keyList = jdbcTemplate.query(sql, new Object[] {username}, new RowMapper<String> () {
+
+				@Override
+				public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+					return rs.getString("key_private");
+				}
+			});
+			if(keyList.size() == 0) {
+				return null;
+			} else {
+				return keyList.get(0);
+			}
+		} catch (Exception e) {
+			//TODO log statement
+			return null;
+		}
+	}
 
 	@Override
 	public List<User> getUserInfo() {
