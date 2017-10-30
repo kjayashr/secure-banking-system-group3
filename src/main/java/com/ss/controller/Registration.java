@@ -1,12 +1,14 @@
 package com.ss.controller;
 
 import java.util.Date;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,14 +18,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.ss.dao.AccountDao;
 import com.ss.dao.RegistrationDao;
 import com.ss.dao.UserAttemptDao;
 
+import org.apache.log4j.Logger;
 
 @Controller
 public class Registration {
+	final static Logger logger = Logger.getLogger(Registration.class);
 	
 	@Autowired
 	RegistrationDao registrationImpl;
@@ -40,8 +45,9 @@ public class Registration {
 	}
 	
 	@RequestMapping(value="/registration",method=RequestMethod.POST)
-	public String handleRegistration(HttpServletRequest req,Authentication auth){
-		ModelAndView model = new ModelAndView();
+	public RedirectView handleRegistration(HttpServletRequest req,Authentication auth){
+		RedirectView model = new RedirectView();
+		model.setUrl(redirectToHome(auth));
 		String uName = "";
 		String role = "";
 	/*	if (!(auth instanceof AnonymousAuthenticationToken)) {
@@ -54,8 +60,6 @@ public class Registration {
 		
 		//String url = (String)req.getHeader("referer");
 		//System.out.println(" aldnfldnaodnf"  + url);
-		model.addObject("savings", "Spring Security Hello World");
-		model.addObject("message", "This is welcome page!");
 		String username=req.getParameter("username");
 		String password=req.getParameter("password");
 		BCryptPasswordEncoder encoder=new BCryptPasswordEncoder();
@@ -65,15 +69,45 @@ public class Registration {
 		String dateofbirth=req.getParameter("dateofbirth");
 		String email=req.getParameter("email");
 		String address=req.getParameter("address");
-		Long contactno=Long.parseLong(req.getParameter("contactno"));
-		Long ssn=Long.parseLong(req.getParameter("ssn"));
+		Long contactno = 1L;
+		try {
+		contactno = Long.parseLong(req.getParameter("contactno"));
+		} catch (NumberFormatException e) {
+			logger.info("faced number format exception due to faulty contactno input");
+			return model;
+		}
+		Long ssn=1L;
+		try {
+			ssn=Long.parseLong(req.getParameter("ssn"));
+		} catch (NumberFormatException e) {
+			logger.info("faced number format exception due to faulty ssn input");
+			return model;
+		}
 		String city=req.getParameter("city");
 		String state=req.getParameter("state");
 		String country=req.getParameter("country");
-		int postcode=Integer.parseInt(req.getParameter("postcode"));
+		int postcode = 0;
+		try {
+			postcode=Integer.parseInt(req.getParameter("postcode"));
+		} catch (NumberFormatException e) {
+			logger.info("faced number format exception due to faulty postcode input");
+			return model;
+		}
 		String type=req.getParameter("accountType");
-		int balance=Integer.parseInt(req.getParameter("balance"));
-		int interest=Integer.parseInt(req.getParameter("balance"));
+		double balance=0;
+		try {
+		    balance = Double.parseDouble(req.getParameter("balance"));
+		} catch (NumberFormatException e) {
+			logger.info("faced number format exception due to faulty balance input");
+			return model;
+		}
+		double interest = 0;
+		try {
+			interest=Integer.parseInt(req.getParameter("interest"));
+		} catch (NumberFormatException e) {
+			logger.info("faced number format exception due to faulty interest input");
+			return model;
+		}
 		String roleUser=req.getParameter("userType");
 		if(roleUser.equalsIgnoreCase("user")){
 			roleUser="ROLE_USER";
@@ -96,7 +130,7 @@ public class Registration {
 			registrationImpl.rollback(username);
 			System.out.println(e.getMessage());
 		}
-		return "login";
+		return model;
 	/*	if(role.equals("ROLE_TIER2"))
 			model.setViewName("hellotier2");
 		else if(role.equals("ROLE_TIER1"))
@@ -104,6 +138,26 @@ public class Registration {
 		else if(role.equals("ROLE_TIER3"))
 			model.setViewName("Admin_Homepage");
 		return model; */
+	}
+	
+	private String redirectToHome(Authentication auth) {
+		String adminTargetURl="/SS/admin/Welcome";
+		String tier1TargetURL="/SS/tier1";
+		String tier2TargetURL="/SS/tier2";
+		String merchantTargetURL="/SS/Merchant/Welcome";
+		String defaultURL = "/SS/login";
+		Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
+		if(roles.contains("ROLE_ADMIN")){
+			return adminTargetURl;
+		}else if(roles.contains("ROLE_TIER1") || roles.contains("ROLE_TIER1_APPROVED")){
+			return tier1TargetURL;
+	      }else if (roles.contains("ROLE_MERCHANT")) {
+	  		return merchantTargetURL;
+	      } else if (roles.contains("ROLE_TIER2")) {
+	    	  return tier2TargetURL;
+	      } else {
+	    	  return defaultURL;
+	      }
 	}
 	
 	@RequestMapping(value="/checkusername*",method=RequestMethod.POST)

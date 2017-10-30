@@ -27,7 +27,7 @@ public class AccountDaoImpl implements AccountDao {
 	JdbcTemplate jdbcTemplate;
 
 	@Override
-	public int createAccount(int balance, String username, String type, int interest) {
+	public int createAccount(double balance, String username, String type, double interest) {
 		String sql = "Insert into account values(?,?,?,?)"; // +balance+",'"+type+"','"+username+"',"+interest+");";
 		return jdbcTemplate.update(sql, new Object[] { balance, type, username, interest });
 	}

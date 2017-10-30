@@ -70,7 +70,7 @@
 	<div class="row">
 		  <table>
 			<tr>
-				<td>User:</td>
+				<td>Username:</td>
 				<td><input type='text' name='username' value=''></td>
 			</tr>
 			<tr>
