@@ -150,9 +150,7 @@
                 <div class="line"><label for="ptc">Post Code *: </label><input type="number" id="postcode" name="postcode" required /></div>
                 <div class="line"><label class="control-label" for="accountType">Type*:</label>
 					<select class="form-control" id="accountType" name="accountType" required>
-						<option>Saving</option>	
-						<option>Checking</option>
-						<option>Credit Card</option>
+						<option>Saving</option>
 					</select>
 				</div>
 				

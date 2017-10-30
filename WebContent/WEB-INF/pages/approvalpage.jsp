@@ -26,10 +26,10 @@
 				data:{transactionId:transactionId, status:status},
 			    success:function(response){
 			    		console.log(response);
-			    		if(response=="false")
-			    			$(y).html("Username unavailable")
-			    		else
-			    			$("#sameUser").html("")
+			    		$("#accepted").attr("disabled", true);
+			    		$("#declined").attr("disabled", true);
+			    		$("#notify").html("Your request has been processed")
+
 			    },
 			    error:function(error){
 			    		console.log("Error "+error);
@@ -64,13 +64,13 @@
 					<td>${log.sender}</td>
 
 					<td>${log.amount}</td>
-					<td>${log.id}</td>
-					<td><button id="accepted" onclick="changeStatus(${log.id}, this.id)">Approve</button></td>
+						<td><button id="accepted" onclick="changeStatus(${log.id}, this.id)">Approve</button></td>
 					<td><button id="declined" onclick="changeStatus(${log.id}, this.id)">Decline</button></td>
 					
 				</tr>
 			</c:forEach>
 			</table>
+			<div><span id="notify" name="notify" style="color:red"></span></div>
 	  </c:when>
 	  <c:otherwise>
 	  			<table>

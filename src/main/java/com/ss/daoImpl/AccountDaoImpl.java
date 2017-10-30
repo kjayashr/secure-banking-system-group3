@@ -91,25 +91,25 @@ public class AccountDaoImpl implements AccountDao {
 
 		if (type.equalsIgnoreCase("credit")) {
 
-			String sql = "Update account set balance = balance + ? where accountType = ?";
-			jdbcTemplate.update(sql, new Object[] { amount, accountType });
+			String sql = "Update account set balance = balance + ? where accountType = ? and username=?";
+			jdbcTemplate.update(sql, new Object[] { amount, accountType, username});
 		} else {
-			String sql = "Update account set balance = balance - ? where accountType = ?";
-			jdbcTemplate.update(sql, new Object[] { amount, accountType });
+			String sql = "Update account set balance = balance - ? where accountType = ? and username=?";
+			jdbcTemplate.update(sql, new Object[] { amount, accountType, username });
 		}
 	}
 
-	public void doTransfer(String from, String to, double amount) {
+	/*public void doTransfer(String from, String to, double amount, String username) {
 
 		// check for threshold and user
 		if (from.equalsIgnoreCase(to) != true) {
 			String sql1 = "Update account set balance = balance + ? where accountType = ?";
-			String sql2 = "Update account set balance = balance - ? where accountType = ?";
-			jdbcTemplate.update(sql1, new Object[] { amount, to });
-			jdbcTemplate.update(sql2, new Object[] { amount, from });
+			String sql2 = "Update account set balance = balance - ? where accountType = ? and username=?";
+			jdbcTemplate.update(sql1, new Object[] { amount, to , tousername});
+			jdbcTemplate.update(sql2, new Object[] { amount, from, username });
 		}
 
-	}
+	}  */
 
 	public void doTransfer(String fromUserName, String fromAccountType, String toUserName, String toAccountType,
 			double amount) {
@@ -123,11 +123,11 @@ public class AccountDaoImpl implements AccountDao {
 		jdbcTemplate.update(sql2, new Object[] { amount, toUserName, toAccountType });
 	}
 
-	public void doPayment(String accountTypeFrom, double amount) {
+	public void doPayment(String accountTypeFrom, double amount, String username) {
 		// TODO Auto-generated method stub
 
-		String sql = "Update account set balance = balance - ? where accountType = ?";
-		jdbcTemplate.update(sql, new Object[] { amount, accountTypeFrom });
+		String sql = "Update account set balance = balance - ? where accountType = ? and username=?";
+		jdbcTemplate.update(sql, new Object[] { amount, accountTypeFrom , username});
 	}
 
 	public void MPayment(String cardno, String cvv, double amount, String usernameofuser, String username,
@@ -259,12 +259,12 @@ public class AccountDaoImpl implements AccountDao {
 
 	@Override
 	public void addToTransaction(double amount, String detail, String status, String username, Date date, String to,
-			boolean critical,String approvalUsername) {
+			boolean critical,String approvalUsername, String accountTypeFrom, String accountTypeTo) {
 		// TODO Auto-generated method stub
 		String sql = "Insert into transaction(amount, detail, status, transacterusername, "
-				+ "transactiondate, transferto, critical, approverUserName) "
-				+ "values (?,?,?,?,?,?,?,?)";
-		Object[] arguments = new Object[] { amount, detail, status, username, date, to, critical, approvalUsername };
+				+ "transactiondate, transferto, critical, approverUserName, fromAccountType, toAccountType) "
+				+ "values (?,?,?,?,?,?,?,?,?,?)";
+		Object[] arguments = new Object[] { amount, detail, status, username, date, to, critical, approvalUsername, accountTypeFrom,accountTypeTo};
 		jdbcTemplate.update(sql, arguments);
 
 	}
@@ -297,6 +297,24 @@ public class AccountDaoImpl implements AccountDao {
 		} else {
 			return ret.get(0);
 		}
+	}
+
+	public void doTransferInternal(String username, double amount, String accountTypeFrom, String accountTypeTo) {
+		// TODO Auto-generated method stub
+		String sql1 = "update account set balance = balance - ? where username=? and accountType=?";
+		String sql2 = "update account set balance = balance + ? where username=? and accountType =?";
+		jdbcTemplate.update(sql1, new Object[] { amount, username, accountTypeFrom });
+		jdbcTemplate.update(sql2, new Object[] { amount, username, accountTypeTo });
+		
+	}
+
+	public void doTransferExternal(String username, double amount, String accountTypeFrom, String tousername) {
+		// TODO Auto-generated method stub
+		System.out.println("inside fxn");
+		String sql1 = "update account set balance = balance - ? where username=? and accountType=?";
+		String sql2 = "update account set balance = balance + ? where username=? and accountType ='Saving'";
+		jdbcTemplate.update(sql1, new Object[] { amount, username, accountTypeFrom });
+		jdbcTemplate.update(sql2, new Object[] { amount, tousername});
 	}
 
 }

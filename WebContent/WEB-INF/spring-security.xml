@@ -1,6 +1,5 @@
 <beans:beans xmlns="http://www.springframework.org/schema/security"
-	xmlns:beans="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
 	http://www.springframework.org/schema/security
@@ -8,56 +7,75 @@
 
 	<http auto-config="true" use-expressions="true">
 		<intercept-url pattern="/admin**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/admin/Welcome" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/admin/registration" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/admin/addInternalUser" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/admin/searchprofile" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/admin/checkinternalusername*" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/admin/modifyprofile" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/admin/updateordeleteprofile" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/admin/viewrequests" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/admin/showrequestdetails/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/admin/processapproveorrejectrequest" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/admin/viewlogs" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/admin/downloadlog/*" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/admin/pii" access="hasRole('ROLE_ADMIN')" />
+		
+		
+
+
 		<!-- access denied page -->
 		<access-denied-handler error-page="/403" />
-		<form-login
-			authentication-success-handler-ref="authenticationSuccessRedirecthandler"
-		    login-page="/login"
-		    login-processing-url="/j_spring_security_check"
-			authentication-failure-url="/login?error="
-			username-parameter="username" 
-			password-parameter="password"/>
-		<logout logout-success-url="/login?logout" logout-url="/j_spring_security_logout"/>
-		
-		
+		<form-login authentication-success-handler-ref="authenticationSuccessRedirecthandler"
+			login-page="/login" login-processing-url="/j_spring_security_check"
+			authentication-failure-url="/login?error=" username-parameter="username"
+			password-parameter="password" />
+		<logout logout-success-url="/login?logout" logout-url="/j_spring_security_logout" />
+
+
 		<!-- enable csrf protection -->
 		<csrf />
 
 
 		<session-management>
-			<concurrency-control max-sessions="1" expired-url="/login?expired" />
+			<concurrency-control max-sessions="1"
+				expired-url="/login?expired" />
 		</session-management>
 	</http>
-	
-	
+
+
 	<beans:bean id="customUserDetailsService" class="com.ss.service.UserDetailsService">
-		<beans:property name="usersByUsernameQuery" value="select * from attempts where username = ?"/>
-		<beans:property name="authoritiesByUsernameQuery" value="select username, role from user_roles where username =?" />
+		<beans:property name="usersByUsernameQuery"
+			value="select * from attempts where username = ?" />
+		<beans:property name="authoritiesByUsernameQuery"
+			value="select username, role from user_roles where username =?" />
 		<beans:property name="dataSource" ref="dataSource" />
 	</beans:bean>
-	
-	<beans:bean id="userDetailsDao" class="com.ss.daoImpl.UserDetailsDaoImpl" >
+
+	<beans:bean id="userDetailsDao" class="com.ss.daoImpl.UserDetailsDaoImpl">
 		<beans:property name="dataSource" ref="dataSource" />
 	</beans:bean>
-	
-	<beans:bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
+
+	<beans:bean id="encoder"
+		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
 		<beans:constructor-arg name="strength" value="10" />
 	</beans:bean>
-	
-	<beans:bean id="authenticationSuccessRedirecthandler" class="com.ss.security.CustomAuthenticationSuccessHandler" >
+
+	<beans:bean id="authenticationSuccessRedirecthandler"
+		class="com.ss.security.CustomAuthenticationSuccessHandler">
 	</beans:bean>
-	
-	
-	
+
+
+
 	<beans:bean id="authenticaionProvider" class="com.ss.controller.LimitNoLoginAuthProvider">
 		<beans:property name="userDetailsService" ref="customUserDetailsService" />
 		<beans:property name="userDetailsDao" ref="userDetailsDao" />
-		<beans:property name="passwordEncoder" ref="encoder"/>
+		<beans:property name="passwordEncoder" ref="encoder" />
 	</beans:bean>
 
 	<authentication-manager>
-	  <authentication-provider ref="authenticaionProvider">
-	  </authentication-provider>
+		<authentication-provider ref="authenticaionProvider">
+		</authentication-provider>
 	</authentication-manager>
-	
-	</beans:beans>
+
+</beans:beans>
