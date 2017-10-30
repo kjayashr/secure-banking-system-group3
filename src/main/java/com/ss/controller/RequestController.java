@@ -105,6 +105,10 @@ public class RequestController {
 					critical=true;
 				// by yuktal
 				//accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,"",null,null);
+
+
+				//accountDaoImpl.addToTransaction(amount, detail, status, username, date, "", critical,null);
+
 				accountDaoImpl.doCreditDebit(accountType, amount, type, username);
 				notifyPageM.addObject("notification","Payment Processed sucessfully");
 			}else{
