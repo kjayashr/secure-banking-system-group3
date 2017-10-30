@@ -206,7 +206,7 @@ public class RegistrationDaoImpl implements RegistrationDao {
 	@Override
 	public int addNewUser(String username, String password, String firstname, String lastname, String dateofbirth,
 			String email, String address, Long contactno, Long ssn, String city, String state, String country,
-			int postcode) {
+			int postcode, String role) {
 
 		String privateKey = "";
 		String publicKey = "";
@@ -240,7 +240,7 @@ public class RegistrationDaoImpl implements RegistrationDao {
 		
 		int userQ=jdbcTemplate.update(sql);
 		
-		String role="ROLE_USER";
+		//String role="ROLE_USER";
 		String sql2="Insert into user_roles(username,role) values"
 					+ "('" +username+"','"+role+"');";
 		

@@ -54,6 +54,7 @@ public class MerchantController {
 		model.addObject("savings", "Spring Security Hello World");
 		model.addObject("message", "This is welcome page!");
 		model.addObject("accountData", accountinfo);
+
 		List<String> validAccounts = accountDoaImpl.getValidAccounts(name);
 		se.setAttribute("validAccounts",validAccounts);
 		

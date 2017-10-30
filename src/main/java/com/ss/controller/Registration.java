@@ -40,17 +40,17 @@ public class Registration {
 	}
 	
 	@RequestMapping(value="/registration",method=RequestMethod.POST)
-	public ModelAndView handleRegistration(HttpServletRequest req,Authentication auth){
+	public String handleRegistration(HttpServletRequest req,Authentication auth){
 		ModelAndView model = new ModelAndView();
 		String uName = "";
 		String role = "";
-		if (!(auth instanceof AnonymousAuthenticationToken)) {
+	/*	if (!(auth instanceof AnonymousAuthenticationToken)) {
 			UserDetails userDetail = (UserDetails) auth.getPrincipal();
 			model.addObject("username", userDetail.getUsername());
 			uName = userDetail.getUsername();
 			role = registrationImpl.getRole(uName);
 			System.out.println("ROLE ::::: " + role);
-		}
+		} */
 		
 		//String url = (String)req.getHeader("referer");
 		//System.out.println(" aldnfldnaodnf"  + url);
@@ -74,10 +74,16 @@ public class Registration {
 		String type=req.getParameter("accountType");
 		int balance=Integer.parseInt(req.getParameter("balance"));
 		int interest=Integer.parseInt(req.getParameter("balance"));
+		String roleUser=req.getParameter("userType");
+		if(roleUser.equalsIgnoreCase("user")){
+			roleUser="ROLE_USER";
+		}else{
+			roleUser="ROLE_MERCHANT";
+		}
 		// validation left
 		try {
 			int i=registrationImpl.addNewUser(username,password,firstname,lastname, dateofbirth, email, address,
-				contactno, ssn, city, state, country, postcode);
+				contactno, ssn, city, state, country, postcode,roleUser);
 			int accountCrRet=accountDao.createAccount(balance,username,type,interest);
 			System.out.println(":::type::"+type);
 			if(type.equalsIgnoreCase("Credit Card"))
@@ -90,14 +96,14 @@ public class Registration {
 			registrationImpl.rollback(username);
 			System.out.println(e.getMessage());
 		}
-//		return "login";
-		if(role.equals("ROLE_TIER2"))
+		return "login";
+	/*	if(role.equals("ROLE_TIER2"))
 			model.setViewName("hellotier2");
 		else if(role.equals("ROLE_TIER1"))
 			model.setViewName("hellotier1");
 		else if(role.equals("ROLE_TIER3"))
 			model.setViewName("Admin_Homepage");
-		return model;
+		return model; */
 	}
 	
 	@RequestMapping(value="/checkusername*",method=RequestMethod.POST)
