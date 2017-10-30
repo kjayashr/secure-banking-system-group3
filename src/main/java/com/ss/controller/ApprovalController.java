@@ -39,8 +39,41 @@ public class ApprovalController {
 	}
 	
 	
+	@RequestMapping(value="/Merchantuserapprovals",method=RequestMethod.GET)
+	public String MerchantgetListOfApprovals(Authentication auth,ModelMap model){
+		String username=auth.getName();
+		System.out.println(username);
+		List<ApprovalList> data=transactionDaoImpl.getApprovalList(username);
+		if(data==null||data.isEmpty()) {
+			model.addAttribute("emptyMsg","Nothing to Approve");
+		}
+		model.addAttribute("list",data);
+		model.addAttribute("column1", "Date");
+		model.addAttribute("column2", "Sender");
+		model.addAttribute("column3", "Amount");
+		model.addAttribute("column4", "id");
+		model.addAttribute("title", "Approval List");
+		System.out.println("Hello Before return");
+		return "Merchantapprovalpage";
+		
+		
+	}
+	
+	
+	
 	@RequestMapping(value="/approveByUser*",method=RequestMethod.POST)
 	public @ResponseBody String checkUserName(@RequestParam("transactionId") String transactionId,@RequestParam("status") String status){
+		//System.out.print("Username to check " +transactionId);
+		//System.out.print("Username to check " +status);
+		int ret = transactionDaoImpl.changestatus(transactionId,status);
+		return "ret";
+	}
+	
+	
+	
+	
+	@RequestMapping(value="/MerchantapproveByUser*",method=RequestMethod.POST)
+	public @ResponseBody String MerchantcheckUserName(@RequestParam("transactionId") String transactionId,@RequestParam("status") String status){
 		//System.out.print("Username to check " +transactionId);
 		//System.out.print("Username to check " +status);
 		int ret = transactionDaoImpl.changestatus(transactionId,status);

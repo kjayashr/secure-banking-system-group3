@@ -126,7 +126,7 @@ public void MPayment(String cardno,String cvv,double amount,String usernameofuse
 	String sqlmc="Update creditcard set current_balance = current_balance- "+amount+"where cardnumber='"+cardno+"'AND cvv='"+cvv+"';";
 	String sqlcurrdue="Update creditcard set current_due=creditlimit-current_balance where cardnumber='"+cardno+"';";
 	String sqlacc="Update account set balance=balance-"+amount+"where username='"+usernameofuser+"'AND accountType='Credit Card';";
-	String sqlMacc="Update account set balance=balance-"+amount+"where username='"+username+"'AND accountType='"+accountTypeTo+"';";
+	String sqlMacc="Update account set balance=balance+"+amount+"where username='"+username+"'AND accountType='"+accountTypeTo+"';";
 	jdbcTemplate.execute(sqlmc);
 	jdbcTemplate.execute(sqlacc);
 	jdbcTemplate.execute(sqlcurrdue);
