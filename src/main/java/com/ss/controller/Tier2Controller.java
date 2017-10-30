@@ -68,11 +68,22 @@ public class Tier2Controller {
 		return model;
      
 	}
+    
+    @RequestMapping(value="/tier2/nctransactions",method=RequestMethod.GET)
+    public ModelAndView nctransaction(HttpServletRequest req, Authentication auth) {
+		List<TransactionDO> transactions = transactionBO.getUnapprovedNonCriticalTransactions(USER_ROLE_TIER2);
+
+		ModelAndView model = new ModelAndView();
+		model.addObject("transactions", transactions);
+		model.setViewName("t2Transaction");
+		return model;
+
+    }
     @RequestMapping(value="/tier2/changedDetails", method=RequestMethod.POST)
     public ModelAndView changedDetails(HttpServletRequest req,Authentication auth) {
     	ModelAndView model = new ModelAndView();
 		String uName = "";
-		String role = "";
+		String role = "ROLE_TIER2";
 		if (!(auth instanceof AnonymousAuthenticationToken)) {
 			UserDetails userDetail = (UserDetails) auth.getPrincipal();
 			model.addObject("username", userDetail.getUsername());
@@ -85,19 +96,15 @@ public class Tier2Controller {
 		String lastname=req.getParameter("lastname");
 		String contactno=req.getParameter("contactno");
 		String address=req.getParameter("address");
-		String city=req.getParameter("city");
+		String city	=req.getParameter("city");
 		String state=req.getParameter("state");
 		String country=req.getParameter("country");
 		String postcode=req.getParameter("postcode");
 		// validation left
 		registrationImpl.myNewMethod(uName,firstname,lastname,address,
 			 city, state, country, postcode,contactno);
-		if(role.equals("ROLE_TIER2"))
-			model.setViewName("hellotier2");
-		else if(role.equals("ROLE_TIER1"))
-			model.setViewName("hellotier1");
-		else if(role.equals("ROLE_TIER3"))
-			model.setViewName("Admin_Homepage");
+		
+		model.setViewName("hellotier2");
 		return model;
 	}
     
@@ -130,6 +137,7 @@ public class Tier2Controller {
     public ModelAndView ModifyInternalUserAccount(HttpServletRequest req,Authentication auth) {
     	ModelAndView model = new ModelAndView();
 		String username=req.getParameter("username");
+		
 		/// named internal user below but works for external users as well
     	List<User> InternaluserInfo = userDaoImpl.getExternalUserInfo(username);
     	System.out.println(username);
@@ -173,7 +181,7 @@ public class Tier2Controller {
     		int s = userDaoImpl.ProcessInternalUserProfileDelete(username);
     	}
 
-    	model.setViewName("searchprofile");
+    	model.setViewName("hellotier2");
     	return model;   
 	    
 	}
@@ -189,10 +197,22 @@ public class Tier2Controller {
 	}
     
 	@RequestMapping(value="/tier2/modifyPersonalAccount", method = RequestMethod.GET)
-	public ModelAndView modifyPersonalAccount() {
+	public ModelAndView modifyPersonalAccount(HttpServletRequest req,Authentication auth) {
 		ModelAndView model = new ModelAndView();
-		model.addObject("message","hello");
-		model.setViewName("t2modifyPersonalAccount");
+		String uName="";
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+			UserDetails userDetail = (UserDetails) auth.getPrincipal();
+			model.addObject("username", userDetail.getUsername());
+			uName = userDetail.getUsername();
+		}
+		
+		List<User> InternaluserInfo = userDaoImpl.getInternalUserInfo(uName);
+		System.out.println("user-size" + InternaluserInfo.size());
+		
+		model.addObject("userInfo",InternaluserInfo.get(0));
+		model.addObject("message", "This is welcome page!");
+		model.setViewName("t2modifyPersonalAccount");			
+		
 		return model;
 	
 	}
@@ -234,23 +254,95 @@ public class Tier2Controller {
     
 	@RequestMapping(value= "/tier2/transaction/approve", method = RequestMethod.POST)
 	public @ResponseBody String approveTransaction(@RequestParam("transactionId") int transactionId) {
-		System.out.println("In approve transactions method");
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String userInSession = "someUser";
-		if (!(auth instanceof AnonymousAuthenticationToken)) {
-		    UserDetails userDetail = (UserDetails) auth.getPrincipal();
-		    userInSession = userDetail.getUsername();
-		}
-		boolean transactionSuccess = transactionBO
-				.approveTransaction(transactionId, userInSession);
-		String transactionMessage = "";
-		if (transactionSuccess) {
-			transactionMessage = "Transaction approval processed successfully!";
-		} else {
-			transactionMessage = "Transaction approval failed!";
-		}
-		System.out.println(transactionMessage);
-		return transactionMessage;
+			System.out.println("In approve transactions method");
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			String userInSession = "someUser";
+			if (!(auth instanceof AnonymousAuthenticationToken)) {
+			    UserDetails userDetail = (UserDetails) auth.getPrincipal();
+			    userInSession = userDetail.getUsername();
+			}
+			
+			TransactionDO transaction = transactionBO.getTransactionFromId(transactionId);
+			System.out.println("checking values :" + transaction.getTargetUserName() + " " + transaction.getFromAccountType() + transaction.getToAccountType());
+			// handles either internal transfer or debit and credit
+			if (transaction.getTargetUserName() == null) {
+				if (transaction.getFromAccountType().equals(transaction.getToAccountType())) {
+					//credit
+					if( transaction.getAmount()>0) {
+						boolean transactionSuccess = transactionBO.approveTransaction(transactionId, userInSession);
+						if (transactionSuccess) {
+							accountDaoImpl.doCreditDebit(transaction.getFromAccountType(), transaction.getAmount(), "credit", transaction.getTransactorUserName());
+						    return "Transaction approval processed successfully!";
+						} else {
+							return "Transaction failed";
+						}
+						
+					} else {
+						//debit
+						boolean amountCheck = accountDaoImpl.checkAmount(transaction.getFromAccountType(), transaction.getAmount(), transaction.getTransactorUserName());
+						boolean transactionSuccess = false;
+						String transactionMessage = "";
+						if (amountCheck) {
+							transactionSuccess = transactionBO
+									.approveTransaction(transactionId, userInSession);
+						} else {
+							transactionMessage = "Not enough balance to perform debit";
+						}
+						
+						if (transactionSuccess) {
+							accountDaoImpl.doCreditDebit(transaction.getFromAccountType(), -transaction.getAmount(), "debit", transaction.getTransactorUserName());
+							transactionMessage = "Transaction approval processed successfully!";
+						} else {
+							transactionMessage = "Transaction approval failed!";
+						}
+						System.out.println(transactionMessage);
+						return transactionMessage;
+					}
+					
+				} else {
+					//internal transfer
+					boolean amountCheck = accountDaoImpl.checkAmount(transaction.getFromAccountType(), transaction.getAmount(), transaction.getTransactorUserName());
+					boolean transactionSuccess = false;
+					String transactionMessage = "";
+					if (amountCheck) {
+						transactionSuccess = transactionBO
+								.approveTransaction(transactionId, userInSession);
+					} else {
+						transactionMessage = "Not enough balance in transfer initiator account";
+					}
+					
+					if (transactionSuccess) {
+						accountDaoImpl.doTransfer(transaction.getTransactorUserName(), transaction.getFromAccountType(), transaction.getTransactorUserName(), transaction.getToAccountType(), transaction.getAmount());
+						transactionMessage = "Transaction approval processed successfully!";
+					} else {
+						transactionMessage = "Transaction approval failed!";
+					}
+					System.out.println(transactionMessage);
+					return transactionMessage;
+					
+				}
+			}
+			boolean amountCheck = accountDaoImpl.checkAmount(transaction.getFromAccountType(), transaction.getAmount(), transaction.getTransactorUserName());
+			boolean transactionSuccess = false; 
+			String transactionMessage = "";
+			
+			//Checking if balance is available
+			if (amountCheck) {
+			    transactionSuccess = transactionBO
+					.approveTransaction(transactionId, userInSession);
+			} else {
+				transactionMessage = "Not enough balance in transfer initiator";
+			}
+			
+			//setting message depending on transaction.
+			if (transactionSuccess) {
+				accountDaoImpl.doTransfer(transaction.getTransactorUserName(), transaction.getFromAccountType(), transaction.getTargetUserName(), transaction.getToAccountType(), transaction.getAmount());
+				transactionMessage = "Transaction approval processed successfully!";
+			} else {
+				transactionMessage = "Transaction approval failed!";
+			}
+			System.out.println(transactionMessage);
+			return transactionMessage;	
 	}
 
 	@RequestMapping(value= "/tier2/transaction/decline", method = RequestMethod.POST)
@@ -273,7 +365,16 @@ public class Tier2Controller {
 		System.out.println(transactionMessage);
 		return transactionMessage;
 	}
+	@RequestMapping(value= "/tier2/fillTransactionRequest", method = RequestMethod.POST)
+    public ModelAndView fillTransactionRequest(HttpServletRequest req) {
+		String fromUserName=req.getParameter("fromUser");
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("customerUser", fromUserName);
+		mav.setViewName("tier2paymentRequest");
+		return mav;
+	}
 
+	
 	////////////////////////////////////
 	
 	

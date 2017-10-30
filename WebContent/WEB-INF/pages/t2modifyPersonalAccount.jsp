@@ -5,14 +5,16 @@
 <html>
     <head>
     <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
-<!-- Optional theme -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	
+<meta name="_csrf" content="${_csrf.token}"/>
+	<!-- default header name is X-CSRF-TOKEN -->
+<meta name="_csrf_header" content="${_csrf.headerName}"/>
         <style type="text/css">
  
             body {font-family:Arial, Sans-Serif;}
@@ -83,44 +85,44 @@
 			<h1>Update or Delete Profile</h1>
 			<div class="line">
 				<label for="firstname">First Name: </label><input type="firstname" id="firstname"
-					 name="firstname"/>
+					value=${userInfo.firstname} name="firstname"/>
 			</div>
 			<div class="line">
 				<label for="lastname">Last Name: </label><input type="lastname" id="lastname"
-					 name="lastname"/>
+					 value = ${userInfo.lastname} name="lastname"/>
 			</div>
 
 			<div class="line">
 				<label for="dob">Data of Birth *: </label><input type="dob" id="dob"
-					 name="dob"/>
+					 value = ${userInfo.dateofbirth} name="dob"/>
 			</div>
 
 			<div class="line">
 				<label for="add">Address *: </label><input type="text" id="address"
-					 name="address" />
+					 value = ${userInfo.address} name="address" />
 			</div>
 			
 			<div class="line">
 				<label for="city">city *: </label><input type="text" id="city"
-					 name="city"/>
+					 value = ${userInfo.city} name="city"/>
 			</div>
 			<div class="line">
 				<label for="state">State *: </label><input type="text" id="state"
-					 name="state"/>
+					 value = ${userInfo.state} name="state"/>
 			</div>
 			<div class="line">
 				<label for="country">Country *: </label><input type="text"
-					 id="country" name="country"/>
+					 value = ${userInfo.country} id="country" name="country"/>
 			</div>
 
 			<div class="line">
 				<label for="postcode">PSC *: </label><input type="text"
-					 id="postcode" name="postcode"  />
+					 value = ${userInfo.postcode} id="postcode" name="postcode"  />
 			</div>
 
 			<div class="line">
 				<label for="contactno">Contact Number *: </label><input type="text"
-					 id="contactno" name="contactno" />
+					 value = ${userInfo.contactno} id="contactno" name="contactno" />
 			</div>
 			
 	<!-- 		<input type="hidden" id="username" name="username" value=${userInfo.username}>
