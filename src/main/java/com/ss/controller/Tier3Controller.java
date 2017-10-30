@@ -115,6 +115,7 @@ public class Tier3Controller {
 
 	@RequestMapping(value="/admin/checkinternalusername*",method=RequestMethod.POST)
 	public @ResponseBody String CheckInternalUsername(@RequestParam("username") String username){
+		System.out.println("checking interal USer");
     	List<User> InternaluserInfo = userDaoImpl.getInternalUserInfo(username);
 		if(InternaluserInfo.size() > 0 ) {
 			return "true";

@@ -64,6 +64,29 @@ public class Tier1Controller {
      
 	}
     
+    
+    @RequestMapping(value = "/tier1/createAccountForUser", method = RequestMethod.GET)
+	public ModelAndView createAccountForUser() {
+    	System.out.println("inside create account");
+		ModelAndView model = new ModelAndView();
+		model.setViewName("tier1/createAccount");
+		return model;
+	}  
+    
+    
+    @RequestMapping(value="tier1/checkexternalusername*",method=RequestMethod.POST)
+	public @ResponseBody String CheckExternalUsername(@RequestParam("username") String username){
+		System.out.println("checking interal USer");
+    	List<User> InternaluserInfo = userDaoImpl.getInternalUserInfo(username);
+		if(InternaluserInfo.size() > 0 ) {
+			System.out.println("true");
+			return "true";
+		} else {
+			System.out.println("false");
+
+			return "false";
+		}		
+	}
 	@RequestMapping(value = "/tier1/transactions", method = RequestMethod.GET)
 	public ModelAndView viewTransactions() {
 		System.out.println("In view Transactions method");

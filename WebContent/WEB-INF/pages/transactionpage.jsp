@@ -19,6 +19,7 @@
 				<th id="column1">${column1}</th>
 				<th id="column2">${column2}</th>
 				<th id="column3">${column3}</th>
+				
 
 
 			</tr>
@@ -31,11 +32,13 @@
 						<td>${log.amount}</td>
 
 					</tr>
-				<div class="row" align="center">
-					<a href="${pageContext.request.contextPath}/downloadPDF">Get PDF</a>
-				</div>
+				
 				</c:forEach>
 			</table>
+			
+			<div class="row" align="center">
+					<a href="${pageContext.request.contextPath}/downloadPDF">Get PDF</a>
+				</div>
 		</c:when>
   		<c:otherwise>
 				<table>
