@@ -43,7 +43,7 @@ public class RequestController {
 	TransactionBO transactionBO;
 	
 	private boolean isKeyValid(String username, Double amount, String pubKey) {
-		boolean retValue = true;
+		boolean retValue = false;
 		if(pubKey!=null && pubKey.trim().length()!=0) {
 			try {
 				String lockedData = PKICertificate.lock(Double.toString(amount), pubKey);
