@@ -61,8 +61,8 @@ public class TransactionDaoImpl implements TransactionDao{
 
 	public List<TransactionList> viewTransaction(String username) {
 		try {
-			String sql="Select transactiondate, amount, detail from transaction where (transferto='"+username+"' or transacterusername='"+username+"') and (status='approve');";
-			List<TransactionList> data =jdbcTemplate.query(sql,new viewTransactionMapper());
+			String sql="Select transactiondate, amount, detail from transaction where (transferto=? or transacterusername=?) and (status='approve');";
+			List<TransactionList> data =jdbcTemplate.query(sql, new Object[] {username, username}, new viewTransactionMapper());
 			return data.size()!=0?data:null;
 		}catch(EmptyResultDataAccessException erda) {
 			return null;

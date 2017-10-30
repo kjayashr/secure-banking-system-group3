@@ -18,7 +18,6 @@ import com.ss.dao.AccountDao;
 import com.ss.model.Account;
 import com.ss.service.CreditCardNumberGenerator;
 import com.ss.service.MailService;
-import com.sun.istack.internal.logging.Logger;;
 
 public class AccountDaoImpl implements AccountDao {
 
