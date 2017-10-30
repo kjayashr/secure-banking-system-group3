@@ -275,6 +275,7 @@ public void MPayment(String cardno,String cvv,double amount,String usernameofuse
 	public void addToTransaction(double amount, String detail, String status, String username, Date date, String to,
 			boolean critical,String approvalUsername, String accountTypeFrom, String accountTypeTo) {
 		// TODO Auto-generated method stub
+		System.out.println("dsbkdsdhksvbdjvs");
 		String sql = "Insert into transaction(amount, detail, status, transacterusername, "
 				+ "transactiondate, transferto, critical, approverUserName, fromAccountType, toAccountType) "
 				+ "values (?,?,?,?,?,?,?,?,?,?)";

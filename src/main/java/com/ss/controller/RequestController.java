@@ -44,7 +44,7 @@ public class RequestController {
 	@RequestMapping(value="/request", method=RequestMethod.POST)
 	public ModelAndView creditDebitRequest(HttpServletRequest req,Authentication auth){
 		String username=auth.getName();
-		boolean critical=false;
+		boolean critical=true;
 		ModelAndView notifyPage=new ModelAndView("notify");
 		String accountType=req.getParameter("accountType");
 		String type=req.getParameter("type");
@@ -61,8 +61,9 @@ public class RequestController {
 				DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 				Date date = new Date();
 				if(amount<threshold){
-					critical=true;
-					//accountDaoImpl.doCreditDebit(accountType, amount, type, username);
+					critical=false;
+					accountDaoImpl.doCreditDebit(accountType, amount, type, username);
+					status="approved";
 
 				}
 				amount=amount*(-1);
@@ -78,8 +79,9 @@ public class RequestController {
 			String detail="Credit to "+accountType;
 			String status="pending";
 			if(amount<threshold){
-				critical=true;
-				//accountDaoImpl.doCreditDebit(accountType, amount, type, username);
+				critical=false;
+				accountDaoImpl.doCreditDebit(accountType, amount, type, username);
+				status="approved";
 				}
 			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,approverusername,accountType,accountType);
 			notifyPage.addObject("notification","Payment Processed sucessfully");
