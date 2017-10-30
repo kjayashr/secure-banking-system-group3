@@ -222,7 +222,7 @@ public class AccountDaoImpl implements AccountDao {
 		String a = "Select count(*) from creditcard where username=? AND cardnumber=?";
 		List<Integer> countList = jdbcTemplate.query(a, new Object[] { accountFrom, cardno }, new RowMapper<Integer>() {
 
-<<<<<<< HEAD
+
 public void MPayment(String cardno,String cvv,double amount,String usernameofuser, String username,String accountTypeTo) {
 	
 	String sqlmc="Update creditcard set current_balance = current_balance- "+amount+"where cardnumber='"+cardno+"'AND cvv='"+cvv+"';";
@@ -234,12 +234,12 @@ public void MPayment(String cardno,String cvv,double amount,String usernameofuse
 	jdbcTemplate.execute(sqlcurrdue);
 	jdbcTemplate.execute(sqlMacc);
 }
-=======
+
 			@Override
 			public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
 				return rs.getInt(1);
 			}
->>>>>>> e198636a3b6b130641e739a08938e07f0b267c3f
+
 
 		});
 		Integer count = 0;
