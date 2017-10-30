@@ -31,10 +31,10 @@
 						<td>${log.amount}</td>
 
 					</tr>
+				</c:forEach>
 				<div class="row" align="center">
 					<a href="${pageContext.request.contextPath}/downloadPDF">Get PDF</a>
 				</div>
-				</c:forEach>
 			</table>
 		</c:when>
   		<c:otherwise>
