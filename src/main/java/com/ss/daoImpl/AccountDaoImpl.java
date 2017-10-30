@@ -28,29 +28,30 @@ public class AccountDaoImpl implements AccountDao {
 	JdbcTemplate jdbcTemplate;
 
 	@Override
-	public int createAccount(int balance,String username, String type,int interest) {
-		String sql="Insert into account values("+balance+",'"+type+"','"+username+"',"+interest+");";
-		int ret=jdbcTemplate.update(sql);
-		return ret;
+	public int createAccount(int balance, String username, String type, int interest) {
+		String sql = "Insert into account values(?,?,?,?)"; // +balance+",'"+type+"','"+username+"',"+interest+");";
+		return jdbcTemplate.update(sql, new Object[] { balance, type, username, interest });
 	}
-	
+
 	@Override
 	public HashMap<String, Account> getAccountInfo(String username) {
-		String sql="select accountType,SUM(balance) as balance from account where username= ? group by accountType";
-		List<Account> data =jdbcTemplate.query(sql, new Object[]{username}, new accountinfoMapper()) ;
-		HashMap<String,Account> retMap=new HashMap<String,Account>();
-		for(Account a:data){
-			if(a.getAccountType().equalsIgnoreCase("Saving")){
+		String sql = "select accountType,SUM(balance) as balance from account where username= ? group by accountType";
+		List<Account> data = jdbcTemplate.query(sql, new Object[] { username }, new accountinfoMapper());
+		HashMap<String, Account> retMap = new HashMap<String, Account>();
+		for (Account a : data) {
+			if (a.getAccountType().equalsIgnoreCase("Saving")) {
 				retMap.put("Saving", a);
-			}else if(a.getAccountType().equalsIgnoreCase("Checking")){
+			} else if (a.getAccountType().equalsIgnoreCase("Checking")) {
 				retMap.put("Checking", a);
-			}else{
+			} else {
 				retMap.put("Credit", a);
 			}
 		}
+
 		System.out.println("::::::::----------------"+retMap);
 		for (Map.Entry entry : retMap.entrySet()) {
 		    System.out.println(entry.getKey() + ", " + entry.getValue());
+
 		}
 		return retMap;
 
@@ -64,182 +65,269 @@ public class AccountDaoImpl implements AccountDao {
 		int length = 16;
 		String cardNumber = cGen.generate(bin, length);
 		System.out.println(cardNumber);
-		String cvv = cGen.generate("9",3);
+		String cvv = cGen.generate("9", 3);
 		double creditlimit = 10000;
 		double currentBalance = 10000;
 		double currentdue = 0;
-		
-		String sql="Insert into creditcard values("+cardNumber+","+cvv+",'"+username+"',"+currentBalance+","+currentdue+","+creditlimit+");";
-		//String sql="Insert into account values("+balance+",'"+type+"','"+username+"',"+interest+");";
-		int ret=jdbcTemplate.update(sql);
-		System.out.println("After creating card"+ret);
-		String carddetails = cardNumber+" and your CVV is : "+cvv;
+
+		// String sql = "Insert into creditcard values(" + cardNumber + "," + cvv + ",'"
+		// + username + "'," + currentBalance
+		// + "," + currentdue + "," + creditlimit + ");";
+		// String sql="Insert into account
+		// values("+balance+",'"+type+"','"+username+"',"+interest+");";
+		String sql = "Insert into creditcard values(?,?,?,?,?,?);";
+		int ret = jdbcTemplate.update(sql,
+				new Object[] { cardNumber, cvv, username, currentBalance, currentdue, creditlimit });
+		System.out.println("After creating card" + ret);
+		String carddetails = cardNumber + " and your CVV is : " + cvv;
 		MailService.carddetails(email, username, carddetails);
-		
+
 		return carddetails;
 	}
 
 	public void doCreditDebit(String accountType, double amount, String type, String username) {
-		
-		// check for threshold and user
-		
-		if(type.equalsIgnoreCase("credit")){
-			
-			String sql="Update account set balance= balance + "+ amount + " where accountType= '"+ accountType + "' and username='"+username+"';";
-			jdbcTemplate.execute(sql);
-		}
-		else{
-			String sql="Update account set balance= balance - "+ amount + " where accountType= '"+ accountType+ "' and username='"+username+"';";
-			jdbcTemplate.execute(sql);
 
+		// check for threshold and user
+
+		if (type.equalsIgnoreCase("credit")) {
+
+			String sql = "Update account set balance = balance + ? where accountType = ?";
+			jdbcTemplate.update(sql, new Object[] { amount, accountType });
+		} else {
+			String sql = "Update account set balance = balance - ? where accountType = ?";
+			jdbcTemplate.update(sql, new Object[] { amount, accountType });
 		}
 	}
-	
-public void doTransfer(String from, String to, double amount) {
-		
+
+	public void doTransfer(String from, String to, double amount) {
+
 		// check for threshold and user
-	if(from.equalsIgnoreCase(to)!= true){
-		String sql="Update account set balance= balance + "+ amount + " where accountType= '"+ to + "';";
-		jdbcTemplate.execute(sql);
-		String sql1="Update account set balance= balance - "+ amount + " where accountType= '"+ from + "';";
-		jdbcTemplate.execute(sql1);
+		if (from.equalsIgnoreCase(to) != true) {
+			String sql1 = "Update account set balance = balance + ? where accountType = ?";
+			String sql2 = "Update account set balance = balance - ? where accountType = ?";
+			jdbcTemplate.update(sql1, new Object[] { amount, to });
+			jdbcTemplate.update(sql2, new Object[] { amount, from });
+		}
+
 	}
-	
+
+	public void doTransfer(String fromUserName, String fromAccountType, String toUserName, String toAccountType,
+			double amount) {
+		// String sql1 = "update account set balance = balance - " + amount + " where
+		// username='" + fromUserName + "' and accountType ='"+fromAccountType+"';";
+		// String sql2 = "update account set balance = balance + " + amount + " where
+		// username='" + toUserName + "' and accountType ='"+toAccountType+"';";
+		String sql1 = "update account set balance = balance - ? where username=? and accountType=?";
+		String sql2 = "update account set balance = balance + ? where username=? and accountType =?";
+		jdbcTemplate.update(sql1, new Object[] { amount, fromUserName, fromAccountType });
+		jdbcTemplate.update(sql2, new Object[] { amount, toUserName, toAccountType });
+	}
+
+	public void doPayment(String accountTypeFrom, double amount) {
+		// TODO Auto-generated method stub
+
+		String sql = "Update account set balance = balance - ? where accountType = ?";
+		jdbcTemplate.update(sql, new Object[] { amount, accountTypeFrom });
+	}
+
+	public void MPayment(String cardno, String cvv, double amount, String usernameofuser, String username,
+			String accountTypeTo) {
+
+		// String sqlmc = "Update creditcard set current_balance = current_balance- " +
+		// amount + "where cardnumber='"
+		// + cardno + "'AND cvv='" + cvv + "';";
+		// String sqlcurrdue = "Update creditcard set
+		// current_due=creditlimit-current_balance where cardnumber='" + cardno
+		// + "';";
+		// String sqlacc = "Update account set balance=balance-" + amount + "where
+		// username='" + usernameofuser
+		// + "'AND accountType='Credit Card';";
+		// String sqlMacc = "Update account set balance=balance-" + amount + "where
+		// username='" + username
+		// + "'AND accountType='" + accountTypeTo + "';";
+
+		String sqlmc = "Update creditcard set current_balance = current_balance- ? where cardnumber=? AND cvv=?";
+		String sqlcurrdue = "Update creditcard set current_due=creditlimit-current_balance where cardnumber=?";
+		String sqlacc = "Update account set balance=balance-? where username=? AND accountType='Credit Card';";
+		String sqlMacc = "Update account set balance=balance+? where username=? AND accountType=?";
+		jdbcTemplate.update(sqlmc, new Object[] { amount, cardno, cvv });
+		jdbcTemplate.update(sqlacc, new Object[] { amount, usernameofuser });
+		jdbcTemplate.update(sqlcurrdue, new Object[] { cardno });
+		jdbcTemplate.update(sqlMacc, new Object[] { amount, username, accountTypeTo });
+	}
+
+	public boolean checkAmount(String accountType, double amount, String username) {
+		// String sql="Select balance from account where accountType='"+ accountType+"'
+		// AND username='"+ username+"';";
+		String sql = "Select balance from account where accountType = ? AND username = ?";
+		List<Integer> ret = jdbcTemplate.query(sql, new Object[] { accountType, username }, new RowMapper<Integer>() {
+
+			@Override
+			public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return rs.getInt("balance");
+			}
+
+		});
+
+		if (ret.size() == 0) {
+			return false;
+		} else {
+			System.out.println(ret.get(0));
+			return ret.get(0) - amount > 0;
+		}
+	}
+
+	public boolean checkCAmount(String cardno, String cvv, double amount) {
+		String sql = "Select current_balance from creditcard where cardnumber=? AND cvv=?";
+		List<Integer> retList = jdbcTemplate.query(sql, new Object[] { cardno, cvv }, new RowMapper<Integer>() {
+
+			@Override
+			public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return rs.getInt("current_balance");
+			}
+
+		});
 		
+		Integer ret = 0;
+		if(retList.size() != 0) {
+			ret = retList.get(0);
+		}
+
+		String limit = "Select creditlimit from creditcard where cardnumber=?";
+
+		List<Double> creditList = jdbcTemplate.query(limit, new Object[] { cardno }, new RowMapper<Double>() {
+
+			@Override
+			public Double mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return rs.getDouble("creditlimit");
+			}
+
+		});
+
+		Double credit = new Double(0);
+		if(creditList.size() != 0) {
+			credit = creditList.get(0);
+		}
+		
+		System.out.println("[TEST NEW 1] " + ret);
+		System.out.println("[TEST NEW 2] " + credit);
+		
+		if (((ret - amount) > 0) && ((credit - amount) > 0))
+			return true;
+		else
+			return false;
 	}
-    public void doTransfer(String fromUserName, String fromAccountType, String toUserName, String toAccountType, double amount) {
-    	String sql = "update account set balance = balance - " + amount + " where username='" + fromUserName + "' and accountType ='"+fromAccountType+"';";
-    	jdbcTemplate.execute(sql);
-    	String sql1 = "update account set balance = balance + " + amount + " where username='" + toUserName + "' and accountType ='"+toAccountType+"';";
-    	jdbcTemplate.execute(sql1);
-    }
-public void doPayment(String accountTypeFrom, double amount) {
-	// TODO Auto-generated method stub
-	
-		String sql1="Update account set balance= balance - "+ amount + " where accountType= '"+ accountTypeFrom + "';";
-		jdbcTemplate.execute(sql1);
-}
 
+	public boolean checkDet(String accountFrom, String cardno) {
+		String a = "Select count(*) from creditcard where username=? AND cardnumber=?";
+		List<Integer> countList = jdbcTemplate.query(a, new Object[] { accountFrom, cardno }, new RowMapper<Integer>() {
 
-public void MPayment(String cardno,String cvv,double amount,String usernameofuser, String username,String accountTypeTo) {
-	
-	String sqlmc="Update creditcard set current_balance = current_balance- "+amount+"where cardnumber='"+cardno+"'AND cvv='"+cvv+"';";
-	String sqlcurrdue="Update creditcard set current_due=creditlimit-current_balance where cardnumber='"+cardno+"';";
-	String sqlacc="Update account set balance=balance-"+amount+"where username='"+usernameofuser+"'AND accountType='Credit Card';";
-	String sqlMacc="Update account set balance=balance-"+amount+"where username='"+username+"'AND accountType='"+accountTypeTo+"';";
-	jdbcTemplate.execute(sqlmc);
-	jdbcTemplate.execute(sqlacc);
-	jdbcTemplate.execute(sqlcurrdue);
-	jdbcTemplate.execute(sqlMacc);
-}
+			@Override
+			public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return rs.getInt(1);
+			}
 
-public boolean checkAmount(String accountType,double amount, String username){
-	String sql="Select balance from account where accountType='"+ accountType+"' AND username='"+ username+"';";
-	System.out.println(sql);
-	Integer ret= jdbcTemplate.queryForObject(sql, Integer.class);
-	System.out.println(ret);
-	return ret - amount > 0;
-}
-
-
-public boolean checkCAmount(String cardno,String cvv,double amount){
-	String sql="Select current_balance from creditcard where cardnumber='"+ cardno+"' AND cvv='"+ cvv+"';";
-	Integer ret= jdbcTemplate.queryForObject(sql, Integer.class);
-	String limit="Select creditlimit from creditcard where cardnumber='"+cardno+"';";
-	
-	Double credit = jdbcTemplate.queryForObject(limit, Double.class);
-	System.out.println(ret);
-	System.out.println(credit);
-	if (((ret-amount)>0)&&((credit-amount)>0))
-		return true;
-	else
-		return false;
-}
-
-public boolean checkDet(String accountFrom,String cardno) {
-	String a="Select count(*) from creditcard where username='"+accountFrom+"' AND cardnumber='" + cardno +"';";
-	Integer count=jdbcTemplate.queryForObject(a, Integer.class);
-	if(count > 0)
-		return true;
-	else
-		return false;
-}
-	
-	
-	
-	
-
-
-public String getusername(String email){
-	
-	String sql1="select username from users where email='"+email+"';";
-	String ret= jdbcTemplate.queryForObject(sql1,String.class);
-	
-	return ret;
-}
-
-public void addToTransaction(double amount, String detail, String status, String username, Date date, String to, boolean critical,String approvalUsername) {
-	// TODO Auto-generated method stub
-	String sql="Insert into transaction(amount,detail,status,transacterusername,transactiondate, transferto,critical,approverUserName) values "
-			+ "(" +amount+",'"+detail+"','"+status+"','"+username+"','"+date+"','"+to+"',"+critical+",'"+approvalUsername+"');";
-	
-	jdbcTemplate.execute(sql);
-	
-}
-
-@Override
-public List<String> getValidAccounts(String name) {
-	String sql="select distinct accountType from account where username= ?";
-	List<Account> data =jdbcTemplate.query(sql, new Object[] {name}, new accountMapper()) ;
-	List<String> ret=new ArrayList<String>();
-	for(Account a:data) {
-		ret.add(a.getAccountType());
+		});
+		Integer count = 0;
+		if(countList.size() != 0) {
+			count = countList.get(0);
+		}
+		if (count > 0)
+			return true;
+		else
+			return false;
 	}
-	return ret;
+
+	public String getusername(String email) {
+
+		String sql = "select username from users where email = ?";
+		List<String> ret = jdbcTemplate.query(sql, new Object[] { email }, new RowMapper<String>() {
+
+			@Override
+			public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return rs.getString("username");
+			}
+
+		});
+
+		if (ret.size() != 0) {
+			return ret.get(0);
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public void addToTransaction(double amount, String detail, String status, String username, Date date, String to,
+			boolean critical,String approvalUsername) {
+		// TODO Auto-generated method stub
+		String sql = "Insert into transaction(amount, detail, status, transacterusername, "
+				+ "transactiondate, transferto, critical, approverUserName) "
+				+ "values (?,?,?,?,?,?,?,?)";
+		Object[] arguments = new Object[] { amount, detail, status, username, date, to, critical, approvalUsername };
+		jdbcTemplate.update(sql, arguments);
+
+	}
+
+	@Override
+	public List<String> getValidAccounts(String name) {
+		String sql = "select distinct accountType from account where username= ?";
+		List<Account> data = jdbcTemplate.query(sql, new Object[] { name }, new accountMapper());
+		List<String> ret = new ArrayList<String>();
+		for (Account a : data) {
+			ret.add(a.getAccountType());
+		}
+		return ret;
+	}
+
+	public String getusernameMerchant(String cardno) {
+
+		String sql1 = "select username from creditcard where cardnumber=?";
+		List<String> ret = jdbcTemplate.query(sql1, new Object[] { cardno }, new RowMapper<String>() {
+
+			@Override
+			public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return rs.getString("username");
+			}
+
+		});
+
+		if (ret.size() == 0) {
+			return null;
+		} else {
+			return ret.get(0);
+		}
+	}
+
 }
-
-public String getusernameMerchant(String cardno) {
-	
-	String sql1="select username from creditcard where cardnumber='"+cardno+"';";
-	String ret= jdbcTemplate.queryForObject(sql1,String.class);
-	
-	return null;
-}
-
-
-}
-
-
-
 
 class accountMapper implements RowMapper<Account> {
-	public Account mapRow(ResultSet rs,int arg1) throws SQLException {
+	public Account mapRow(ResultSet rs, int arg1) throws SQLException {
 		Account accountdata = new Account();
-	    accountdata.setAccountType(rs.getString("accountType"));
-	    return accountdata;
+		accountdata.setAccountType(rs.getString("accountType"));
+		return accountdata;
 	}
 }
 
 class accountinfoMapper implements RowMapper<Account> {
-	  public Account mapRow(ResultSet rs, int arg1) throws SQLException {
-	    Account accountdata = new Account();
-	    accountdata.setBalance(rs.getInt("balance"));
-	    accountdata.setAccountType(rs.getString("accountType"));
-	    //accountdata.setInterestRate(rs.getString("interestRate"));
-	    return accountdata;
-	  }
-	  
-	  
+	public Account mapRow(ResultSet rs, int arg1) throws SQLException {
+		Account accountdata = new Account();
+		accountdata.setBalance(rs.getInt("balance"));
+		accountdata.setAccountType(rs.getString("accountType"));
+		// accountdata.setInterestRate(rs.getString("interestRate"));
+		return accountdata;
+	}
+
 }
 
-class BalanceMapper implements RowMapper<Double>{
+class BalanceMapper implements RowMapper<Double> {
 
 	@Override
 	public Double mapRow(ResultSet rs, int arg1) throws SQLException {
 		System.out.println(rs.getDouble("balance"));
-		return (Double)rs.getDouble("balance");
+		return (Double) rs.getDouble("balance");
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 }

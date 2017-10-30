@@ -12,7 +12,7 @@
 </head>
 <body>
 
-    <sec:authorize access="hasRole('ROLE_TIER1')">
+    <sec:authorize access="hasAnyRole('ROLE_TIER1', 'ROLE_TIER1_APPROVED')">
 <div class="row" align="center">
 			<a href="${pageContext.request.contextPath}/tier1">Modify Personal Account</a>
 </div>
