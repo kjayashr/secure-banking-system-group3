@@ -444,7 +444,7 @@ public class RequestController {
 	@RequestMapping(value="/payment", method=RequestMethod.POST)
 	public ModelAndView paymentRequest(HttpServletRequest req,Authentication auth){
 		String username=auth.getName();
-		boolean critical=false;
+		boolean critical=true;
 		ModelAndView notifyPage=new ModelAndView("notify");
 		String accountTypeFrom=req.getParameter("from");
 		String accountTypeTo=req.getParameter("to");
@@ -466,7 +466,12 @@ public class RequestController {
 			String status="pending";
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			Date date = new Date();
-			if(amount>=threshold) critical=true;
+			if(amount<threshold) {
+				critical=false;
+				accountDaoImpl.doPayment(accountTypeFrom,amount,username);
+				status="approved";
+
+			}
 
 			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,null, accountTypeFrom,"payment"); 
 			//accountDaoImpl.doPayment(accountTypeFrom,amount,username);
