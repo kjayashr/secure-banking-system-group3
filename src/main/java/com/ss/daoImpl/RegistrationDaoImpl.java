@@ -323,7 +323,7 @@ public class RegistrationDaoImpl implements RegistrationDao {
 
 		}
 		
-		if (!email.equals(Long.toString(ExistinguserInfo.getContactno()))) {
+		if (!email.equals(ExistinguserInfo.getEmail())) {
 			String sql8 = "insert into request_changes (requestid, fieldname, fieldvalue) values (?,?,?);";
 			GeneratedKeyHolder holder8 = new GeneratedKeyHolder();
 			jdbcTemplate.update(new PreparedStatementCreator() {

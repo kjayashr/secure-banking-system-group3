@@ -55,33 +55,33 @@ form .line.submit {
 <body>
 	<jsp:include page="header.jsp"/>
 	<div id="container" class="container">
-		<form action="${pageContext.request.contextPath}/editprofile"
-			method="post">
+		<form action="${pageContext.request.contextPath}/user/changedDetails"
+			method="get">
 			<h1>Edit Profile</h1>
 			<div class="line">
 				<label for="email">Email *: </label><input type="email" id="email"
-					name="email" required />
+					value=${userInfo.email} name="email"  />
 			</div>
 			<div class="line">
 				<label for="add">Address *: </label><input type="text" id="address"
-					name="address" required />
+					value=${userInfo.address} name="address"  />
 			</div>
 			
 			<div class="line">
 				<label for="city">city *: </label><input type="text" id="city"
-					name="city" required />
+					value=${userInfo.city} name="city" />
 			</div>
 			<div class="line">
 				<label for="state">State *: </label><input type="text" id="state"
-					name="state" required />
+					value=${userInfo.state} name="state" />
 			</div>
 			<div class="line">
 				<label for="country">Country *: </label><input type="text"
-					id="country" name="country" required />
+					value=${userInfo.country} id="country" name="country"  />
 			</div>
 			<div class="line">
 				<label for="ptc">Post Code *: </label><input type="text"
-					id="postcode" name="postcode" required />
+					value=${userInfo.postcode} id="postcode" name="postcode"  />
 			</div>
 			<div class="line submit">
 				<input type="submit" value="Submit" class="btn btn-primary" />
