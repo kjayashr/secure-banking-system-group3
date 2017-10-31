@@ -14,11 +14,13 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -72,7 +74,7 @@ public class Tier3Controller {
     @Autowired
     UserAttemptDao userAttemptDao;
     
-
+    final static Logger logger = Logger.getLogger(Tier3Controller.class);
 
     @RequestMapping(value="/admin/Welcome", method=RequestMethod.GET)
 	public ModelAndView hellotier3Page() {
@@ -95,21 +97,53 @@ public class Tier3Controller {
 	public String handleRegistration(HttpServletRequest req,Authentication auth){
 		String username=req.getParameter("username");
 		String password=req.getParameter("password");
+		BCryptPasswordEncoder encoder=new BCryptPasswordEncoder();
+		password=encoder.encode(password);
 		String firstname=req.getParameter("firstname");
 		String lastname=req.getParameter("lastname");
 		String dateofbirth=req.getParameter("dateofbirth");
 		String email=req.getParameter("email");
 		String address=req.getParameter("address");
-		Long contactno=Long.parseLong(req.getParameter("contactno"));
-		Long ssn=Long.parseLong(req.getParameter("ssn"));
+		Long contactno = 1L;
+		try {
+		contactno = Long.parseLong(req.getParameter("contactno"));
+		} catch (NumberFormatException e) {
+			logger.info("faced number format exception due to faulty contactno input");
+			return "Admin_Homepage";
+		}
+		Long ssn=1L;
+		try {
+			ssn=Long.parseLong(req.getParameter("ssn"));
+		} catch (NumberFormatException e) {
+			logger.info("faced number format exception due to faulty ssn input");
+			return "Admin_Homepage";
+		}
 		String city=req.getParameter("city");
 		String state=req.getParameter("state");
 		String country=req.getParameter("country");
-		int postcode=Integer.parseInt(req.getParameter("postcode"));
+		int postcode = 0;
+		try {
+			postcode=Integer.parseInt(req.getParameter("postcode"));
+		} catch (NumberFormatException e) {
+			logger.info("faced number format exception due to faulty postcode input");
+			return "Admin_Homepage";
+		}
 		String type=req.getParameter("accountType");
+		double balance=0;
+		try {
+		    balance = Double.parseDouble(req.getParameter("balance"));
+		} catch (NumberFormatException e) {
+			logger.info("faced number format exception due to faulty balance input");
+			return "Admin_Homepage";
+		}
+		double interest = 0;
+		try {
+			interest=Integer.parseInt(req.getParameter("interest"));
+		} catch (NumberFormatException e) {
+			logger.info("faced number format exception due to faulty interest input");
+			return "Admin_Homepage";
+		}
 		String role = req.getParameter("UserType");
-		int balance=Integer.parseInt(req.getParameter("balance"));
-		int interest=Integer.parseInt(req.getParameter("balance"));
 		// validation left
 		try{
 			int i=registrationImpl.addNewUser(username,password,firstname,lastname, dateofbirth, email, address,contactno, ssn, city, state, country, postcode, role);
