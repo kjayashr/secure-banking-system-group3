@@ -93,5 +93,9 @@
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
             </form>
         </div>
+        <div class="row" align="center">
+			<a href="${pageContext.request.contextPath}/tier2">Go Back To Home Page</a>
+		</div>
+        
     </body>
 </html>
