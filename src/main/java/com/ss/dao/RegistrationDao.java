@@ -18,4 +18,5 @@ public interface RegistrationDao {
 	
 	public int resetPassword(String username, String password);
 	public String checkValidEntry(String username, String contactNo);
+
 }
