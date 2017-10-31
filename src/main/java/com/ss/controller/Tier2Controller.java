@@ -276,7 +276,7 @@ public class Tier2Controller {
 					transactionMessage = "Not enough balance to perform debit";
 				}
 				if (transactionSuccess) {
-					accountDaoImpl.doCreditDebit(transaction.getFromAccountType(), transaction.getAmount(), "credit", transaction.getTransactorUserName());
+					accountDaoImpl.doCreditDebit(transaction.getFromAccountType(), transaction.getAmount(), "debit", transaction.getTransactorUserName());
 				    return "Transaction approval processed successfully!";
 				} else {
 					return "Transaction failed";

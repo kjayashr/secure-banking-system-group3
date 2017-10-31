@@ -97,12 +97,12 @@ public class MerchantController {
 		// validation left
 		registrationImpl.myNewMethod2(uName,email,address, city, state, country, postcode);
 		
-		model.setViewName("Merchanthello");
+		model.setViewName("redirect:/Merchant/Welcome");
 		return model;
 	}
 
 	
-	@RequestMapping(value ="/Merchant/merchantEditProfile",method = RequestMethod.GET)
+	@RequestMapping(value ="/MerchanteditProfile",method = RequestMethod.GET)
 	public ModelAndView modifyPersonalAccount(HttpServletRequest req,Authentication auth) {
 		ModelAndView model = new ModelAndView();
 		System.out.println("hello from merchant controller");

@@ -52,15 +52,19 @@ public class TransactionDaoImpl implements TransactionDao{
 			i=jdbcTemplate.update(sql, new Object[] {transactionId});
 			
 		}else{
+			//rejection
 			String sql="Update transaction set status='rejected' where id=?";
 			i=jdbcTemplate.update(sql, new Object[] {transactionId});
 		}
 		
 		return i;
 	}
+	
+	
 
 	public List<TransactionList> viewTransaction(String username) {
 		try {
+
 			String sql="Select transactiondate, amount, detail from transaction where (transferto=? or transacterusername=?) and (status='approved');";
 			List<TransactionList> data =jdbcTemplate.query(sql, new Object[] {username, username}, new viewTransactionMapper());
 			return data.size()!=0?data:null;
