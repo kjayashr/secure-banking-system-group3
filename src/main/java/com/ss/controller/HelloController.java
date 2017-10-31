@@ -15,15 +15,21 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.ss.daoImpl.AccountDaoImpl;
 import com.ss.model.Account;
+import com.ss.model.TransactionList;
 import com.ss.model.User;
+import com.ss.security.CustomAuthenticationSuccessHandler;
+import com.ss.security.OTPUtil;
 
 import org.apache.log4j.Logger;
 @Controller
@@ -37,6 +43,9 @@ public class HelloController {
 	
 	@Autowired
 	RegistrationDao	registrationImpl;
+	
+	@Autowired
+	OTPUtil otpUtil;
 	
 	@RequestMapping(value = "/welcome**" , method = RequestMethod.GET)
 	public ModelAndView welcomePage(HttpServletRequest req, HttpServletResponse resp,HttpSession se) {
@@ -167,7 +176,67 @@ public class HelloController {
 			model.setViewName("redirect:/welcome");
 			return model;
 		}
-
+	    
+	    
+	    @RequestMapping(value = "/resetpassword", method = RequestMethod.GET)
+		public String resetPassword(ModelMap model) {
+	    	model.addAttribute("reset_state", "start");
+			return "resetpassword";
+		}
+	    
+	    @RequestMapping(value = "/resetpassword", method = RequestMethod.POST)
+		public String resetPassword(HttpServletRequest req, HttpServletResponse resp, Authentication auth, ModelMap model) {
+			
+			if(req.getParameter("password_set") != null && req.getParameter("password_set").equals("DONE")) {
+				String username = req.getParameter("username_holder");
+				String password = req.getParameter("new_password");
+				int ret = registrationImpl.resetPassword(username, password);
+				System.out.println("[PASS SET] " + ret);
+				if(ret != 0) {
+					model.addAttribute("reset_state", "finish");
+				} else {
+					model.addAttribute("reset_state", "wrong");
+				}
+				return "resetpassword";
+			} else {
+				String username = req.getParameter("username_holder");
+				System.out.println("[TEST] " + username);
+				if(req.getParameter("otp_attempts") == null) {
+					otpUtil.generateOTP(username);
+					model.addAttribute("username_holder", username);
+					model.addAttribute("page", "resetpassword");
+					model.addAttribute("otp_attempts", 3);
+					return "otpPage";
+				} else {
+					System.out.println("[TEST] Validate " + username);
+					int userOTP = Integer.parseInt(req.getParameter("userOTP"));
+					int count = Integer.parseInt(req.getParameter("otp_attempts"));
+					if (!otpUtil.validateOTP(username, userOTP, count)) {
+						count--;
+						if (count > 0) {
+							model.addAttribute("username_holder", username);
+							model.addAttribute("page", "resetpassword");
+							model.addAttribute("otp_attempts", count);
+							return "otpPage";
+						} else {
+							model.addAttribute("reset_state", "wrongOTP");
+							return "resetpassword";
+						}
+					}
+					
+					model.addAttribute("username_holder", username);
+					model.addAttribute("reset_state", "takePass");
+					return "resetpassword";
+				}
+			}
+		}
+	    
+	    @RequestMapping(value="/prescheck",method=RequestMethod.POST)
+		public @ResponseBody String checkUserName(@RequestParam("username_holder") String username,
+				@RequestParam("dob") String dob){
+			System.out.print("Username to check " +username+" | "+dob);
+			String ret = registrationImpl.checkValidEntry(username,dob);
+			return ret;
+		}
 	
-
 }
