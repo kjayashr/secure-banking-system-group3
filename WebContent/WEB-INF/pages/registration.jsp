@@ -118,6 +118,17 @@
    			 return false;
    		 }
    	 }
+   	 
+  	 function checkDOB(){
+   		 var dob=$("#dateofbirth").val();
+  		 re = /^\d{4}\-\d{1,2}\-\d{1,2}$/;
+  	     if(dob != '' && !dob.match(re)) {
+  		    $("#invalidDOB").html("Invalid date format");
+   		 }else{
+    		$("#invalidDOB").html("");
+    	 }  	 
+  	 }
+
 	 
     
     </script>
@@ -132,7 +143,9 @@
                 <!-- You may want to consider adding a "confirm" password box also -->
                 <div class="line"><label for="firstname">FirstName*: </label><input type="text" id="firstname" name="firstname" required /></div>
                 <div class="line"><label for="lastname">LastName*: </label><input type="text" id="lastname" name="lastname"  required/></div>
-                <div class="line"><label for="dob">Date of Birth*: </label><input type="text" id="dateofbirth" name="dateofbirth" placeholder="YYYY-MM-DD" required /></div>
+                <div class="line"><label for="dob">Date of Birth*: </label><input type="text" id="dateofbirth" name="dateofbirth" placeholder="YYYY-MM-DD" onblur="checkDOB()"required /></div>
+                <span id="invalidDOB" name="invalidDOB" style="color:red"></span>
+                
                 <div class="line"><label for="email">Email*: </label><input type="email" id="email" name="email" onblur="checkAvailabilityEmail()" required /></div>
                 <div><span id="sameEmail" name="sameEmail" style="color:red"></span></div>
                 <!-- Valid input types: http://www.w3schools.com/html5/html5_form_input_types.asp -->

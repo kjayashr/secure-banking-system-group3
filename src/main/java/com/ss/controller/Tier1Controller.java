@@ -39,7 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class Tier1Controller {
-	private static final String USER_ROLE_TIER1 = "TIER1";
+	private static final String USER_ROLE_TIER1 = "ROLE_TIER1";
 	
 	@Autowired
 	AccountDaoImpl accountDaoImpl;
