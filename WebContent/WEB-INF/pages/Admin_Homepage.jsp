@@ -17,7 +17,7 @@
 	</h1>
 	
 <h2>Welcome ${pageContext.request.userPrincipal.name}</h2>
-    <sec:authorize access="hasRole('ROLE_USER')">
+    <sec:authorize access="hasRole('ROLE_ADMIN')">
 		<!-- For login user -->
 		<c:url value="/j_spring_security_logout" var="logoutUrl" />
 		<form action="${logoutUrl}" method="post" id="logoutForm">
