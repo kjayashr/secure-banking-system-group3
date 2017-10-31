@@ -32,6 +32,7 @@ import com.ss.dao.AccountDao;
 import com.ss.dao.AdminDao;
 import com.ss.dao.RegistrationDao;
 import com.ss.daoImpl.AccountDaoImpl;
+import com.ss.daoImpl.UserAttemptDaoImpl;
 import com.ss.daoImpl.UserDaoImpl;
 import com.ss.model.Account;
 import com.ss.dao.TransactionBO;
@@ -69,7 +70,9 @@ public class Tier3Controller {
 	UserDaoImpl userDaoImpl;
     
     @Autowired
-	UserAttemptDao userAttemptDao;
+    UserAttemptDao userAttemptDao;
+    
+
 
     @RequestMapping(value="/admin/Welcome", method=RequestMethod.GET)
 	public ModelAndView hellotier3Page() {
@@ -267,5 +270,32 @@ public class Tier3Controller {
 		return model;
 	}
     
+	@RequestMapping(value="/admin/unblockUser", method=RequestMethod.GET)
+	public ModelAndView unblockUser(HttpServletRequest req,Authentication auth) {
+		System.out.println("In view unblockUser method");
+		List<String> blockedUsers = userAttemptDao.getBlockedUser();
+
+		ModelAndView model = new ModelAndView();
+		model.addObject("blockedUsers", blockedUsers);
+		model.setViewName("unblockUser");
+		return model;
+	}
+	
+	@RequestMapping(value= "/userUnblockApproved", method = RequestMethod.POST)
+	public @ResponseBody String userUnblockApproved(@RequestParam("username") String username) {
+		System.out.println("In Unblok aproval method " + username);
+		
+		if(username!=null && username.trim().length()!=0) {
+			boolean status = userAttemptDao.unblockedUser(username);
+			System.out.println("In Unblok aproval method --- " + status);
+			if(status) {
+				return "Unblocked successfully!";
+			} else {
+				return "Unblocked failed!";
+			}
+		} else {
+			return "Unblocked failed! No username passed!";
+		}
+	}
     
 }
