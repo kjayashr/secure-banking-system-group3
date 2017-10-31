@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,6 +29,7 @@ import com.ss.model.Account;
 import com.ss.model.T1userDO;
 import com.ss.model.TransactionDO;
 import com.ss.model.User;
+import com.ss.service.MailService;
 
 import jdk.nashorn.internal.ir.RuntimeNode.Request;
 
@@ -39,8 +41,11 @@ import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class Tier2Controller {
+	final static Logger logger = Logger.getLogger(Tier2Controller.class);
 	private static final String USER_ROLE_TIER2 = "ROLE_TIER2";
 	private static String PAYMENT_ACCOUNT_TYPE = "payment";
+
+	private static int threshold=1000;
 	@Autowired
 	RegistrationDao registrationImpl;
 	
@@ -265,6 +270,10 @@ public class Tier2Controller {
 			
 			TransactionDO transaction = transactionBO.getTransactionFromId(transactionId);
 			//handling payments
+
+			User userDetails = userDaoImpl.getUserbyUsername(transaction.getTransactorUserName());
+			String userEmail = userDetails.getEmail();
+			String toName = userDetails.getFirstname() + " " + userDetails.getLastname();
 			if (PAYMENT_ACCOUNT_TYPE.equals(transaction.getToAccountType())) {
 			    boolean amountCheck = accountDaoImpl.checkAmount(transaction.getFromAccountType(), transaction.getAmount(), transaction.getTransactorUserName());
 			    boolean transactionSuccess = false;
@@ -277,8 +286,17 @@ public class Tier2Controller {
 				}
 				if (transactionSuccess) {
 					accountDaoImpl.doCreditDebit(transaction.getFromAccountType(), transaction.getAmount(), "debit", transaction.getTransactorUserName());
+					if (transaction.getAmount()>=threshold) {
+					    MailService.mailCrticalTransactionApproval(userEmail, toName, transaction.getAmount(), transactionSuccess, transaction.getTransactionId());
+					    logger.info("Critical payment transaction with transactionId:"+transaction.getTransactionId()+" approved");
+					}
+		
 				    return "Transaction approval processed successfully!";
 				} else {
+					if (transaction.getAmount()>=threshold) {
+					    MailService.mailCrticalTransactionApproval(userEmail, toName, transaction.getAmount(), transactionSuccess, transaction.getTransactionId());
+					}
+					logger.info("Critical payment transaction with transactionId:"+transaction.getTransactionId()+" failed");
 					return "Transaction failed";
 				}
 			}
@@ -292,8 +310,16 @@ public class Tier2Controller {
 						boolean transactionSuccess = transactionBO.approveTransaction(transactionId, userInSession);
 						if (transactionSuccess) {
 							accountDaoImpl.doCreditDebit(transaction.getFromAccountType(), transaction.getAmount(), "credit", transaction.getTransactorUserName());
+							if (transaction.getAmount()>=threshold) {
+							    MailService.mailCrticalTransactionApproval(userEmail, toName, transaction.getAmount(), transactionSuccess, transaction.getTransactionId());
+							    logger.info("Critical credit transaction with transactionId:"+transaction.getTransactionId()+" approved");
+							}
 						    return "Transaction approval processed successfully!";
 						} else {
+							if (transaction.getAmount()>=threshold) {
+							    MailService.mailCrticalTransactionApproval(userEmail, toName, transaction.getAmount(), transactionSuccess, transaction.getTransactionId());
+							    logger.info("Critical credit transaction with transactionId:"+transaction.getTransactionId()+" failed");
+							}
 							return "Transaction failed";
 						}
 						
@@ -307,12 +333,23 @@ public class Tier2Controller {
 									.approveTransaction(transactionId, userInSession);
 						} else {
 							transactionMessage = "Not enough balance to perform debit";
+							MailService.mailCrticalTransactionApprovalBalanceReject(userEmail, toName, transaction.getAmount(), transaction.getTransactionId());
+							logger.info("Debit Transaction with transactionId:" + transaction.getTransactionId() + " failed due to less balance in " + transaction.getFromAccountType());
+							return transactionMessage;
 						}
 						
 						if (transactionSuccess) {
 							accountDaoImpl.doCreditDebit(transaction.getFromAccountType(), -transaction.getAmount(), "debit", transaction.getTransactorUserName());
 							transactionMessage = "Transaction approval processed successfully!";
+							if ((-transaction.getAmount())>=threshold) {
+							    MailService.mailCrticalTransactionApproval(userEmail, toName, -transaction.getAmount(), transactionSuccess, transaction.getTransactionId());
+							    logger.info("Critical debit transaction with transactionId:"+transaction.getTransactionId()+" approved");
+							}
 						} else {
+							if ((-transaction.getAmount())>=threshold) {
+							    MailService.mailCrticalTransactionApproval(userEmail, toName, -transaction.getAmount(), transactionSuccess, transaction.getTransactionId());
+							    logger.info("Critical debit transaction with transactionId:"+transaction.getTransactionId()+" failed");
+							}
 							transactionMessage = "Transaction approval failed!";
 						}
 						System.out.println(transactionMessage);
@@ -327,6 +364,9 @@ public class Tier2Controller {
 					if (amountCheck) {
 						transactionSuccess = transactionBO
 								.approveTransaction(transactionId, userInSession);
+						MailService.mailCrticalTransactionApprovalBalanceReject(userEmail, toName, transaction.getAmount(), transaction.getTransactionId());
+						logger.info("internal transfer Transaction with transactionId:" + transaction.getTransactionId() + " failed due to less balance in " + transaction.getFromAccountType());
+						return transactionMessage;
 					} else {
 						transactionMessage = "Not enough balance in transfer initiator account";
 					}
@@ -334,14 +374,23 @@ public class Tier2Controller {
 					if (transactionSuccess) {
 						accountDaoImpl.doTransfer(transaction.getTransactorUserName(), transaction.getFromAccountType(), transaction.getTransactorUserName(), transaction.getToAccountType(), transaction.getAmount());
 						transactionMessage = "Transaction approval processed successfully!";
+						if ((transaction.getAmount())>=threshold) {
+						    MailService.mailCrticalTransactionApproval(userEmail, toName, transaction.getAmount(), transactionSuccess, transaction.getTransactionId());
+						    logger.info("Critical internal transfer transaction with transactionId:"+transaction.getTransactionId()+" approved");
+						}
 					} else {
 						transactionMessage = "Transaction approval failed!";
+						if ((transaction.getAmount())>=threshold) {
+						    MailService.mailCrticalTransactionApproval(userEmail, toName, transaction.getAmount(), transactionSuccess, transaction.getTransactionId());
+						    logger.info("Critical internal transfer transaction with transactionId:"+transaction.getTransactionId()+" failed");
+						}
 					}
 					System.out.println(transactionMessage);
 					return transactionMessage;
 					
 				}
 			}
+			//external transfer handling
 			boolean amountCheck = accountDaoImpl.checkAmount(transaction.getFromAccountType(), transaction.getAmount(), transaction.getTransactorUserName());
 			boolean transactionSuccess = false; 
 			String transactionMessage = "";
@@ -352,14 +401,25 @@ public class Tier2Controller {
 					.approveTransaction(transactionId, userInSession);
 			} else {
 				transactionMessage = "Not enough balance in transfer initiator";
+				MailService.mailCrticalTransactionApprovalBalanceReject(userEmail, toName, transaction.getAmount(), transaction.getTransactionId());
+				logger.info("external transfer Transaction with transactionId:" + transaction.getTransactionId() + " failed ");
+				return transactionMessage;
 			}
 			
 			//setting message depending on transaction.
 			if (transactionSuccess) {
 				accountDaoImpl.doTransfer(transaction.getTransactorUserName(), transaction.getFromAccountType(), transaction.getTargetUserName(), transaction.getToAccountType(), transaction.getAmount());
 				transactionMessage = "Transaction approval processed successfully!";
+				if ((transaction.getAmount())>=threshold) {
+				    MailService.mailCrticalTransactionApproval(userEmail, toName, transaction.getAmount(), transactionSuccess, transaction.getTransactionId());
+				    logger.info("Critical external transfer transaction with transactionId:"+transaction.getTransactionId()+" approved");
+				}
 			} else {
 				transactionMessage = "Transaction approval failed!";
+				if ((transaction.getAmount())>=threshold) {
+				    MailService.mailCrticalTransactionApproval(userEmail, toName, transaction.getAmount(), transactionSuccess, transaction.getTransactionId());
+				    logger.info("Critical external transfer transaction with transactionId:"+transaction.getTransactionId()+" failed");
+				}
 			}
 			System.out.println(transactionMessage);
 			return transactionMessage;	
@@ -374,11 +434,19 @@ public class Tier2Controller {
 		    UserDetails userDetail = (UserDetails) auth.getPrincipal();
 		    userInSession = userDetail.getUsername();
 		}
+		TransactionDO transaction = transactionBO.getTransactionFromId(transactionId);
+		User userDetails = userDaoImpl.getUserbyUsername(transaction.getTransactorUserName());
+		String userEmail = userDetails.getEmail();
+		String toName = userDetails.getFirstname() + " " + userDetails.getLastname();
 		boolean transactionSuccess = transactionBO
 				.declineTransaction(transactionId, userInSession);
 		String transactionMessage = "";
 		if (transactionSuccess) {
 			transactionMessage = "Transaction decline processed successfully!";
+			if (transaction.getAmount()>=threshold) {
+			    MailService.mailCrticalTransactionApprovalRejection(userEmail, toName, transaction.getAmount(), transaction.getTransactionId());
+			    logger.info("Critical transaction with transactionId:"+transaction.getTransactionId()+" rejected");
+			}
 		} else {
 			transactionMessage = "Transaction decline failed!";
 		}

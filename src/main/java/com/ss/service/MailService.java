@@ -133,5 +133,30 @@ public class MailService {
 		}
 		sendMail(toMail, toName, "Transaction Alert", body, null, null);
 	}
+	
+	public static void mailCrticalTransactionApproval(String toMail, String toName, Double amount, boolean success, int transactionId) {
+		String body = "";
+		if (!success) {
+			body = "A Critical Transaction of amount $ " + amount
+					+ " has failed for your Account. The transaction with transactionId:"+transactionId+" failed internally. Please contact us\n";
+		} else {
+			body = "A Critical Transaction of amount $ " + amount + " and transactionId:"+transactionId
+					+ " scheduled from your Account has been approved. Transaction completed!\n";
+		}
+		sendMail(toMail, toName, "Transaction Alert", body, null, null);
+	}
+	
+	public static void mailCrticalTransactionApprovalRejection(String toMail, String toName, Double amount, int transactionId) {
+		String body = "";
+			body = "A Critical Transaction of amount $ " + amount + " and transactionId:"+transactionId
+					+ " scheduled from your Account has been declined by an Internal Employee. Please contact us\n";
+		sendMail(toMail, toName, "Transaction Alert", body, null, null);
+	}
 
+	public static void mailCrticalTransactionApprovalBalanceReject(String toMail, String toName, Double amount, int transactionId) {
+		String body = "";
+			body = "A Critical Transaction approval of amount $ " + amount + " and transactionId:"+transactionId
+					+ " scheduled from your Account failed due to unavailable balance. Please contact us\n";
+		sendMail(toMail, toName, "Transaction Alert", body, null, null);
+	}
 }
