@@ -67,7 +67,6 @@ public class Tier1Controller {
     
     @RequestMapping(value = "/tier1/createAccountForUser", method = RequestMethod.GET)
 	public ModelAndView createAccountForUser() {
-    	System.out.println("inside create account");
 		ModelAndView model = new ModelAndView();
 		model.setViewName("tier1/createAccount");
 		return model;
@@ -76,14 +75,12 @@ public class Tier1Controller {
     
     @RequestMapping(value="tier1/checkexternalusername*",method=RequestMethod.POST)
 	public @ResponseBody String CheckExternalUsername(@RequestParam("username") String username){
-		System.out.println("checking interal USer");
-    	List<User> InternaluserInfo = userDaoImpl.getInternalUserInfo(username);
-		if(InternaluserInfo.size() > 0 ) {
+    	List<User> ExternalUserInfo = userDaoImpl.getExternalUserInfo(username);
+		if(ExternalUserInfo.size() > 0 ) {
 			System.out.println("true");
 			return "true";
 		} else {
 			System.out.println("false");
-
 			return "false";
 		}		
 	}
@@ -382,4 +379,49 @@ public class Tier1Controller {
     	model.setUrl("/SS/tier1");
     	return model;   	    
 	}
+
+	@RequestMapping(value="/tier1/checkaccountexists*",method=RequestMethod.POST)
+	public @ResponseBody String checkUserAccount(@RequestParam("username") String username,@RequestParam("accounttype") String accounttype){
+		System.out.print("Username to checkssssssssssssssssss " +username);
+		String ret = registrationImpl.checkForExistingAccount(username,accounttype);
+		if(ret == "false") {
+			String ret1 = CheckExternalUsername(username);
+			if(ret1 == "true") {
+				return "false";
+			} else {
+				return "true";
+			}
+		} else {
+			return "true";
+		}
+	}
+	
+	@RequestMapping(value="/tier1/createNewAccountType",method=RequestMethod.POST)
+	public ModelAndView createNewAccountType(HttpServletRequest req,Authentication auth){
+		ModelAndView model = new ModelAndView();
+		String uName = "";
+		String role = "";
+	
+		String username=req.getParameter("username");
+		String email=req.getParameter("email");
+		String type=req.getParameter("accounttype");
+		int balance=Integer.parseInt(req.getParameter("balance"));
+		int interest=Integer.parseInt(req.getParameter("interest"));
+
+		try {
+			int accountCrRet= accountDaoImpl.createAccount(balance,username,type,interest);
+			System.out.println(":::type::"+type);
+			if(type.equalsIgnoreCase("Credit Card"))
+			{
+				String createCreditCardRet=accountDaoImpl.createCreditCard(username,email);
+			}
+			
+		}catch(Exception e) {
+			registrationImpl.rollback(username);
+			System.out.println(e.getMessage());
+		}
+		model.setViewName("tier1/hellotier1");
+		return model;
+	}
+    
 }

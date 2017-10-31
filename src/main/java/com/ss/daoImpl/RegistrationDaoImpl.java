@@ -473,6 +473,25 @@ public class RegistrationDaoImpl implements RegistrationDao {
 		
 	}
 	
+
+	public String checkForExistingAccount(String username,String accounttype) {
+		String sql = "SELECT username from account where username = ? and accountType =?";
+		try {
+			List<String> ret = jdbcTemplate.query(sql, new Object[] {username,accounttype}, new RowMapper<String>() {
+				@Override
+				public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+					return rs.getString("username");
+				}
+			});			
+			if(ret.size()==0) {
+				return "false";
+			} else {
+				return "true";
+			}
+		} catch (EmptyResultDataAccessException e) {
+			return "false";
+		}
+	}
 	
 	@Override
 	public int resetPassword(String username, String password) {

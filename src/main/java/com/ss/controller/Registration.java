@@ -171,9 +171,6 @@ public class Registration {
 	public @ResponseBody String checkEmail(@RequestParam("email") String email){
 		String ret = registrationImpl.checkEmail(email);
 		return ret;
-	}
-	
-	
-	
+	}	
 	
 }
