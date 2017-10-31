@@ -9,6 +9,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,13 +24,16 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.ss.daoImpl.AccountDaoImpl;
 import com.ss.model.Account;
+import com.ss.model.User;
 import com.ss.security.PKICertificate;
 import com.ss.service.EncryptDecryptUtil;
+import com.ss.service.MailService;
 import com.ss.dao.TransactionBO;
 import com.ss.dao.UserDao;
 
 @Controller
 public class RequestController {
+	final static Logger logger = Logger.getLogger(RequestController.class);
 	private static String SAVINGS_ACCOUNT_TYPE = "Saving";
 	private static String PAYMENT_ACCOUNT_TYPE = "payment";
 
@@ -44,7 +48,7 @@ public class RequestController {
 	TransactionBO transactionBO;
 	
 	private boolean isKeyValid(String username, Double amount, String pubKey) {
-		boolean retValue = false;
+		boolean retValue = true;
 		if(pubKey!=null && pubKey.trim().length()!=0) {
 			try {
 				String lockedData = PKICertificate.lock(Double.toString(amount), pubKey);
@@ -237,10 +241,18 @@ public class RequestController {
 				if (!critical) {
 					status = "approved";
 					accountDaoImpl.doCreditDebit(accountType, amount, type, transacterUserName);
+					notifyPage.addObject("notification","Debit Processed sucessfully");
+				} else {
+					notifyPage.addObject("notification","Debit Accepted But Pending Employee Approval");
 				}
 				transactionBO.insertTransaction(-amount, detail, status, transacterUserName, date, null, critical, accountType, accountType);
-				notifyPage.addObject("notification","Payment Processed sucessfully");
+				
 			}else {
+				User userDetails = userDao.getUserbyUsername(transacterUserName);
+				String userEmail = userDetails.getEmail();
+				String toName = userDetails.getFirstname() + " " + userDetails.getLastname();
+				System.out.println(toName + " "+ userEmail );
+				MailService.mailCrticalTransaction(userEmail, toName, amount, false);
 				notifyPage.addObject("notification","Insufficient Funds");
 			}
 		}else if (type.equalsIgnoreCase("Credit")) {
@@ -249,10 +261,13 @@ public class RequestController {
 			if (!critical) {
 				status = "approved";
 				accountDaoImpl.doCreditDebit(accountType, amount, type, transacterUserName);
+				notifyPage.addObject("notification","Credit Processed sucessfully");
+			} else {
+				notifyPage.addObject("notification","Credit accepted sucessfully");
 			}
 			transactionBO.insertTransaction(amount, detail, status, transacterUserName, date, null, critical, accountType, accountType);
 			
-			notifyPage.addObject("notification","Payment Processed sucessfully");
+			
 		} else {
 			notifyPage.addObject("notification", "Incorrect Banking Function accessed");
 		}
@@ -337,30 +352,45 @@ public class RequestController {
 			if(typeOfTransfer.equalsIgnoreCase("internal")){
 				 detail="Transfer to "+ accountTypeTo + " from "+ accountTypeFrom + " for user " + fromUserName + " by user" + byUser;
 				 tousername=accountTypeFrom;
-				 System.out.println("transfer1:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 				 
 				 if (!critical) {
 					 accountDaoImpl.doTransferInternal(fromUserName,amount, accountTypeFrom,accountTypeTo);
-				 status="approved";
-					 
+				     status="approved";
+				     logger.info("internal transaction successfully approved");
+						notifyPage.addObject("notification","Transfer Processed Sucessfully");
+				 } else {
+				     User userDetails = userDao.getUserbyUsername(fromUserName);
+					 String userEmail = userDetails.getEmail();
+					 String toName = userDetails.getFirstname() + " " + userDetails.getLastname();
+					 MailService.mailCrticalTransaction(userEmail, toName, amount, false);
+					 logger.info("Email sent for critical transaction");
+					 notifyPage.addObject("notification","Transfer Accepted but needs Employee Approval");
 				 }
 				 transactionBO.insertTransaction(amount, detail, status, fromUserName, date, null, critical, accountTypeFrom, accountTypeTo);
-				 System.out.println("transfer2:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-					
+				 logger.info("transaction inserted for user " + fromUserName);
 			}
 			else{
 				if (accountTypeTo == null) {
 					accountTypeTo = "Saving";
 				}
 				 detail="Transfer to "+ toUserName + " from "+ fromUserName + " for amount " + amount + " by user " + byUser;
+				 logger.info(detail);
+				 if (amount>=threshold) {
+					 User userDetails = userDao.getUserbyUsername(fromUserName);
+					 String userEmail = userDetails.getEmail();
+					 String toName = userDetails.getFirstname() + " " + userDetails.getLastname();
+					 MailService.mailCrticalTransaction(userEmail, toName, amount, false);
+					 logger.info("Email sent for critical transaction");
+					 notifyPage.addObject("notification","Transfer Accepted but needs Employee and User Approval");
+				 } else {
+					notifyPage.addObject("notification","External Transfer pending User Approval");
+				 }
 				 transactionBO.insertTransaction(amount, detail, status, fromUserName, date, toUserName, critical, accountTypeFrom, accountTypeTo);
+					logger.info("External transfer accepted");
 			}
-			notifyPage.addObject("notification","Transfer Processed Sucessfully");
 	    } else {
 	    	notifyPage.addObject("notification","Insufficient funds to transfer");
 	    }
-		System.out.println("transfer:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-		
 		return notifyPage;
 	}
 	
@@ -556,14 +586,21 @@ public class RequestController {
 			String status="pending";
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			Date date = new Date();
-			if(amount>=threshold) critical=true;
-			
-			if (!critical) {
+			if(amount>=threshold) {
+				critical=true;
+				User userDetails = userDao.getUserbyUsername(fromUser);
+				String userEmail = userDetails.getEmail();
+				String toName = userDetails.getFirstname() + " " + userDetails.getLastname();
+				MailService.mailCrticalTransaction(userEmail, toName, amount, false);
+				logger.info("Email sent for critical transaction");
+				notifyPage.addObject("notification","Payment accepted but need Employee approval");
+			} else {
 				status = "approved";
 				accountDaoImpl.doCreditDebit(accountTypeFrom, amount, "debit", fromUser);
+				notifyPage.addObject("notification","Payment processed successfully");
+				logger.info("Non critical payment successful");
 			}
 			transactionBO.insertTransaction(amount, detail, status, fromUser, date, toUserName, critical, accountTypeFrom, accountTypeTo);
-			notifyPage.addObject("notification","Payment Processed sucessfully");
 		}else{
 			notifyPage.addObject("notification","Insufficient Funds");
 		}
@@ -605,23 +642,23 @@ public class RequestController {
 				status = "approved";
 				accountDaoImpl.doCreditDebit(accountTypeFrom, amount, "debit", fromUser);
 				notifyPage.addObject("notification","Payment Processed sucessfully");
-				System.out.println("inside non critical");
+				logger.info("Non critical transaction processed sucessfully for user " + fromUser);
 			} else {
+				User userDetails = userDao.getUserbyUsername(fromUser);
+				String userEmail = userDetails.getEmail();
+				String toName = userDetails.getFirstname() + " " + userDetails.getLastname();
+				MailService.mailCrticalTransaction(userEmail, toName, amount, false);
+				logger.info("Email sent for critical transaction");
 				notifyPage.addObject("notification","Payment accepted but needs employee approval");
-				System.out.println("Inside critical");
 			}
 			System.out.println("Inserting payment transaction");
-			transactionBO.insertTransaction(-amount, detail, status, fromUser, date, toUserName, critical, accountTypeFrom, accountTypeTo);
+			transactionBO.insertTransaction(amount, detail, status, fromUser, date, toUserName, critical, accountTypeFrom, accountTypeTo);
 			
 		}else{
 			notifyPage.addObject("notification","Insufficient Funds");
 		}
 		return notifyPage;
 	}
-	
-	
-	
-	
 	
 	
 	@RequestMapping(value="/GetCustomerPayment", method=RequestMethod.POST)
