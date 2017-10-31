@@ -39,7 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class Tier1Controller {
-	private static final String USER_ROLE_TIER1 = "TIER1";
+	private static final String USER_ROLE_TIER1 = "ROLE_TIER1";
 	
 	@Autowired
 	AccountDaoImpl accountDaoImpl;
@@ -350,7 +350,7 @@ public class Tier1Controller {
     public ModelAndView ShowRequestDetails(@PathVariable("id")int requestid, @PathVariable("requesterusername")String requesterusername) throws IOException {
     	ModelAndView model = new ModelAndView();
 		List<UserRequestDetails> userrequestdetails=userDaoImpl.getUserRequestsDetailsInfo(requestid);
-    	List<User> existinguserInfo = userDaoImpl.getInternalUserInfo(requesterusername);
+    	List<User> existinguserInfo = userDaoImpl.getExternalUserInfo(requesterusername);
     	if(existinguserInfo.size() > 0 ) {
 	    	model.addObject("existinguserdetails",existinguserInfo.get(0));
 			model.addObject("requestid", requestid);

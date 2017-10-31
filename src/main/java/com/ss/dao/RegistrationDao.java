@@ -16,4 +16,6 @@ public interface RegistrationDao {
 			String country, String postcode, String contactno);
 	void myNewMethod2(String uName,String email,String address,String city, String state, String country, String postcode);
 	String checkForExistingAccount(String username, String accounttype);
+	public int resetPassword(String username, String password);
+	public String checkValidEntry(String username, String contactNo);
 }

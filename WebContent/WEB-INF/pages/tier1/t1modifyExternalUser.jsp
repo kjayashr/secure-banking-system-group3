@@ -145,5 +145,9 @@
 				
 		</form>
 	</div>
+	       <div class="row" align="center">
+			<a href="${pageContext.request.contextPath}/tier1">Go Back To Home Page</a>
+		</div>
+	
 </body>
 </html>

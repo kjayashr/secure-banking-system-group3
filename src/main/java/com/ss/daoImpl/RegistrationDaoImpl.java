@@ -473,6 +473,7 @@ public class RegistrationDaoImpl implements RegistrationDao {
 		
 	}
 	
+
 	public String checkForExistingAccount(String username,String accounttype) {
 		String sql = "SELECT username from account where username = ? and accountType =?";
 		try {
@@ -490,6 +491,49 @@ public class RegistrationDaoImpl implements RegistrationDao {
 		} catch (EmptyResultDataAccessException e) {
 			return "false";
 		}
-
 	}
+	
+	@Override
+	public int resetPassword(String username, String password) {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+	    String encPassword = encoder.encode(password);
+		
+	    System.out.println("[TEST] inside resetpass " + username +" | " + password + " | " + encPassword);
+		String sql = "update users set password=? where username=?";
+		int userQ=jdbcTemplate.update(sql, new Object[] {encPassword, username});
+		
+		String sql2 = "update attempts set accountNonLocked=1, credentialsNonExpired=1, accountNonExpired=1, attempts=0, password=? where username=?";
+		int atmpQ=jdbcTemplate.update(sql2, new Object[] {encPassword, username});
+		
+		if(userQ != 0 && atmpQ != 0) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+	
+	@Override
+	public String checkValidEntry(String username, String contactno) {
+		Long contact;
+		try {
+			contact = Long.parseLong(contactno);
+		} catch (NumberFormatException e) {
+			return "false";
+		}
+		String sql = "select username from users where username=? and  contactno = ?";
+		List<String> list = jdbcTemplate.query(sql, new Object[] {username, contact}, new RowMapper<String>() {
+
+			@Override
+			public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return rs.getString("username");
+			}
+			
+		});
+		if(list.size()==0) {
+			return "false";
+		} else {
+			return "true";
+		}
+	}
+
 }

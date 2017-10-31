@@ -46,6 +46,8 @@
 	<div align="center" class="row"><a href="${pageContext.request.contextPath}/admin/viewlogs">Access Log File</a> </div>
 	<br></br>	
 	<div align="center" class="row"><a href="${pageContext.request.contextPath}/admin/pii">Access PII</a> </div>
+	<br></br>
+	<div align="center" class="row"><a href="${pageContext.request.contextPath}/admin/unblockUser">Unblock Locked Users</a> </div>
 	<br></br>	
 
 </body>

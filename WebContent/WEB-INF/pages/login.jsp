@@ -87,7 +87,7 @@
 			</td>
 			<td></td>
 			<td>
-				<a href="${pageContext.request.contextPath}/registration"> Sign Up </a>
+				<a href="${pageContext.request.contextPath}/resetpassword"> Reset Password </a>
 			</td>
 	</table>
 	</div>

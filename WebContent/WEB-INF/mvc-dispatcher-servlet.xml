@@ -31,5 +31,6 @@
 	<bean id="otpDao" class="com.ss.daoImpl.OTPDaoImpl" />
 	<bean id="userDao" class="com.ss.daoImpl.UserDaoImpl" />
 	<bean id="otpUtil" class="com.ss.security.OTPUtil" />
+	<bean id="userAttemptDao" class="com.ss.daoImpl.UserAttemptDaoImpl" />
 
 </beans>
