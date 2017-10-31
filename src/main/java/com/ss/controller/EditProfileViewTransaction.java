@@ -51,7 +51,7 @@ public class EditProfileViewTransaction {
 //	}
 	
 	
-	@RequestMapping(value = "/Merchanteditprofile", method = RequestMethod.GET)
+	@RequestMapping(value = "/Merchant/Merchanteditprofile", method = RequestMethod.GET)
 	public String MerchantgetEditProfile() {
 		
 		return "Merchanteditprofile";

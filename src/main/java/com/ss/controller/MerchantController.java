@@ -102,7 +102,7 @@ public class MerchantController {
 	}
 
 	
-	@RequestMapping(value ="/Merchant/merchantEditProfile",method = RequestMethod.GET)
+	@RequestMapping(value ="/MerchanteditProfile",method = RequestMethod.GET)
 	public ModelAndView modifyPersonalAccount(HttpServletRequest req,Authentication auth) {
 		ModelAndView model = new ModelAndView();
 		System.out.println("hello from merchant controller");

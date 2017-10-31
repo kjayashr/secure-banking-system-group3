@@ -14,22 +14,23 @@
 <body>
 <jsp:include page="Mheader.jsp"/>
 <script>
-   	 function changeStatus(x,y) {
+   	 function changeStatus(x,y,z) {
    		 	console.log("dsa");
 	   		var token = $("meta[name='_csrf']").attr("content");
    			var header = $("meta[name='_csrf_header']").attr("content");
    			var transactionId=x;
    			var status=y;
+   			var amount=z;
 			$.ajax({
 				type:"POST",
 				url:"${pageContext.request.contextPath}/MerchantapproveByUser",
-				data:{transactionId:transactionId, status:status},
+				data:{transactionId:transactionId, status:status, amount:amount},
 			    success:function(response){
 			    		console.log(response);
-			    		if(response=="false")
-			    			$(y).html("Username unavailable")
-			    		else
-			    			$("#sameUser").html("")
+			    		$("#accepted").attr("disabled", true);
+			    		$("#declined").attr("disabled", true);
+			    		$("#notify").html("Your request has been processed")
+
 			    },
 			    error:function(error){
 			    		console.log("Error "+error);
@@ -64,12 +65,13 @@
 					<td>${log.sender}</td>
 
 					<td>${log.amount}</td>
-					<td><button id="accepted" onclick="changeStatus(${log.id}, this.id)">Approve</button></td>
-					<td><button id="declined" onclick="changeStatus(${log.id}, this.id)">Decline</button></td>
+						<td><button id="accepted" onclick="changeStatus(${log.id}, this.id,${log.amount})">Approve</button></td>
+					<td><button id="declined" onclick="changeStatus(${log.id}, this.id,${log.amount})">Decline</button></td>
 					
 				</tr>
 			</c:forEach>
 			</table>
+			<div><span id="notify" name="notify" style="color:red"></span></div>
 	  </c:when>
 	  <c:otherwise>
 	  			<table>

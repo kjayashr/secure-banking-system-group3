@@ -118,14 +118,15 @@ public class RequestController {
 		return notifyPage;
 	}
 	
+	
 	@RequestMapping(value="/Merchantrequest", method=RequestMethod.POST)
-	public ModelAndView merchantcreditDebitRequest(HttpServletRequest req,Authentication auth){
+	public ModelAndView MerchantcreditDebitRequest(HttpServletRequest req,Authentication auth){
 		String username=auth.getName();
-		boolean critical=false;
-		//ModelAndView notifyPage=new ModelAndView("notify");
+		boolean critical=true;
 		ModelAndView notifyPageM=new ModelAndView("notifyMer");
 		String accountType=req.getParameter("accountType");
 		String type=req.getParameter("type");
+		String approverusername=null;
 		double amount=Double.parseDouble(req.getParameter("amount"));
 		String pubKey = req.getParameter("pubKey");
 		System.out.println(accountType + " " + type + " " +amount+ " " +pubKey);
@@ -138,30 +139,44 @@ public class RequestController {
 		// add validation over credit and debit
 		if(type.equalsIgnoreCase("Debit")){
 			if(accountDaoImpl.checkAmount(accountType, amount,username)){
+				System.out.println("inside debit");
+
 				String detail="Debit to "+accountType;
-				//System.out.println("           &&&\n\n***This is the detail:::                :::"+detail);
 				String status="pending";
 				DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 				Date date = new Date();
-				if(amount>=threshold)
-					critical=true;
+				if(amount<threshold){
+					critical=false;
+					accountDaoImpl.doCreditDebit(accountType, amount, type, username);
+					status="approved";
 
-
-				//accountDaoImpl.addToTransaction(amount, detail, status, username, date, "", critical, null);
-
-
-				accountDaoImpl.doCreditDebit(accountType, amount, type, username);
+				}
+				amount=amount*(-1);
+				accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,approverusername,accountType,accountType);
 				notifyPageM.addObject("notification","Payment Processed sucessfully");
 			}else{
 				notifyPageM.addObject("notification","Insufficient Funds");
 			}	
 		}else{
-			accountDaoImpl.doCreditDebit(accountType, amount, type, username);
+			System.out.println("inside credit");
+			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			Date date = new Date();
+			String detail="Credit to "+accountType;
+			String status="pending";
+			if(amount<threshold){
+				critical=false;
+				accountDaoImpl.doCreditDebit(accountType, amount, type, username);
+				status="approved";
+				}
+			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,approverusername,accountType,accountType);
 			notifyPageM.addObject("notification","Payment Processed sucessfully");
 		}
 		return notifyPageM;
 	}
-
+	
+	
+	
+	
 	@RequestMapping(value="/tier1/requestForUser", method=RequestMethod.POST)
 	public ModelAndView creditDebitRequestForUser(HttpServletRequest req,Authentication auth){
 		String accountType=req.getParameter("accountType");
@@ -405,6 +420,8 @@ public class RequestController {
 	}
 	
 	
+	
+	
 	@RequestMapping(value="/Merchanttransfer", method=RequestMethod.POST)
 	public ModelAndView MerchanttransferRequest(HttpServletRequest req,Authentication auth){
 		String username=auth.getName();
@@ -414,7 +431,13 @@ public class RequestController {
 		String typeOfTransfer=req.getParameter("typeoftransfer");
 		String recipient=req.getParameter("recipient");
 		double amount=Double.parseDouble(req.getParameter("amount"));
-		System.out.println(accountTypeFrom + " " + accountTypeTo + " " +amount);
+		String pubKey = req.getParameter("pubKey");
+		
+		if(!isKeyValid(username, amount, pubKey)) {
+			notifyPageM.addObject("notification","Wrong key passed. Payment failed.");
+			return notifyPageM;
+		}
+		
 		boolean critical=false;
 		
 		// add validation over credit and debit
@@ -429,8 +452,12 @@ public class RequestController {
 			if(typeOfTransfer.equalsIgnoreCase("internal")){
 				 detail="Transfer to "+ accountTypeTo + " from "+ accountTypeFrom;
 				 tousername=accountTypeTo;
+				 if(critical==false){
+					 accountDaoImpl.doTransferInternal(username,amount, accountTypeFrom,accountTypeTo);
+					 status="approved";
+
+				 }
 				 accountDaoImpl.addToTransaction(amount, detail, status, username, date, tousername, critical,null,accountTypeFrom,accountTypeTo); 
-				 accountDaoImpl.doTransferInternal(username,amount, accountTypeFrom,accountTypeTo);
 
 			}
 			else{    // external
@@ -439,7 +466,7 @@ public class RequestController {
 				 detail="Transfer to "+ recipient + " from "+ accountTypeFrom;
 				 System.out.println("inside external");
 				accountDaoImpl.addToTransaction(amount, detail, status, username, date, tousername, critical,null,accountTypeFrom,"Saving"); 
-				accountDaoImpl.doTransferExternal(username, amount, accountTypeFrom, tousername);
+				//accountDaoImpl.doTransferExternal(username, amount, accountTypeFrom, tousername);
 			}
 			
 			//accountDaoImpl.doTransfer(accountTypeFrom,tousername,amount, username);
@@ -449,6 +476,10 @@ public class RequestController {
 		}
 		return notifyPageM;
 	}
+	
+	
+	
+	
 	
 	
 	@RequestMapping(value="/payment", method=RequestMethod.POST)
@@ -596,13 +627,15 @@ public class RequestController {
 	@RequestMapping(value="/GetCustomerPayment", method=RequestMethod.POST)
 	public ModelAndView CustomerpaymentRequest(HttpServletRequest req,Authentication auth){
 		String username=auth.getName();
-		boolean critical=false;
+		boolean critical=true;
+		String approverusername=null;
 		ModelAndView notifyPageM=new ModelAndView("notifyMer");
 		String accountFrom=req.getParameter("fromName");
 		System.out.println(accountFrom);
 		String accountTypeTo=req.getParameter("to");
 		String cvv=req.getParameter("fromCVV");
 		String cardno=req.getParameter("fromCard");
+		System.out.println(cardno+"This is my card");
 		double amount=Double.parseDouble(req.getParameter("amount"));
 		String pubKey = req.getParameter("pubKey");
 		System.out.println(amount+ " " +pubKey);
@@ -615,6 +648,7 @@ public class RequestController {
 		// add validation over credit and debit
 		// check if both to and from are same
 		boolean verify=accountDaoImpl.checkDet(accountFrom,cardno);
+		System.out.println(verify+"i wrote this");
 		boolean checkCustomerAmount=false;
 		String usernameofuser="";
 		if(verify) {
@@ -627,13 +661,22 @@ public class RequestController {
 		System.out.println("second" + verify);
 		if(verify&&checkCustomerAmount){
 			//ADDING TO TRANSACTION TABLE
+			
 			String detail="From user"+ accountFrom;
 			String status="pending";
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			Date date = new Date();
-			if(amount>threshold) critical=true;
-			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,"",accountFrom, accountTypeTo); 
-			accountDaoImpl.MPayment(cardno,cvv,amount,usernameofuser,username,accountTypeTo);
+			
+			if(amount<threshold) 
+			{
+				critical=false;
+				accountDaoImpl.MPayment(cardno,cvv,amount,usernameofuser,username,accountTypeTo);
+				status="approved";
+				
+			}
+			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,approverusername,accountFrom, accountTypeTo);
+			
+			
 			//accountDaoImpl.doPayment(accountTypeTo,-amount);
 			notifyPageM.addObject("notification","Payment Processed sucessfully");
 		}else{
