@@ -232,10 +232,10 @@ public class HelloController {
 		}
 	    
 	    @RequestMapping(value="/prescheck",method=RequestMethod.POST)
-		public @ResponseBody String checkUserName(@RequestParam("username_holder") String username,
-				@RequestParam("dob") String dob){
-			System.out.print("Username to check " +username+" | "+dob);
-			String ret = registrationImpl.checkValidEntry(username,dob);
+		public @ResponseBody String checkUserName(@RequestParam("username") String username,
+				@RequestParam("contactno") String contactno){
+			System.out.print("Username to check " +username+" | "+contactno);
+			String ret = registrationImpl.checkValidEntry(username,contactno);
 			return ret;
 		}
 	

@@ -494,9 +494,15 @@ public class RegistrationDaoImpl implements RegistrationDao {
 	}
 	
 	@Override
-	public String checkValidEntry(String username, String dob) {
-		String sql = "select username from users where username=? and  dob = ?";
-		List<String> list = jdbcTemplate.query(sql, new Object[] {username, dob}, new RowMapper<String>() {
+	public String checkValidEntry(String username, String contactno) {
+		Long contact;
+		try {
+			contact = Long.parseLong(contactno);
+		} catch (NumberFormatException e) {
+			return "false";
+		}
+		String sql = "select username from users where username=? and  contactno = ?";
+		List<String> list = jdbcTemplate.query(sql, new Object[] {username, contact}, new RowMapper<String>() {
 
 			@Override
 			public String mapRow(ResultSet rs, int rowNum) throws SQLException {

@@ -17,5 +17,5 @@ public interface RegistrationDao {
 	void myNewMethod2(String uName,String email,String address,String city, String state, String country, String postcode);
 	
 	public int resetPassword(String username, String password);
-	public String checkValidEntry(String username, String dob);
+	public String checkValidEntry(String username, String contactNo);
 }
