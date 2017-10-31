@@ -353,7 +353,7 @@ public class Tier1Controller {
     public ModelAndView ShowRequestDetails(@PathVariable("id")int requestid, @PathVariable("requesterusername")String requesterusername) throws IOException {
     	ModelAndView model = new ModelAndView();
 		List<UserRequestDetails> userrequestdetails=userDaoImpl.getUserRequestsDetailsInfo(requestid);
-    	List<User> existinguserInfo = userDaoImpl.getInternalUserInfo(requesterusername);
+    	List<User> existinguserInfo = userDaoImpl.getExternalUserInfo(requesterusername);
     	if(existinguserInfo.size() > 0 ) {
 	    	model.addObject("existinguserdetails",existinguserInfo.get(0));
 			model.addObject("requestid", requestid);
