@@ -152,6 +152,10 @@ public class RequestController {
 				if(amount<threshold){
 					critical=false;
 					accountDaoImpl.doCreditDebit(accountType, amount, type, username);
+//					if(accountType.equalsIgnoreCase("Credit Card")){
+//						accountDaoImpl.updateCreditCardTable(username, amount);
+//
+//					}
 					status="approved";
 
 				}
@@ -170,6 +174,10 @@ public class RequestController {
 			if(amount<threshold){
 				critical=false;
 				accountDaoImpl.doCreditDebit(accountType, amount, type, username);
+				if(accountType.equalsIgnoreCase("Credit Card")){
+					amount=amount*(-1);
+
+				}
 				status="approved";
 				}
 			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,approverusername,accountType,accountType);
@@ -493,7 +501,7 @@ public class RequestController {
 			else{    // external
 				  String to=accountDaoImpl.getusername(recipient);
 				  tousername=to;
-				 detail="Transfer to "+ recipient + " from "+ accountTypeFrom;
+				 detail="Transfer to "+ recipient + " from "+ accountTypeFrom+ recipient;
 				 System.out.println("inside external");
 				accountDaoImpl.addToTransaction(amount, detail, status, username, date, tousername, critical,null,accountTypeFrom,"Saving"); 
 				//accountDaoImpl.doTransferExternal(username, amount, accountTypeFrom, tousername);
@@ -540,6 +548,7 @@ public class RequestController {
 			if(amount<threshold) {
 				critical=false;
 				accountDaoImpl.doPayment(accountTypeFrom,amount,username);
+				
 				status="approved";
 
 			}

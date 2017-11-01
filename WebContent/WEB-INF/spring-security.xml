@@ -42,12 +42,12 @@
 		<intercept-url pattern="/MerchanteditProfile" access="hasRole('ROLE_MERCHANT')" />
 		<intercept-url pattern="/Merchant/Welcome/" access="hasRole('ROLE_MERCHANT')" />
 		<intercept-url pattern="/Merchantviewtransaction" access="hasRole('ROLE_MERCHANT')" />
-		<intercept-url pattern="/userapprovals" access="hasRole('ROLE_USER')" />
-		<intercept-url pattern="/viewtransaction" access="hasRole('ROLE_USER')" />
+		<intercept-url pattern="/userapprovals" access="hasAnyRole('ROLE_TIER1', 'ROLE_TIER1_APPROVED','ROLE_ADMIN','ROLE_TIER2','ROLE_USER')" />
+		<intercept-url pattern="/viewtransaction" access="hasAnyRole('ROLE_TIER1', 'ROLE_TIER1_APPROVED','ROLE_ADMIN','ROLE_TIER2','ROLE_USER')" />
 		<intercept-url pattern="/editProfile" access="hasRole('ROLE_USER')" />
-		<intercept-url pattern="/payment" access="hasRole('ROLE_USER')" />
-		<intercept-url pattern="/transfer" access="hasRole('ROLE_USER')" />
-		<intercept-url pattern="/request" access="hasRole('ROLE_USER')" />
+		<intercept-url pattern="/payment" access="hasAnyRole('ROLE_TIER1', 'ROLE_TIER1_APPROVED','ROLE_ADMIN','ROLE_TIER2','ROLE_USER')" />
+		<intercept-url pattern="/transfer" access="hasAnyRole('ROLE_TIER1', 'ROLE_TIER1_APPROVED','ROLE_ADMIN','ROLE_TIER2','ROLE_USER')"/>
+		<intercept-url pattern="/request" access="hasAnyRole('ROLE_TIER1', 'ROLE_TIER1_APPROVED','ROLE_ADMIN','ROLE_TIER2','ROLE_USER')" />
 		<intercept-url pattern="/tier1" access="hasAnyRole('ROLE_TIER1', 'ROLE_TIER1_APPROVED')" />
 		<intercept-url pattern="/tier1/modifyPersonalAccount" access="hasAnyRole('ROLE_TIER1', 'ROLE_TIER1_APPROVED')" />
 		<intercept-url pattern="/tier1/transferForUser" access="hasRole('ROLE_TIER1_APPROVED')" />

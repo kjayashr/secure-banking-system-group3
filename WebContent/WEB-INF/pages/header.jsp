@@ -40,7 +40,7 @@
 				}
 			</script>
 			<div class="row">
-    		<sec:authorize access="hasRole('ROLE_USER')">
+    		<sec:authorize access="hasAnyRole('ROLE_USER','ROLE_TIER1','ROLE_TIER2','ROLE_TIER1_APPROVED','ROLE_ADMIN')">
 				<a href="${pageContext.request.contextPath}/editProfile" class="btn btn-default navbar-btn pull-right"  >Edit Profile</a>		
 				<a href="${pageContext.request.contextPath}/viewtransaction" class="btn btn-default navbar-btn pull-right"  >View Transactions</a>
 				<a href="${pageContext.request.contextPath}/userapprovals" class="btn btn-default navbar-btn pull-right"  >Approvals Needed</a>
