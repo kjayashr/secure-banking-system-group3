@@ -56,6 +56,18 @@ $('.dropdown-menu li a').click(function(){
 </script>
 		<div class="container">
 			<h2>${pageContext.request.userPrincipal.name}'s Accounts</h2>
+			<!-- Changing for going back to employee home page -->
+			<c:choose>
+			<c:when test="${myrole eq 'tier2'}">
+			<p><a href="${pageContext.request.contextPath}/tier2">Goto My Employee Page</a></p>
+			</c:when>
+			<c:when test="${myrole eq 'tier1'}">
+			<p><a href="${pageContext.request.contextPath}/tier1">Goto My Employee Page</a></p>
+			</c:when>
+			<c:when test="${myrole eq 'admin'}">
+			<p><a href="${pageContext.request.contextPath}/admin/Welcome">Goto My Employee Page</a></p>
+			</c:when>
+			</c:choose>
 			<ul class="nav nav-tabs">
 				<li class="active"><a data-toggle="tab" href="#account">Accounts</a></li>
 				<li><a data-toggle="tab" href="#creditdebit">Credit/Debit</a></li>

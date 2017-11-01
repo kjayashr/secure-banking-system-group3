@@ -26,9 +26,11 @@
 		</script>
 
 		<c:if test="${pageContext.request.userPrincipal.name != null}">
+			<!-- 
 			<h2>
 				<a x href="javascript:formSubmit()"> Logout</a>
 			</h2>
+			-->
 		</c:if>
     </sec:authorize>
 <div class="row" align="center">

@@ -48,7 +48,7 @@ public class HelloController {
 	OTPUtil otpUtil;
 	
 	@RequestMapping(value = "/welcome**" , method = RequestMethod.GET)
-	public ModelAndView welcomePage(HttpServletRequest req, HttpServletResponse resp,HttpSession se) {
+	public ModelAndView welcomePage(HttpServletRequest req, HttpServletResponse resp,HttpSession se,Authentication auth) {
 		ModelAndView model = new ModelAndView();
 		if(req.getUserPrincipal() == null) {
 			try {
@@ -61,6 +61,23 @@ public class HelloController {
 				model.setViewName("login");
 				return model;
 			}
+		}
+		
+		String uName = "";
+		String role = "";
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+			UserDetails userDetail = (UserDetails) auth.getPrincipal();
+			model.addObject("username", userDetail.getUsername());
+			uName = userDetail.getUsername();
+			role = registrationImpl.getRole(uName);
+			if (role.equals("ROLE_TIER2")) {
+				model.addObject("myrole", "tier2");
+			} else if (role.equals("ROLE_TIER1") || role.equals("ROLE_TIER1_APPROVED")) {
+				model.addObject("myrole", "tier1");
+			} else if(role.equals("ROLE_ADMIN")) {
+				model.addObject("myrole", "admin");
+			}
+			
 		}
 		String name = req.getUserPrincipal().getName();
 		HashMap<String,Account> accountinfo=accountDoaImpl.getAccountInfo(name);
