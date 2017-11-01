@@ -92,9 +92,29 @@ public class AccountDaoImpl implements AccountDao {
 
 			String sql = "Update account set balance = balance + ? where accountType = ? and username=?";
 			jdbcTemplate.update(sql, new Object[] { amount, accountType, username});
-		} else {
+			
+			if(accountType.equalsIgnoreCase("Credit Card")){
+				System.out.println("credit card");
+				String sql1 = "Update creditcard set current_balance = current_balance + ? where username=?";
+				jdbcTemplate.update(sql1, new Object[] { amount,username});
+				
+				String sql2 = "Update creditcard set current_due = current_due - ? where username=?";
+				jdbcTemplate.update(sql2, new Object[] { amount,username});
+
+
+			}
+		} else {  // debit
 			String sql = "Update account set balance = balance - ? where accountType = ? and username=?";
 			jdbcTemplate.update(sql, new Object[] { amount, accountType, username });
+			
+			if(accountType.equalsIgnoreCase("Credit Card")){
+				System.out.println("credit card");
+				String sql1 = "Update creditcard set current_balance = current_balance - ? where username=?";
+				jdbcTemplate.update(sql1, new Object[] { amount,username});
+				
+				String sql2 = "Update creditcard set current_due = current_due + ? where username=?";
+				jdbcTemplate.update(sql2, new Object[] { amount,username});
+			}
 		}
 	}
 
@@ -305,6 +325,27 @@ public class AccountDaoImpl implements AccountDao {
 		jdbcTemplate.update(sql1, new Object[] { amount, username, accountTypeFrom });
 		jdbcTemplate.update(sql2, new Object[] { amount, username, accountTypeTo });
 		
+		if(accountTypeFrom.equalsIgnoreCase("Credit Card")){
+			
+			System.out.println("credit card");
+			String sql3 = "Update creditcard set current_balance = current_balance - ? where username=?";
+			jdbcTemplate.update(sql3, new Object[] { amount,username});
+			
+			String sql4 = "Update creditcard set current_due = current_due + ? where username=?";
+			jdbcTemplate.update(sql4, new Object[] { amount,username});
+			
+		}
+		if(accountTypeTo.equalsIgnoreCase("Credit Card")){
+			
+			System.out.println("credit card");
+			String sql3 = "Update creditcard set current_balance = current_balance + ? where username=?";
+			jdbcTemplate.update(sql3, new Object[] { amount,username});
+			
+			String sql4 = "Update creditcard set current_due = current_due - ? where username=?";
+			jdbcTemplate.update(sql4, new Object[] { amount,username});
+			
+		}
+		
 	}
 
 	public void doTransferExternal(String username, double amount, String accountTypeFrom, String tousername) {
@@ -314,6 +355,19 @@ public class AccountDaoImpl implements AccountDao {
 		String sql2 = "update account set balance = balance + ? where username=? and accountType ='Saving'";
 		jdbcTemplate.update(sql1, new Object[] { amount, username, accountTypeFrom });
 		jdbcTemplate.update(sql2, new Object[] { amount, tousername});
+		
+		
+       if(accountTypeFrom.equalsIgnoreCase("Credit Card")){
+			
+			System.out.println("credit card");
+			String sql3 = "Update creditcard set current_balance = current_balance - ? where username=?";
+			jdbcTemplate.update(sql3, new Object[] { amount,username});
+			
+			String sql4 = "Update creditcard set current_due = current_due + ? where username=?";
+			jdbcTemplate.update(sql4, new Object[] { amount,username});
+			
+		}
+		
 	}
 
 }
