@@ -275,8 +275,9 @@ public class Tier3Controller {
     public void download(@PathVariable("filename")String filename, HttpServletResponse response) throws IOException {
  //TO-DO Check the user is admin before downloading
     	
-    	File file = new File(System.getProperty("catalina.base") + "\\logs\\" + "my-application.log." + filename );
-        InputStream is = new FileInputStream(file);
+    	File file = new File("C:\\logs\\my-application.log." + filename);
+
+    	InputStream is = new FileInputStream(file);
  
         // MIME type of the file
         response.setContentType("application/octet-stream");

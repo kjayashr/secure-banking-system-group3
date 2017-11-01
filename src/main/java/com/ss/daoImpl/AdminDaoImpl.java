@@ -13,26 +13,21 @@ public class AdminDaoImpl implements AdminDao {
 	@Override
 	public List<String> getExistingLogFilesPaths() {
 		
-		String catalingpath = System.getProperty("catalina.base");
-		System.out.println(catalingpath);
-		
-//		List<String> list = new ArrayList<String>();
 		List<String> listOfFiles = new ArrayList<String>();
-		String path=catalingpath+"\\logs";
+
+		String path= "C:\\logs";
 
 		File dir = new File(path);
         
 		File[] files = dir.listFiles();
 		
         for (File file : files) {
-            System.out.println(file.getAbsolutePath());
-            
-            Pattern p = Pattern.compile("(my-application).+([0-9]{4}[-][0-9]{2}[-][0-9]{2}[-][0-9]{2}[-][0-9]{2})"); 
-            System.out.print(file.getName());  
+            System.out.println("path" + file.getAbsolutePath());
+            Pattern p = Pattern.compile("(my-application\\.log\\.)([0-9]*)"); 
+            System.out.print("name" + file.getName());  
 
             Matcher m = p.matcher(file.getName()); 
             if (m.matches()) {   
-              System.out.print("\n\n");  
               listOfFiles.add(m.group(2));
             }
          }
