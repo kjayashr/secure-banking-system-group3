@@ -140,6 +140,24 @@ public class AccountDaoImpl implements AccountDao {
 		String sql2 = "update account set balance = balance + ? where username=? and accountType =?";
 		jdbcTemplate.update(sql1, new Object[] { amount, fromUserName, fromAccountType });
 		jdbcTemplate.update(sql2, new Object[] { amount, toUserName, toAccountType });
+		
+		if(fromAccountType.equalsIgnoreCase("Credit Card")){
+			String sql3 = "Update creditcard set current_balance = current_balance - ? where username=?";
+			jdbcTemplate.update(sql3, new Object[] { amount,fromUserName});
+			
+			String sql4 = "Update creditcard set current_due = current_due + ? where username=?";
+			jdbcTemplate.update(sql4, new Object[] { amount,fromUserName});
+		}
+        if(toAccountType.equalsIgnoreCase("Credit Card")){
+			
+			System.out.println("credit card");
+			String sql3 = "Update creditcard set current_balance = current_balance + ? where username=?";
+			jdbcTemplate.update(sql3, new Object[] { amount,toUserName});
+			
+			String sql4 = "Update creditcard set current_due = current_due - ? where username=?";
+			jdbcTemplate.update(sql4, new Object[] { amount,toUserName});
+			
+		}
 	}
 
 	public void doPayment(String accountTypeFrom, double amount, String username) {

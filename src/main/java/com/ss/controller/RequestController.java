@@ -676,7 +676,7 @@ public class RequestController {
 		boolean critical=true;
 		String approverusername=null;
 		ModelAndView notifyPageM=new ModelAndView("notifyMer");
-		String accountFrom=req.getParameter("fromName");
+		String accountFrom="Credit Card";
 		System.out.println(accountFrom);
 		String accountTypeTo=req.getParameter("to");
 		String cvv=req.getParameter("fromCVV");
@@ -713,14 +713,18 @@ public class RequestController {
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			Date date = new Date();
 			
+			String approverUSerName=null;
 			if(amount<threshold) 
 			{
 				critical=false;
 				accountDaoImpl.MPayment(cardno,cvv,amount,usernameofuser,username,accountTypeTo);
 				status="approved";
+				approverusername=usernameofuser;
+				
+				
 				
 			}
-			accountDaoImpl.addToTransaction(amount, detail, status, username, date, null, critical,approverusername,accountFrom, accountTypeTo);
+			accountDaoImpl.addToTransaction(amount, detail, status, usernameofuser, date, username, critical,approverusername,accountFrom, accountTypeTo);
 			
 			
 			//accountDaoImpl.doPayment(accountTypeTo,-amount);
