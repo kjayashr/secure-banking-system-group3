@@ -693,7 +693,7 @@ public class RequestController {
 		
 		// add validation over credit and debit
 		// check if both to and from are same
-		boolean verify=accountDaoImpl.checkDet(accountFrom,cardno);
+		boolean verify=accountDaoImpl.checkDet(accountDaoImpl.getusernameMerchant(cardno),cardno);
 		System.out.println(verify+"i wrote this");
 		boolean checkCustomerAmount=false;
 		String usernameofuser="";
@@ -719,7 +719,8 @@ public class RequestController {
 				critical=false;
 				accountDaoImpl.MPayment(cardno,cvv,amount,usernameofuser,username,accountTypeTo);
 				status="approved";
-				approverusername=usernameofuser;
+				approverusername=
+						 usernameofuser=accountDaoImpl.getusernameMerchant(cardno);;
 				
 				
 				
