@@ -74,7 +74,7 @@ div {
 
 		function checkFinalOTP() {
 			var userOTP = $("#userOTP").val();
-			if (userOTP.length != 6 || isNaN(userOTP)) {
+			if (userOTP.length != 6 || isNaN(userOTP) || userOTP.indexOf('.') > -1) {
 				$("#invalidOTP").html("Your OTP is 6 digit number");
 			} else {
 				$("#invalidOTP").html("");
@@ -83,7 +83,7 @@ div {
 
 		function checkOTP() {
 			var userOTP = $("#userOTP").val();
-			if (userOTP.length > 6 || isNaN(userOTP)) {
+			if (userOTP.length > 6 || isNaN(userOTP) || userOTP.indexOf('.') > -1) {
 				$("#invalidOTP").html("Your OTP is 6 digit number");
 			} else {
 				$("#invalidOTP").html("<br>");
@@ -118,11 +118,12 @@ div {
 			<div class="row">
 
 				<div class="line">
-					<label for="userOTP">OTP : ${otp_attempts}</</label> <input
+					<label for="userOTP">Enter your OTP : </</label> <input
 						type="text" id="userOTP" style="width: 100px;" name="userOTP"
 						onblur="checkOTP()" />
 				</div>
 				<div>
+					<p>${otp_attempts} chance(s) left</p>
 					<span id="invalidOTP" style="color: red"></span>
 				</div>
 				<input type="hidden" name="otp_attempts" value="${otp_attempts}"/>

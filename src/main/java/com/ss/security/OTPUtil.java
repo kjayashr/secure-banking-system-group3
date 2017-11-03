@@ -29,7 +29,7 @@ public class OTPUtil {
 			user = userDao.getUserbyUsername(username);
 		}
 
-		System.out.println("OTP TEST : " + username + " | " + user.getUsername() + " | " + user.getEmail());
+//		System.out.println("OTP TEST : " + username + " | " + user.getUsername() + " | " + user.getEmail());
 		String encryptedOTP = "";
 
 		if (!isResend) {
