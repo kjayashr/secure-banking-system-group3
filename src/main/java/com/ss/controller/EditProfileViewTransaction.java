@@ -80,8 +80,16 @@ public class EditProfileViewTransaction {
 	@RequestMapping(value = "/viewtransaction", method = RequestMethod.POST)
 	public ModelAndView getviewtransaction(HttpServletRequest req, HttpServletResponse resp, Authentication auth, ModelMap model) {
 		String username = auth.getName();
-		int userOTP = Integer.parseInt(req.getParameter("userOTP"));
-		int count = Integer.parseInt(req.getParameter("otp_attempts"));
+		int userOTP = 0;
+		int count = -1;
+		
+		try {
+			userOTP = Integer.parseInt(req.getParameter("userOTP"));
+			count = Integer.parseInt(req.getParameter("otp_attempts"));
+		} catch (NumberFormatException e) {
+			
+		}
+		
 		if (!otpUtil.validateOTP(username, userOTP, count)) {
 			count--;
 			if (count > 0) {
@@ -116,8 +124,16 @@ public class EditProfileViewTransaction {
 	public ModelAndView Merchantgetviewtransaction(HttpServletRequest req, HttpServletResponse resp, Authentication auth, ModelMap model) {
 		String username = auth.getName();
 		
-		int userOTP = Integer.parseInt(req.getParameter("userOTP"));
-		int count = Integer.parseInt(req.getParameter("otp_attempts"));
+		int userOTP = 0;
+		int count = -1;
+		
+		try {
+			userOTP = Integer.parseInt(req.getParameter("userOTP"));
+			count = Integer.parseInt(req.getParameter("otp_attempts"));
+		} catch (NumberFormatException e) {
+			
+		}
+		
 		if (!otpUtil.validateOTP(username, userOTP, count)) {
 			count--;
 			if (count > 0) {

@@ -77,7 +77,7 @@ public class OTPUtil {
 			return true;
 		} else {
 			// in last try, if validation fails, remove the OTP
-			if (tryLeft == 1) {
+			if (tryLeft <= 1) {
 				otpDao.delete(username);
 			}
 			return false;

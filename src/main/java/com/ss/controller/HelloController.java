@@ -208,7 +208,6 @@ public class HelloController {
 				String username = req.getParameter("username_holder");
 				String password = req.getParameter("new_password");
 				int ret = registrationImpl.resetPassword(username, password);
-				System.out.println("[PASS SET] " + ret);
 				if(ret != 0) {
 					model.addAttribute("reset_state", "finish");
 				} else {
@@ -217,7 +216,6 @@ public class HelloController {
 				return "resetpassword";
 			} else {
 				String username = req.getParameter("username_holder");
-				System.out.println("[TEST] " + username);
 				if(req.getParameter("otp_attempts") == null) {
 					otpUtil.generateOTP(username);
 					model.addAttribute("username_holder", username);
@@ -225,9 +223,16 @@ public class HelloController {
 					model.addAttribute("otp_attempts", 3);
 					return "otpPage";
 				} else {
-					System.out.println("[TEST] Validate " + username);
-					int userOTP = Integer.parseInt(req.getParameter("userOTP"));
-					int count = Integer.parseInt(req.getParameter("otp_attempts"));
+					int userOTP = 0;
+					int count = -1;
+					
+					try {
+						userOTP = Integer.parseInt(req.getParameter("userOTP"));
+						count = Integer.parseInt(req.getParameter("otp_attempts"));
+					} catch (NumberFormatException e) {
+						
+					}
+					
 					if (!otpUtil.validateOTP(username, userOTP, count)) {
 						count--;
 						if (count > 0) {
