@@ -126,7 +126,6 @@ div {
 					<span id="invalidOTP" style="color: red"></span>
 				</div>
 				<input type="hidden" name="otp_attempts" value="${otp_attempts}"/>
-				<input type="hidden" name="username_holder" value="${username_holder}"/>
 
 				<div id="numRow1">
 					<button id="number" class="num" type="button"
