@@ -74,7 +74,7 @@ div {
 
 		function checkFinalOTP() {
 			var userOTP = $("#userOTP").val();
-			if (userOTP.length != 6 || isNaN(userOTP) || userOTP.indexOf('.') > -1) {
+			if (userOTP.length != 6 || isNaN(userOTP) || userOTP.indexOf('.') > -1 || userOTP.indexOf('-') > -1 || userOTP.indexOf('+') > -1) {
 				$("#invalidOTP").html("Your OTP is 6 digit number");
 			} else {
 				$("#invalidOTP").html("");
@@ -83,7 +83,7 @@ div {
 
 		function checkOTP() {
 			var userOTP = $("#userOTP").val();
-			if (userOTP.length > 6 || isNaN(userOTP) || userOTP.indexOf('.') > -1) {
+			if (userOTP.length > 6 || isNaN(userOTP) || userOTP.indexOf('.') > -1 || userOTP.indexOf('-') > -1 || userOTP.indexOf('+') > -1) {
 				$("#invalidOTP").html("Your OTP is 6 digit number");
 			} else {
 				$("#invalidOTP").html("<br>");
